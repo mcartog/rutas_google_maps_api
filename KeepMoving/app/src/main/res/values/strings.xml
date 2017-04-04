@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Rutas</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="to_map">Empezar ruta</string>
+    <string name="to_history">Historial</string>
+    <string name="to_stadistics">Estadísticas</string>
+    <string name="prefs">Preferencias</string>
+    <string name="start">Iniciar</string>
+    <string name="stop">Detener</string>
+    <string name="about">Acerca de...</string>
+    <string name="caputure_waypoint">Genera punto de interés</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
