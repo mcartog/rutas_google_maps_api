@@ -4,7 +4,15 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import com.marcostoral.keepmoving.dto.Route;
+
 public class TrackMyRoute extends Service {
+
+    Route myRoute = new Route();
+
+
+
+
     public TrackMyRoute() {
     }
 

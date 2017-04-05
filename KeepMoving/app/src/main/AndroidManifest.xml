@@ -50,7 +50,12 @@
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version" />
         </activity>
-        <activity android:name=".activities.RouteDetailsActivity"></activity>
+        <activity android:name=".activities.RouteDetailsActivity" />
+
+        <service
+            android:name=".services.TrackMyRoute"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
