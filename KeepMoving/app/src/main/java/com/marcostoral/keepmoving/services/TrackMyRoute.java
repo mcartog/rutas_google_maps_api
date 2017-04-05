@@ -2,16 +2,19 @@ package com.marcostoral.keepmoving.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.IBinder;
 
+import com.google.android.gms.common.api.GoogleApiActivity;
 import com.marcostoral.keepmoving.dto.Route;
 
-public class TrackMyRoute extends Service {
+public class TrackMyRoute extends Service implements com.google.android.gms.location.LocationListener{
 
-    Route myRoute = new Route();
-
-
-
+    LocationManager locman;
+    LocationListener loclis;
+    Location location;
 
     public TrackMyRoute() {
     }
@@ -21,4 +24,11 @@ public class TrackMyRoute extends Service {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
+    @Override
+    public void onLocationChanged(android.location.Location location) {
+
+    }
+
+
 }

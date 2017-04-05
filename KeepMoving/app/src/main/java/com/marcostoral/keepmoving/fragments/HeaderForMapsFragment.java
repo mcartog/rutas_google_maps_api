@@ -12,10 +12,10 @@ import com.marcostoral.keepmoving.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ListViewFragment extends Fragment {
+public class HeaderForMapsFragment extends Fragment {
 
 
-    public ListViewFragment() {
+    public HeaderForMapsFragment() {
         // Required empty public constructor
     }
 
@@ -23,11 +23,8 @@ public class ListViewFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list_view, container, false);
-
-
+        View view = inflater.inflate(R.layout.fragment_header_for_maps, container, false);
         return view;
     }
 

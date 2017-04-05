@@ -1,0 +1,60 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.marcostoral.keepmoving.fragments.HeaderForMapsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="60"
+        android:orientation="vertical">
+
+        <Chronometer
+            android:id="@+id/chrono"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:padding="5dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/ivTypeMap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/running_48"
+                />
+             <TextView
+                 android:text="TextView"
+                 android:padding="5dp"
+                 android:gravity="center_vertical"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/tvDistance"
+                   />
+
+        </LinearLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="90dp"
+            android:layout_height="match_parent"
+            android:src="@android:drawable/ic_menu_camera"
+            android:background="@color/colorAccent"
+            android:id="@+id/ivCaptureWaypoint"
+            android:contentDescription="@string/caputure_waypoint" />
+    </LinearLayout>
+
+
+</FrameLayout>
