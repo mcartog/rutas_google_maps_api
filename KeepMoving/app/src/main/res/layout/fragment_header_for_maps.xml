@@ -44,7 +44,7 @@
                  android:id="@+id/tvDistance"
                    />
 
-        </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <ImageButton
