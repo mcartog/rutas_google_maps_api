@@ -1,5 +1,7 @@
 package com.marcostoral.keepmoving.dto;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -9,25 +11,17 @@ import java.util.Date;
 
 public class Route {
 
-    //public enum Type {'HIKING', 'RUNNING', 'CYCLING'};
-
     private String title;
     private String distance;
     private String time;
     private String date;
-    //private Type type;
     private int type;
     private ArrayList<Waypoint> waypointList;
 
 
     public Route() {
-    }
-
-    public Route(String distance, String time, int type) {
-        this.distance = distance;
-        this.time = time;
-
-        this.type = type;
+        this.date = getDateTime();
+        this.waypointList = new ArrayList<Waypoint>();
     }
 
     public String getDistance() {
@@ -69,6 +63,17 @@ public class Route {
     public void setWaypointList(ArrayList<Waypoint> waypointList) {
         this.waypointList = waypointList;
     }
+
+
+    /**
+     * Devuelve la fecha del dispositivo en formato yyyy/MM/dd String.
+     * @return
+     */
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        Date date = new Date();
+        return dateFormat.format(date); }
+
 
     @Override
     public String toString() {

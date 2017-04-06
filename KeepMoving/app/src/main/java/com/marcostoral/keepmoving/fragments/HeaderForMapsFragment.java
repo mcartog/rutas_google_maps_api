@@ -3,6 +3,7 @@ package com.marcostoral.keepmoving.fragments;
 
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,10 +40,19 @@ public class HeaderForMapsFragment extends Fragment {
     //dto instance
     private Route myRoute;
 
+
     public HeaderForMapsFragment() {
         // Required empty public constructor
     }
 
+    ///////////////////////////////////////////////////////
+    //////////////////   CALLBACK   ///////////////////////
+    ///////////////////////////////////////////////////////
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,9 +66,14 @@ public class HeaderForMapsFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
-
-
+    ///////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
 
     public void init(View view){
         btnWaypoint = (ImageButton) view.findViewById(R.id.ibWaypoint);
@@ -73,11 +88,11 @@ public class HeaderForMapsFragment extends Fragment {
             public void onClick(View v) {
                 btnStart.setVisibility(View.INVISIBLE);
                 myRoute = new Route();
-                String date = getDateTime();
 
-                myRoute.setDate(date);
 
-                Toast.makeText(getContext(),"lanzo servicio "+date,Toast.LENGTH_SHORT).show();
+                chronometer.setBase(SystemClock.elapsedRealtime());
+                chronometer.start();
+                Toast.makeText(getContext(),"lanzo servicio "+myRoute.toString(),Toast.LENGTH_SHORT).show();
 
                 //Lanzo servicio
 
@@ -90,7 +105,11 @@ public class HeaderForMapsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 btnStop.setVisibility(View.INVISIBLE);
+                chronometer.stop();
+                myRoute.setTime(chronometer.getText().toString());
+
                 Toast.makeText(getContext(),"detengo servicio "+myRoute.toString(),Toast.LENGTH_LONG).show();
+
                 btnStart.setVisibility(View.VISIBLE);
             }
         });
@@ -98,20 +117,14 @@ public class HeaderForMapsFragment extends Fragment {
         btnWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(getContext(), "captuar waypoint",Toast.LENGTH_LONG).show();
             }
         });
     }
 
 
-    /**
-     * Devuelve la fecha del dispositivo en formato yyyy/MM/dd String.
-     * @return
-     */
-    private String getDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        Date date = new Date();
-        return dateFormat.format(date); }
+
 
 
 }

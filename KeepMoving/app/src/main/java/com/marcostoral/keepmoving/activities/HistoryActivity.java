@@ -31,13 +31,13 @@ public class HistoryActivity extends FragmentActivity {
     ///////////////////////////////////////////////////////
 
     public void cargaRutas(){
-
+/*
         listaRutas.add(new Route("13km","1h3m",R.drawable.running_48));
         listaRutas.add(new Route("63km","1h3m",R.drawable.cycling_48));
         listaRutas.add(new Route("10km","1h3m",R.drawable.trekking_48));
         listaRutas.add(new Route("13km","1h3m",R.drawable.cycling_48));
 
-
+*/
     }
 
 
