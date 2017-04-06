@@ -10,7 +10,7 @@
         android:id="@+id/header"
         android:name="com.marcostoral.keepmoving.fragments.HeaderForMapsFragment"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
 
         />
 
@@ -20,9 +20,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="100dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="47dp"
         tools:context="com.marcostoral.keepmoving.activities.MapsActivity" />
-
+<!--
     <Button
         android:text="@string/start"
         android:layout_width="match_parent"
@@ -47,6 +47,6 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"  />
-
+-->
 </RelativeLayout>
 

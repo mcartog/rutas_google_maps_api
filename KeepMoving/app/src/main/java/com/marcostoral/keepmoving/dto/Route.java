@@ -14,7 +14,7 @@ public class Route {
     private String title;
     private String distance;
     private String time;
-    private Date date;
+    private String date;
     //private Type type;
     private int type;
     private ArrayList<Waypoint> waypointList;
@@ -46,11 +46,11 @@ public class Route {
         this.time = time;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -68,5 +68,17 @@ public class Route {
 
     public void setWaypointList(ArrayList<Waypoint> waypointList) {
         this.waypointList = waypointList;
+    }
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "title='" + title + '\'' +
+                ", distance='" + distance + '\'' +
+                ", time='" + time + '\'' +
+                ", date='" + date + '\'' +
+                ", type=" + type +
+                ", waypointList=" + waypointList +
+                '}';
     }
 }

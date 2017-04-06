@@ -1,15 +1,24 @@
 package com.marcostoral.keepmoving.activities;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -19,14 +28,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import static com.google.ads.AdRequest.LOGTAG;
+
+public class MapsActivity extends FragmentActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
 
     //Map
     private GoogleMap mMap;
 
-    //UI
-    private Button btnStart;
-    private Button btnStop;
+    private GoogleApiClient apiClient;
+
+    private static final int PETICION_PERMISO_LOCALIZACION = 101;
+
 
     //Location
     private LocationManager locman;
@@ -46,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        init();
+      //  init();
 
     }
 
@@ -66,7 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-        LatLng myLocation = myLocationInit();
+        LatLng myLocation = myLocationInit(location);
 
         // Add a marker in Sydney and move the camera
        // LatLng sydney = new LatLng(-34, 151);
@@ -74,43 +86,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
     }
 
+
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
 
     public void init(){
 
-        btnStart = (Button) findViewById(R.id.btnStart);
-        btnStop = (Button) findViewById(R.id.btnStop);
-
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnStart.setVisibility(View.INVISIBLE);
-                Route myRoute = new Route();
-                Toast.makeText(MapsActivity.this,"lanzo servicio",Toast.LENGTH_SHORT).show();
-
-                //Lanzo servicio
-
-
-                btnStop.setVisibility(View.VISIBLE);
-            }
-        });
-
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnStop.setVisibility(View.INVISIBLE);
-                Toast.makeText(MapsActivity.this,"detengo servicio",Toast.LENGTH_SHORT).show();
-                btnStart.setVisibility(View.VISIBLE);
-            }
-        });
+        apiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, this)
+                .addConnectionCallbacks(this)
+                .addApi(LocationServices.API)
+                .build();
 
 
 
     }
 
-    public LatLng myLocationInit(){
+    public LatLng myLocationInit(Location location){
         LatLng myLocation;
         locman = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -130,4 +123,36 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+        //Conectado correctamente a Google Play Services
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PETICION_PERMISO_LOCALIZACION);
+        } else {
+
+            Location lastLocation =
+                    LocationServices.FusedLocationApi.getLastLocation(apiClient);
+
+            myLocationInit(lastLocation);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        //Se ha producido un error que no se puede resolver automáticamente
+        //y la conexión con los Google Play Services no se ha establecido.
+
+        Log.e(LOGTAG, "Error grave al conectar con Google Play Services");
+    }
 }
