@@ -11,7 +11,7 @@ import com.marcostoral.keepmoving.dto.Route;
 
 import java.util.ArrayList;
 
-public class HistoryActivity extends FragmentActivity {
+public class HistoryActivity extends AppCompatActivity {
 
     private Fragment lvFragment;
     private ArrayList<Route> listaRutas = new ArrayList<>();
@@ -22,6 +22,7 @@ public class HistoryActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
         cargaRutas();
     }
 
