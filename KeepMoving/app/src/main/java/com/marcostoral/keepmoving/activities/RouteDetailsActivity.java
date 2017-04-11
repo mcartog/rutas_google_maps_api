@@ -13,8 +13,6 @@ import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
 
 public class RouteDetailsActivity extends AppCompatActivity {
 
-    private Fragment routeDetailsFragment;
-
     private String date;
     private String distance;
     private String time;
