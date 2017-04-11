@@ -37,7 +37,7 @@ public class RouteDetailsActivity extends AppCompatActivity {
 
         Route route = new Route(distance,time,type,date);
 
-        RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fRouteDetails);
+        RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
         detailsFragment.renderRoute(route);
 
     }

@@ -7,7 +7,7 @@
     tools:context="com.marcostoral.keepmoving.activities.RouteDetailsActivity">
 
     <fragment
-        android:id="@+id/fRouteDetails"
+        android:id="@+id/fragmentDetailsRoute"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.marcostoral.keepmoving.fragments.RouteDetailsFragment"

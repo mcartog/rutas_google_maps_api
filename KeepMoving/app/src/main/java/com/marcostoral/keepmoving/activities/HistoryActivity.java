@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 public class HistoryActivity extends AppCompatActivity implements ListViewFragment.OnFragmentInteractionListener{
 
-    private Fragment lvFragment;
+//    private Fragment lvFragment;
     private ArrayList<Route> listaRutas = new ArrayList<>();
 
     private ListViewAdapter adapter;
@@ -33,13 +33,18 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
 
     }
 
+    /**
+     * Comprueba si el fragment de detalles está cargado en la activity (si es xlarge) y en caso de
+     * que esté actualiza su visualización. Si no, abre nueva actividad.
+     * @param route
+     */
     @Override
     public void onListClick(Route route) {
+
         if (isMultiPanel) {
 
-            RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fRouteDetails);
+            RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
             detailsFragment.renderRoute(route);
-
 
         } else {
 
@@ -53,15 +58,13 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
             startActivity(intent);
 
 
-
-            //    Toast.makeText(this, "Haces clic en la lista",Toast.LENGTH_LONG).show();
-
         }
 
     }
 
     private void setMultiPanel() {
-        isMultiPanel = (getSupportFragmentManager().findFragmentById(R.id.fRouteDetails) != null);
+
+        isMultiPanel = (getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute) != null);
     }
 
 
