@@ -1,0 +1,77 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:orientation="vertical"
+       >
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:src="@android:drawable/ic_menu_camera"
+            android:background="@color/colorAccent"
+            android:id="@+id/ibWaypoint"
+            android:contentDescription="@string/caputure_waypoint" />
+        <Chronometer
+            android:id="@+id/chrono"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:textSize="30sp"
+            android:padding="5dp"
+            />
+
+        <ImageView
+            android:id="@+id/ivCurrentType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/running"
+            />
+
+        <TextView
+            android:text="TextView"
+            android:padding="5dp"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvCurrentDistance"
+            />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            >
+
+            <Button
+                android:text="@string/start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnStart"
+                android:visibility="visible"
+                android:background="@color/colorAccent"
+                android:layout_gravity="bottom"
+                />
+            <Button
+                android:text="@string/stop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnStop"
+                android:visibility="invisible"
+                android:background="@color/colorAccent"
+                android:layout_gravity="bottom"
+                />
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
