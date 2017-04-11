@@ -46,6 +46,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
     private LocationListener loclis;
     private Location location;
 
+
     private double lat;
     private double lon;
 
@@ -59,7 +60,7 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-      //  init();
+        init();
 
     }
 

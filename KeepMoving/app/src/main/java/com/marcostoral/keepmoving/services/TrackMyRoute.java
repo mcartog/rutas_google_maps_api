@@ -12,9 +12,13 @@ import com.marcostoral.keepmoving.dto.Route;
 
 public class TrackMyRoute extends Service implements com.google.android.gms.location.LocationListener{
 
-    LocationManager locman;
-    LocationListener loclis;
-    Location location;
+    private LocationManager locman;
+    private LocationListener loclis;
+    private Location location;
+
+
+    private double lat;
+    private double lon;
 
     public TrackMyRoute() {
     }

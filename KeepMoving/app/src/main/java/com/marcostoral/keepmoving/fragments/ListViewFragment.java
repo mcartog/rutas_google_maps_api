@@ -1,6 +1,8 @@
 package com.marcostoral.keepmoving.fragments;
 
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
@@ -14,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.activities.RouteDetailsActivity;
 import com.marcostoral.keepmoving.adapters.ListViewAdapter;
 import com.marcostoral.keepmoving.dto.Route;
 
@@ -50,8 +53,21 @@ public class ListViewFragment extends Fragment {
     }
 
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+        }
+    }
 
-
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
 
 
     /**
@@ -92,6 +108,12 @@ public class ListViewFragment extends Fragment {
             case R.id.action_share:
                 //Aquí van las acciones que hará esto: borrar elemento de una lista, editarlo, añadir elemento a una lista, iniciar una actividad...
                 Toast.makeText(getContext(), "Compartir en red social",Toast.LENGTH_SHORT).show();
+              /* Consulta cómo hacer esto en:
+              https://developers.facebook.com/docs/sharing/android
+
+                ShareButton shareButton = (ShareButton)findViewById(R.id.fb_share_button);
+                shareButton.setShareContent(content);
+                */
                 return true;
             case R.id.action_delete:
                 //Ejemplo borrar elemento
@@ -121,7 +143,15 @@ public class ListViewFragment extends Fragment {
         lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                mListener.onListClick(arrayRoutes.get(position));
+
+
                 Toast.makeText(getContext(), "Haces clic en la lista",Toast.LENGTH_LONG).show();
+           //     Intent intent = new Intent(getContext(), RouteDetailsActivity.class);
+             //   intent.putExtra("mensaje","ESTO ES UN MENSAJE, PERO LO SUYO ES TRANSMITIR EL OBJETO RUTA");
+
+             //   startActivity(intent);
             }
         });
 

@@ -58,7 +58,7 @@ public class ListViewAdapter extends ArrayAdapter {
 
         }
 
-   //     holder.type.setImageResource(routeList.get(position).getType());
+        holder.type.setImageResource(routeList.get(position).getType());
         holder.distance.setText(routeList.get(position).getDistance());
         holder.time.setText(routeList.get(position).getTime());
         holder.date.setText((CharSequence) routeList.get(position).getDate());

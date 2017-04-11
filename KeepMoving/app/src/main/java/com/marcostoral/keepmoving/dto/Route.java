@@ -13,12 +13,15 @@ import java.util.Date;
 
 public class Route {
 
+    private int id =0;
     private String title;
     private String distance;
     private String time;
     private String date;
+    private String comment;
     private int type;
     private ArrayList<Waypoint> waypointList;
+    //private polilinea? arrayXY??? KML???
 
 
     public Route() {
@@ -27,10 +30,12 @@ public class Route {
     }
 
     //Este consturctor es aapra la prueba de diseño
-    public Route(String distance, String time,int type) {
+    public Route(String distance, String time,int type, String date) {
+        this.id++;
         this.type = type;
         this.time = time;
         this.distance = distance;
+        this.date = date;
     }
 
     public String getDistance() {
@@ -71,6 +76,10 @@ public class Route {
 
     public void setWaypointList(ArrayList<Waypoint> waypointList) {
         this.waypointList = waypointList;
+    }
+
+    public void addWaypoint (Waypoint waypoint){
+        waypointList.add(waypoint);
     }
 
 

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:layout_weight="1"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.marcostoral.keepmoving.fragments.HeaderForMapsFragment">
+    tools:context="com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -33,7 +33,7 @@
                 android:id="@+id/ivCurrentType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/running_48"
+                android:src="@drawable/running"
                 />
              <TextView
                  android:text="TextView"

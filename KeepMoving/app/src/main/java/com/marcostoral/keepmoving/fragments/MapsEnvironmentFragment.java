@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
+import com.marcostoral.keepmoving.dto.Waypoint;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,7 +28,7 @@ import java.util.Date;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HeaderForMapsFragment extends Fragment {
+public class MapsEnvironmentFragment extends Fragment {
 
     //UI
     private ImageButton btnWaypoint;
@@ -41,7 +42,7 @@ public class HeaderForMapsFragment extends Fragment {
     private Route myRoute;
 
 
-    public HeaderForMapsFragment() {
+    public MapsEnvironmentFragment() {
         // Required empty public constructor
     }
 
@@ -83,10 +84,13 @@ public class HeaderForMapsFragment extends Fragment {
         btnStart = (Button) view.findViewById(R.id.btnStart);
         btnStop = (Button) view.findViewById(R.id.btnStop);
 
+        btnWaypoint.setEnabled(false);
+
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnStart.setVisibility(View.INVISIBLE);
+                btnWaypoint.setEnabled(true);
                 myRoute = new Route();
 
 
@@ -105,10 +109,12 @@ public class HeaderForMapsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 btnStop.setVisibility(View.INVISIBLE);
+                btnWaypoint.setEnabled(false);
                 chronometer.stop();
                 myRoute.setTime(chronometer.getText().toString());
 
                 Toast.makeText(getContext(),"detengo servicio "+myRoute.toString(),Toast.LENGTH_LONG).show();
+
 
                 btnStart.setVisibility(View.VISIBLE);
             }
@@ -117,6 +123,11 @@ public class HeaderForMapsFragment extends Fragment {
         btnWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Waypoint waypoint = new Waypoint();
+
+             //   waypoint.setLng();
+             //   waypoint.setLtd();
+                myRoute.addWaypoint(waypoint);
 
                 Toast.makeText(getContext(), "captuar waypoint",Toast.LENGTH_LONG).show();
             }

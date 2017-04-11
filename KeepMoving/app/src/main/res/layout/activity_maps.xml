@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/header"
-        android:name="com.marcostoral.keepmoving.fragments.HeaderForMapsFragment"
+        android:name="com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 

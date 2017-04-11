@@ -7,6 +7,7 @@ package com.marcostoral.keepmoving.dto;
 public class Waypoint {
     private long ltd;
     private long lng;
+    //foto o video o audio?
 
     public Waypoint() {
     }
