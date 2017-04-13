@@ -9,8 +9,10 @@ import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +30,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
+import com.marcostoral.keepmoving.fragments.ListViewFragment;
+import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
 
 import static com.google.ads.AdRequest.LOGTAG;
 
@@ -50,11 +54,44 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
     private double lat;
     private double lon;
 
+    private MapsEnvironmentFragment headerFragment;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+
+        //Recibo los datos que vienen con el intent
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            //Y los transformo a entero
+            Integer type = Integer.parseInt(extras.getString("type"));
+
+
+            switch (type){
+                case 0:
+                    //Tengo que pasarle este dato al fragment!! Para que modifique la imagen y cree la ruta con el typo adecuado.
+                    Toast.makeText(this, type.toString(),Toast.LENGTH_LONG).show();
+
+                    break;
+                case 1:
+                    // Toast.makeText(this, type,Toast.LENGTH_LONG).show();
+                    break;
+                case 2:
+
+                    //  Toast.makeText(this, type,Toast.LENGTH_LONG).show();
+                    break;
+            }
+
+        }
+
+
+
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -80,12 +117,12 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
 
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-        LatLng myLocation = myLocationInit(location);
+      //  LatLng myLocation = myLocationInit(location);
 
         // Add a marker in Sydney and move the camera
-       // LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(myLocation).title("You are here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(myLocation));
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("You are here"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
 
@@ -157,4 +194,5 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
 
         Log.e(LOGTAG, "Error grave al conectar con Google Play Services");
     }
+
 }

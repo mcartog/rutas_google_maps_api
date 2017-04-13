@@ -146,12 +146,6 @@ public class ListViewFragment extends Fragment {
 
                 mListener.onListClick(arrayRoutes.get(position));
 
-
-                Toast.makeText(getContext(), "Haces clic en la lista",Toast.LENGTH_LONG).show();
-           //     Intent intent = new Intent(getContext(), RouteDetailsActivity.class);
-             //   intent.putExtra("mensaje","ESTO ES UN MENSAJE, PERO LO SUYO ES TRANSMITIR EL OBJETO RUTA");
-
-             //   startActivity(intent);
             }
         });
 

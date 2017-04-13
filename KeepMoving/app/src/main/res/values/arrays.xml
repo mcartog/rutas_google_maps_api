@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="routeType">
-        <item>Bicicleta</item>
-        <item>Running</item>
-        <item>Senderismo</item>
+    <string-array name="route_type">
+        <item>@string/biking</item>
+        <item>@string/running</item>
+        <item>@string/hiking</item>
     </string-array>
 
-    <string-array name="routeTypeValues">
+    <string-array name="route_type_values">
         <item>0</item>
         <item>1</item>
         <item>2</item>

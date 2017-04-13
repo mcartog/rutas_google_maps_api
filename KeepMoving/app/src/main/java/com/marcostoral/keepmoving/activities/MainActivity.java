@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private Dialog generateDialogRouteType(){
 
-        final String[] items = getResources().getStringArray(R.array.route_type);
+        final String[] items = getResources().getStringArray(R.array.route_type_values);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 

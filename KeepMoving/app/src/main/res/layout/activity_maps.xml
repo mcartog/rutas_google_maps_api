@@ -7,7 +7,7 @@
     tools:context="com.marcostoral.keepmoving.activities.HistoryActivity">
 
     <fragment
-        android:id="@+id/header"
+        android:id="@+id/fragment_header"
         android:name="com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -22,31 +22,6 @@
         android:layout_marginTop="100dp"
         android:layout_marginBottom="47dp"
         tools:context="com.marcostoral.keepmoving.activities.MapsActivity" />
-<!--
-    <Button
-        android:text="@string/start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnStart"
-        android:visibility="visible"
-        android:background="@color/colorAccent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"  />
-    <Button
-        android:text="@string/stop"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnStop"
-        android:visibility="invisible"
-        android:background="@color/colorAccent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"  />
--->
+
 </RelativeLayout>
 
