@@ -11,4 +11,14 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string-array name="media_type">
+        <item>@string/photo</item>
+        <item>@string/movie</item>
+    </string-array>
+
+    <string-array name="route_media_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 </resources>

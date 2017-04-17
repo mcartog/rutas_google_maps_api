@@ -1,17 +1,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_history"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.marcostoral.keepmoving.activities.HistoryActivity">
 
+
     <fragment
-        android:id="@+id/fragment_header"
+        android:id="@+id/fragment_maps_environment"
         android:name="com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
+        tools:layout="@layout/fragment_maps_environment"
         />
 
     <fragment
@@ -22,6 +22,8 @@
         android:layout_marginTop="100dp"
         android:layout_marginBottom="47dp"
         tools:context="com.marcostoral.keepmoving.activities.MapsActivity" />
+
+
 
 </RelativeLayout>
 

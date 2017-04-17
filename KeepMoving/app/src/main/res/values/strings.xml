@@ -17,6 +17,9 @@
     <string name="biking">En bicicleta</string>
     <string name="running">Corriendo</string>
     <string name="hiking">Andando</string>
+    <string name="title_dialog_media_type">¿Qué quieres hacer? </string>
+    <string name="photo">Fotografía</string>
+    <string name="movie">Vídeo</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -75,15 +75,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialogRouteType.show();
-                Toast.makeText(MainActivity.this, "al mapa",Toast.LENGTH_SHORT).show();
-
-            }
+                  }
         });
 
         btnHistory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "historial",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
                 startActivity(intent);
             }

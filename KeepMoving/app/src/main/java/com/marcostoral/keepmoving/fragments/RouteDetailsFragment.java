@@ -58,6 +58,20 @@ public class RouteDetailsFragment extends Fragment {
         tvDate.setText(route.getDate());
         tvDistance.setText(route.getDistance());
         tvTime.setText(route.getTime());
+        switch (route.getType()){
+            case R.drawable.cycling:
+                ivType.setImageResource(R.drawable.cycling);
+                break;
+            case R.drawable.running:
+                ivType.setImageResource(R.drawable.running);
+                break;
+            case R.drawable.hiking:
+                ivType.setImageResource(R.drawable.hiking);
+                break;
+            default:
+                ivType = null;
+        }
+
     }
 
 

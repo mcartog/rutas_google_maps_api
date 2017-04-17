@@ -17,10 +17,9 @@ import java.util.ArrayList;
 
 public class HistoryActivity extends AppCompatActivity implements ListViewFragment.OnFragmentInteractionListener{
 
-//    private Fragment lvFragment;
-    private ArrayList<Route> listaRutas = new ArrayList<>();
 
-    private ListViewAdapter adapter;
+  //  private ArrayList<Route> routeList = new ArrayList<>();
+  //  private ListViewAdapter adapter;
 
     private boolean isMultiPanel;
 
@@ -50,29 +49,18 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
 
             Intent intent = new Intent(this, RouteDetailsActivity.class);
 
+            //Aquí habrá que poner un objeto Route.
             intent.putExtra("distance", route.getDistance());
             intent.putExtra("time",route.getTime());
-            //     intent.putExtra("type", route.getType());
+            intent.putExtra("type", route.getType());
             intent.putExtra("date", route.getDate());
 
             startActivity(intent);
-
-
         }
-
     }
 
     private void setMultiPanel() {
-
         isMultiPanel = (getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute) != null);
     }
-
-
-    ///////////////////////////////////////////////////////
-    ////////////////////   CRUD   /////////////////////////
-    ///////////////////////////////////////////////////////
-
-
-
 
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class Route {
 
-    private int id =0;
+    private int id;
     private String title;
     private String distance;
     private String time;
@@ -31,7 +31,7 @@ public class Route {
 
     //Este consturctor es aapra la prueba de diseño
     public Route(String distance, String time,int type, String date) {
-        this.id++;
+
         this.type = type;
         this.time = time;
         this.distance = distance;

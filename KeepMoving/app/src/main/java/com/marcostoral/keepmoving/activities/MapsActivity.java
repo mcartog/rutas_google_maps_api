@@ -1,27 +1,14 @@
 package com.marcostoral.keepmoving.activities;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import android.os.PersistableBundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,34 +16,16 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.dto.Route;
-import com.marcostoral.keepmoving.fragments.ListViewFragment;
 import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
 
-import static com.google.ads.AdRequest.LOGTAG;
-
-public class MapsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     //Map
     private GoogleMap mMap;
 
-    private GoogleApiClient apiClient;
+    private MapsEnvironmentFragment environmentFragment;
 
-    private static final int PETICION_PERMISO_LOCALIZACION = 101;
-
-
-    //Location
-    private LocationManager locman;
-    private LocationListener loclis;
-    private Location location;
-
-
-    private double lat;
-    private double lon;
-
-    private MapsEnvironmentFragment headerFragment;
-
-
+    String type2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,43 +33,37 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_maps);
 
 
-        //Recibo los datos que vienen con el intent
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            //Y los transformo a entero
-            Integer type = Integer.parseInt(extras.getString("type"));
+        if (savedInstanceState!=null) {
+            try {
+                savedInstanceState.getString("type");
 
 
-            switch (type){
-                case 0:
-                    //Tengo que pasarle este dato al fragment!! Para que modifique la imagen y cree la ruta con el typo adecuado.
-                    Toast.makeText(this, type.toString(),Toast.LENGTH_LONG).show();
-
-                    break;
-                case 1:
-                    // Toast.makeText(this, type,Toast.LENGTH_LONG).show();
-                    break;
-                case 2:
-
-                    //  Toast.makeText(this, type,Toast.LENGTH_LONG).show();
-                    break;
+            } catch (Exception e) {
             }
-
         }
 
 
 
+        environmentFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
 
+
+        init();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        init();
-
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        //Save the fragment's instance
+
+        getSupportFragmentManager().putFragment(outState, "fragment_environment", environmentFragment);
+
+    }
 
     /**
      * Manipulates the map once available.
@@ -114,7 +77,6 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
       //  LatLng myLocation = myLocationInit(location);
@@ -130,69 +92,14 @@ public class MapsActivity extends AppCompatActivity implements GoogleApiClient.C
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
 
+
     public void init(){
-
-        apiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addConnectionCallbacks(this)
-                .addApi(LocationServices.API)
-                .build();
-
-
-
+     //   MapsEnvironmentFragment fragment = (MapsEnvironmentFragment) getFragmentManager().findFragmentByTag(tag);
+     //   fragment.recibeIcono(type);
     }
 
-    public LatLng myLocationInit(Location location){
-        LatLng myLocation;
-        locman = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-        if (location != null) {
-            lat = location.getLatitude();
-            lon = location.getLongitude();
-
-            myLocation = new LatLng(lat, lon);
-
-            return myLocation;
-
-        } else {
-            LatLng sydney = new LatLng(-34, 151);
-            return sydney;
-        }
-
-    }
-
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-        //Conectado correctamente a Google Play Services
-
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    PETICION_PERMISO_LOCALIZACION);
-        } else {
-
-            Location lastLocation =
-                    LocationServices.FusedLocationApi.getLastLocation(apiClient);
-
-            myLocationInit(lastLocation);
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        //Se ha producido un error que no se puede resolver automáticamente
-        //y la conexión con los Google Play Services no se ha establecido.
-
-        Log.e(LOGTAG, "Error grave al conectar con Google Play Services");
+    public String getType(){
+        return type2;
     }
 
 }

@@ -2,7 +2,6 @@ package com.marcostoral.keepmoving.fragments;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
@@ -16,12 +15,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.activities.RouteDetailsActivity;
 import com.marcostoral.keepmoving.adapters.ListViewAdapter;
 import com.marcostoral.keepmoving.dto.Route;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +28,7 @@ public class ListViewFragment extends Fragment {
     private ListView lvHistory;
     private ArrayList<Route> arrayRoutes = new ArrayList<>();
     private ListViewAdapter adapter;
+
     private OnFragmentInteractionListener mListener;
 
 
@@ -160,19 +158,19 @@ public class ListViewFragment extends Fragment {
 
         arrayRoutes.add(new Route("10km","1h",R.drawable.running,"15/02/2004"));
         arrayRoutes.add(new Route("20km","1h10m",R.drawable.cycling,"15/02/2005"));
-        arrayRoutes.add(new Route("30km","1h20m",R.drawable.trekking,"15/02/2006"));
+        arrayRoutes.add(new Route("30km","1h20m",R.drawable.hiking,"15/02/2006"));
         arrayRoutes.add(new Route("40km","1h30m",R.drawable.cycling,"15/02/2014"));
         arrayRoutes.add(new Route("10km","1h",R.drawable.running,"15/02/2004"));
         arrayRoutes.add(new Route("20km","1h10m",R.drawable.cycling,"15/02/2005"));
-        arrayRoutes.add(new Route("30km","1h20m",R.drawable.trekking,"15/02/2006"));
+        arrayRoutes.add(new Route("30km","1h20m",R.drawable.hiking,"15/02/2006"));
         arrayRoutes.add(new Route("40km","1h30m",R.drawable.cycling,"15/02/2014"));
         arrayRoutes.add(new Route("10km","1h",R.drawable.running,"15/02/2004"));
         arrayRoutes.add(new Route("20km","1h10m",R.drawable.cycling,"15/02/2005"));
-        arrayRoutes.add(new Route("30km","1h20m",R.drawable.trekking,"15/02/2006"));
+        arrayRoutes.add(new Route("30km","1h20m",R.drawable.hiking,"15/02/2006"));
         arrayRoutes.add(new Route("40km","1h30m",R.drawable.cycling,"15/02/2014"));
         arrayRoutes.add(new Route("10km","1h",R.drawable.running,"15/02/2004"));
         arrayRoutes.add(new Route("20km","1h10m",R.drawable.cycling,"15/02/2005"));
-        arrayRoutes.add(new Route("30km","1h20m",R.drawable.trekking,"15/02/2006"));
+        arrayRoutes.add(new Route("30km","1h20m",R.drawable.hiking,"15/02/2006"));
         arrayRoutes.add(new Route("40km","1h30m",R.drawable.cycling,"15/02/2014"));
 
 
