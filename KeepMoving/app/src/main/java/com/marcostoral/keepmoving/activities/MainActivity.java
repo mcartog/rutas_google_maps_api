@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     //Dialogs
     private Dialog dialogRouteType;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

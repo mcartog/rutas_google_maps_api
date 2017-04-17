@@ -45,11 +45,20 @@ public class MapsEnvironmentFragment extends Fragment {
     //DIALOGS
     private Dialog waypointDialog;
 
-    MapsActivity activity = (MapsActivity) getActivity();
-    String type;
+    private String type;
 
     public MapsEnvironmentFragment() {
         // Required empty public constructor
+    }
+
+    public static MapsEnvironmentFragment newInstance(Bundle args) {
+
+        MapsEnvironmentFragment fragment = new MapsEnvironmentFragment();
+        if(args!=null){
+            fragment.setArguments(args);
+        }
+
+        return fragment;
     }
 
     ///////////////////////////////////////////////////////
@@ -65,14 +74,21 @@ public class MapsEnvironmentFragment extends Fragment {
 
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+     }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle extras) {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_maps_environment, container, false);
+
         init(view);
-
-
-       // String type2 = activity.getType();
+        
+        getArguments().getString("type");
+        recibeIcono("1");
 
         return view;
     }
@@ -206,15 +222,15 @@ public class MapsEnvironmentFragment extends Fragment {
             switch (Integer.parseInt(type)){
                 case 0:
                     Toast.makeText(getContext(),type,Toast.LENGTH_SHORT).show();
-                    //ivCurrentType.setImageResource(R.drawable.cycling);
+                    ivCurrentType.setImageResource(R.drawable.cycling);
                     break;
                 case 1:
                     Toast.makeText(getContext(),type,Toast.LENGTH_SHORT).show();
-                   // ivCurrentType.setImageResource(R.drawable.running);
+                    ivCurrentType.setImageResource(R.drawable.running);
                     break;
                 case 2:
                     Toast.makeText(getContext(),type,Toast.LENGTH_SHORT).show();
-                    //ivCurrentType.setImageResource(R.drawable.hiking);
+                    ivCurrentType.setImageResource(R.drawable.hiking);
                     break;
             }
 
@@ -239,7 +255,7 @@ public class MapsEnvironmentFragment extends Fragment {
 
                 if(Integer.parseInt(items[item])==0){
                     //start
-                    Toast.makeText(getContext(),"Opción elegida: " + items[item],Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),"Opción elegida: " + items[item],Toast.LENGTH_LONG).show();
                     /* Lanzo la actividad para caputrar foto.
                     startActivityForResult();
                      */
@@ -253,8 +269,5 @@ public class MapsEnvironmentFragment extends Fragment {
 
         return builder.create();
     }
-
-
-
 
 }

@@ -23,31 +23,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Map
     private GoogleMap mMap;
 
-    private MapsEnvironmentFragment environmentFragment;
-
-    String type2;
+    private String type;
+    private MapsEnvironmentFragment mapsEnvironmentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-
-        if (savedInstanceState!=null) {
-            try {
-                savedInstanceState.getString("type");
-
-
-            } catch (Exception e) {
-            }
+        Bundle extras = getIntent().getExtras();
+        if (extras!=null) {
+            type = extras.getString("type");
+            Toast.makeText(this,"Recibo de main "+type,Toast.LENGTH_LONG).show();
         }
+        mapsEnvironmentFragment.newInstance(extras);
 
-
-
-        environmentFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
-
-
-        init();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -61,7 +51,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onSaveInstanceState(outState, outPersistentState);
         //Save the fragment's instance
 
-        getSupportFragmentManager().putFragment(outState, "fragment_environment", environmentFragment);
+      //  getSupportFragmentManager().putFragment(outState, "fragment_environment", environmentFragment);
 
     }
 
@@ -92,14 +82,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
 
-
-    public void init(){
-     //   MapsEnvironmentFragment fragment = (MapsEnvironmentFragment) getFragmentManager().findFragmentByTag(tag);
-     //   fragment.recibeIcono(type);
-    }
-
-    public String getType(){
-        return type2;
-    }
 
 }
