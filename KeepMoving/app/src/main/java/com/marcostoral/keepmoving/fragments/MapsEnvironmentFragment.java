@@ -45,26 +45,13 @@ public class MapsEnvironmentFragment extends Fragment {
     //DIALOGS
     private Dialog waypointDialog;
 
-    private String type;
-
     public MapsEnvironmentFragment() {
         // Required empty public constructor
-    }
-
-    public static MapsEnvironmentFragment newInstance(Bundle args) {
-
-        MapsEnvironmentFragment fragment = new MapsEnvironmentFragment();
-        if(args!=null){
-            fragment.setArguments(args);
-        }
-
-        return fragment;
     }
 
     ///////////////////////////////////////////////////////
     //////////////////   CALLBACK   ///////////////////////
     ///////////////////////////////////////////////////////
-
 
     @Override
     public void onAttach(Context context) {
@@ -72,11 +59,9 @@ public class MapsEnvironmentFragment extends Fragment {
 
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
      }
 
     @Override
@@ -84,11 +69,7 @@ public class MapsEnvironmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_maps_environment, container, false);
-
         init(view);
-        
-        getArguments().getString("type");
-        recibeIcono("1");
 
         return view;
     }
@@ -133,25 +114,7 @@ public class MapsEnvironmentFragment extends Fragment {
         }
     }
 
-  /*  @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState!=null){
-            if(savedInstanceState.getInt("start")==4){
-                btnStart.setVisibility(View.INVISIBLE);
-            }else {
-                btnStart.setVisibility(View.VISIBLE);
-            }
 
-            if(savedInstanceState.getInt("stop")==4)
-            {
-                btnStop.setVisibility(View.INVISIBLE);
-            }else {
-                btnStop.setVisibility(View.VISIBLE);
-            }
-
-        }
-    }*/
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
@@ -217,7 +180,7 @@ public class MapsEnvironmentFragment extends Fragment {
         });
     }
 
-    public void recibeIcono(String type){
+    public void routeTypeIconReceptor(String type){
 
             switch (Integer.parseInt(type)){
                 case 0:

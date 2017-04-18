@@ -1,11 +1,13 @@
 package com.marcostoral.keepmoving.activities;
 
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
@@ -34,10 +36,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Bundle extras = getIntent().getExtras();
         if (extras!=null) {
             type = extras.getString("type");
-            Toast.makeText(this,"Recibo de main "+type,Toast.LENGTH_LONG).show();
-        }
-        mapsEnvironmentFragment.newInstance(extras);
+            MapsEnvironmentFragment mapsFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
+            mapsFragment.routeTypeIconReceptor(type);
 
+        }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()

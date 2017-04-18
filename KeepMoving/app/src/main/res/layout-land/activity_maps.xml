@@ -15,7 +15,7 @@
         tools:context="com.marcostoral.keepmoving.activities.MapsActivity" />
 
     <fragment
-        android:id="@+id/fragment_header"
+        android:id="@+id/fragment_maps_environment"
         android:name="com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
