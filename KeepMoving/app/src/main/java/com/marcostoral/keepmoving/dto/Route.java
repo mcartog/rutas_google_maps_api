@@ -1,5 +1,7 @@
 package com.marcostoral.keepmoving.dto;
 
+import android.os.Parcelable;
+
 import com.marcostoral.keepmoving.utils.Utils;
 
 import java.text.DateFormat;
@@ -14,9 +16,9 @@ import java.util.Date;
 public class Route {
 
     private int id;
-    private String title;
     private String distance;
     private String time;
+    //Cambiar a Date
     private String date;
     private String comment;
     private int type;
@@ -25,7 +27,7 @@ public class Route {
 
 
     public Route() {
-        this.date = Utils.getDateTime();
+       // this.date = new Date();
         this.waypointList = new ArrayList<Waypoint>();
     }
 

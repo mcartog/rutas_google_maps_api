@@ -7,6 +7,8 @@
     <string name="prefs">Preferencias</string>
     <string name="start">Iniciar</string>
     <string name="stop">Detener</string>
+    <string name="acept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
     <string name="about">Acerca de...</string>
     <string name="caputure_waypoint">Genera punto de interés</string>
     <string name="distance">Distancia: </string>
@@ -20,6 +22,9 @@
     <string name="title_dialog_media_type">¿Qué quieres hacer? </string>
     <string name="photo">Fotografía</string>
     <string name="movie">Vídeo</string>
+    <string name="title_dialog_persist_route">Ruta generada</string>
+    <string name="msn_dialog_persist_route">¿Quieres guardar la ruta?</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

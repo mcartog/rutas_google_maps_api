@@ -26,6 +26,8 @@ import com.marcostoral.keepmoving.activities.MapsActivity;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
+import java.util.ArrayList;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -44,6 +46,7 @@ public class MapsEnvironmentFragment extends Fragment {
 
     //DIALOGS
     private Dialog waypointDialog;
+    private Dialog saveConfirmationDialog;
 
     public MapsEnvironmentFragment() {
         // Required empty public constructor
@@ -88,9 +91,12 @@ public class MapsEnvironmentFragment extends Fragment {
         int stopState = btnStop.getVisibility();
 
 
-     //   outState.putLong("chrono",chronoState);
+
+
+        //   outState.putLong("chrono",chronoState);
         outState.putInt("start",startState);
         outState.putInt("stop",stopState);
+
 
     }
 
@@ -100,15 +106,20 @@ public class MapsEnvironmentFragment extends Fragment {
         if(savedInstanceState!=null){
             if(savedInstanceState.getInt("start")==4){
                 btnStart.setVisibility(View.INVISIBLE);
+                btnWaypoint.setEnabled(true);
+
             }else {
                 btnStart.setVisibility(View.VISIBLE);
+                btnWaypoint.setEnabled(false);
             }
 
             if(savedInstanceState.getInt("stop")==4)
             {
                 btnStop.setVisibility(View.INVISIBLE);
+                btnWaypoint.setEnabled(false);
             }else {
                 btnStop.setVisibility(View.VISIBLE);
+                btnWaypoint.setEnabled(true);
             }
 
         }
@@ -122,6 +133,7 @@ public class MapsEnvironmentFragment extends Fragment {
     public void init(View view){
 
         waypointDialog = generateDialogCaptureWaypoint();
+        saveConfirmationDialog = saveRouteConfirmation();
 
         btnWaypoint = (ImageButton) view.findViewById(R.id.ibWaypoint);
         chronometer = (Chronometer) view.findViewById(R.id.chrono);
@@ -157,7 +169,8 @@ public class MapsEnvironmentFragment extends Fragment {
                 btnStop.setVisibility(View.INVISIBLE);
                 btnWaypoint.setEnabled(false);
                 chronometer.stop();
-//                myRoute.setTime(chronometer.getText().toString());
+                myRoute.setTime(chronometer.getText().toString());
+                saveConfirmationDialog.show();
 
                 Toast.makeText(getContext(),"detengo servicio "+myRoute.toString(),Toast.LENGTH_LONG).show();
 
@@ -227,6 +240,32 @@ public class MapsEnvironmentFragment extends Fragment {
                     startActivityForResult();
                      */
                 }
+            }
+        });
+
+        return builder.create();
+    }
+
+    /**
+     * Crea el diálogo de selección de tipo de media caputrado.
+     * @return
+     */
+    private Dialog saveRouteConfirmation(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.title_dialog_persist_route);
+        builder.setMessage(R.string.msn_dialog_persist_route);
+
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(),"lanzo el procedimiento de salvar",Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(),"cancelo",Toast.LENGTH_SHORT).show();
+                dialog.cancel();
             }
         });
 
