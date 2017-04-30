@@ -1,5 +1,6 @@
 package com.marcostoral.keepmoving.dto;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.marcostoral.keepmoving.utils.Utils;
@@ -13,7 +14,7 @@ import java.util.Date;
  * Created by marcostoral on 3/04/17.
  */
 
-public class Route {
+public class Route implements Parcelable{
 
     private int id;
     private String distance;
@@ -25,10 +26,28 @@ public class Route {
     private ArrayList<Waypoint> waypointList;
     //private polilinea? arrayXY??? KML???
 
+    public static final Parcelable.Creator<Waypoint> CREATOR
+            = new Parcelable.Creator<Waypoint>() {
+        public Waypoint createFromParcel(Parcel in) {
+            return new Waypoint();
+        }
+
+        public Waypoint[] newArray(int size) {
+            return new Waypoint[size];
+        }
+    };
+
 
     public Route() {
        // this.date = new Date();
         this.waypointList = new ArrayList<Waypoint>();
+    }
+
+    public Route (Parcel p){
+        // this.date = new Date();
+        this.waypointList = new ArrayList<Waypoint>();
+        readFromParcel(p);
+
     }
 
     //Este consturctor es aapra la prueba de diseño
@@ -85,17 +104,26 @@ public class Route {
     }
 
 
-
-
-//para pruebas
     @Override
-    public String toString() {
-        return "Route{" +
-                ", distance='" + distance + '\'' +
-                ", time='" + time + '\'' +
-                ", date='" + date + '\'' +
-                ", type=" + type +
-                ", waypointList=" + waypointList +
-                '}';
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(distance);
+        dest.writeString(time);
+    //    dest.writeTypedList(waypointList);
+
+    }
+
+    public void readFromParcel (Parcel in){
+
+        distance = in.readString();
+        time = in.readString();
+
+
+        in.readTypedList(waypointList, CREATOR);
     }
 }

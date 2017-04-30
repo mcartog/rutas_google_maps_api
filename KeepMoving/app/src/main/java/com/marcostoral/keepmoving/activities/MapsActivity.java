@@ -1,11 +1,18 @@
 package com.marcostoral.keepmoving.activities;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
@@ -15,26 +22,38 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
+
+import static java.security.AccessController.getContext;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     //Map
     private GoogleMap mMap;
 
+    private CameraPosition cameraPosition;
+    private Marker marker;
+
     private String type;
     private MapsEnvironmentFragment mapsEnvironmentFragment;
 
+/*
+    private LocationManager locationManager;
+    private Location currentLocation;
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        //Recibo el tipo de actividad y lo paso al fragment.
         Bundle extras = getIntent().getExtras();
-        if (extras!=null) {
+        if (extras != null) {
             type = extras.getString("type");
             MapsEnvironmentFragment mapsFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
             mapsFragment.routeTypeIconReceptor(type);
@@ -53,7 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onSaveInstanceState(outState, outPersistentState);
         //Save the fragment's instance
 
-      //  getSupportFragmentManager().putFragment(outState, "fragment_environment", environmentFragment);
+        //  getSupportFragmentManager().putFragment(outState, "fragment_environment", environmentFragment);
 
     }
 
@@ -69,14 +88,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);  //Coger esto de las prefes.
+/*
+        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+  //      locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, (LocationListener) this);
+ //       locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, (LocationListener) this);
+
+        //checkGPS();
+        */
       //  LatLng myLocation = myLocationInit(location);
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
+        LatLng sydney = new LatLng(37, -6);
         mMap.addMarker(new MarkerOptions().position(sydney).title("You are here"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    //     mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        //Camara
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(sydney)     //Aquí meterle la última posición conocida
+                .zoom(15)
+                .build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
     }
 
 
@@ -84,5 +128,83 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
 
+    private boolean isGPSEnabled() {
+        try {
+            int gpsSignal = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            if (gpsSignal == 0) {
+                return false;
+            } else {
+                return true;
+            }
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void showInfoAlert() {
+        new AlertDialog.Builder(this)
+                .setTitle("GPS Signal")
+                .setMessage("You don't have GPS signal enabled. Would you like to enable the GPS signal now?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("CANCEL", null)
+                .show();
+    }
+
+/*
+    private void checkGPS(){
+        if (!this.isGPSEnabled()) {
+            showInfoAlert();
+        } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (location == null) {
+                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+            currentLocation = location;
+
+            if (currentLocation != null) {
+                createOrUpdateMarkerByLocation(location);
+                zoomToLocation(location);
+            }
+
+        }
+    }
+    private void createOrUpdateMarkerByLocation(Location location) {
+        if (marker == null) {
+            marker = mMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).draggable(true));
+        } else {
+            marker.setPosition(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
+
+    }
+
+    private void zoomToLocation(Location location) {
+        cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(location.getLatitude(), location.getLongitude()))
+                .zoom(15)           // limit -> 21
+                .bearing(0)         // 0 - 365º
+                .tilt(30)           // limit -> 90
+                .build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+    }
+*/
 
 }
