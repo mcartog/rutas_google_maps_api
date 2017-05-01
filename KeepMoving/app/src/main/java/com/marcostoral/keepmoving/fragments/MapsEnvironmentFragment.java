@@ -54,6 +54,8 @@ public class MapsEnvironmentFragment extends Fragment {
     static final int REQUEST_VIDEO_CAPTURE = 1;
     static final int REQUEST_IMAGE_CAPTURE = 2;
 
+    private long milliseconds;
+
     public MapsEnvironmentFragment() {
         // Required empty public constructor
     }
@@ -61,17 +63,6 @@ public class MapsEnvironmentFragment extends Fragment {
     ///////////////////////////////////////////////////////
     //////////////////   CALLBACK   ///////////////////////
     ///////////////////////////////////////////////////////
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,27 +74,20 @@ public class MapsEnvironmentFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-      //  long chronoState = chronometer.getBase();
+        //  long chronoState = chronometer.getBase();
+        long milliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
         int startState = btnStart.getVisibility();
         int stopState = btnStop.getVisibility();
 
-
-
-
-
         //   outState.putLong("chrono",chronoState);
+        outState.putLong("milliseconds",milliseconds);
         outState.putInt("start",startState);
         outState.putInt("stop",stopState);
-
 
     }
 
@@ -111,7 +95,10 @@ public class MapsEnvironmentFragment extends Fragment {
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState!=null){
+
             if(savedInstanceState.getInt("start")==4){
+                milliseconds = savedInstanceState.getLong("milliseconds");
+                startChronometer();
                 btnStart.setVisibility(View.INVISIBLE);
                 btnWaypoint.setEnabled(true);
 
@@ -216,9 +203,7 @@ public class MapsEnvironmentFragment extends Fragment {
                 btnWaypoint.setEnabled(true);
                 myRoute = new Route();
 
-
-                chronometer.setBase(SystemClock.elapsedRealtime());
-                chronometer.start();
+                startChronometer();
 
                 Toast.makeText(getContext(),"lanzo servicio "+myRoute.toString(),Toast.LENGTH_SHORT).show();
 
@@ -258,6 +243,15 @@ public class MapsEnvironmentFragment extends Fragment {
         });
     }
 
+    private void startChronometer(){
+        chronometer.setBase(SystemClock.elapsedRealtime() - milliseconds);
+        chronometer.start();
+    }
+
+    /**
+     * Recibe el tipo de ruta y le asigna una imagen en función de la elección.
+     * @param type
+     */
     public void routeTypeIconReceptor(String type){
 
             switch (Integer.parseInt(type)){
