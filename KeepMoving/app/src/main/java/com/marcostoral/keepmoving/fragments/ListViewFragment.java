@@ -155,7 +155,7 @@ public class ListViewFragment extends Fragment {
      */
 
     public void cargaRutas(){
-
+/*
         arrayRoutes.add(new Route("10km","1h",R.drawable.running,"15/02/2004"));
         arrayRoutes.add(new Route("20km","1h10m",R.drawable.cycling,"15/02/2005"));
         arrayRoutes.add(new Route("30km","1h20m",R.drawable.hiking,"15/02/2006"));
@@ -172,7 +172,7 @@ public class ListViewFragment extends Fragment {
         arrayRoutes.add(new Route("20km","1h10m",R.drawable.cycling,"15/02/2005"));
         arrayRoutes.add(new Route("30km","1h20m",R.drawable.hiking,"15/02/2006"));
         arrayRoutes.add(new Route("40km","1h30m",R.drawable.cycling,"15/02/2014"));
-
+*/
 
     }
 

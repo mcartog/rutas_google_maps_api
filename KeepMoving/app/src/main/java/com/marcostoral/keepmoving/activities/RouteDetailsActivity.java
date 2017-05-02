@@ -33,11 +33,11 @@ public class RouteDetailsActivity extends AppCompatActivity {
            // type = getIntent().getIntExtra("type");
         }
 
-        Route route = new Route(distance,time,type,date);
+      /*  Route route = new Route(distance,time,type,date);
 
         RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
         detailsFragment.renderRoute(route);
-
+*/
     }
 
 

@@ -16,13 +16,13 @@
             android:id="@+id/ivDetailsType"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment" />
+            android:text="" />
 
         <TextView
             android:id="@+id/tvDetailsDate"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment" />
+            android:text="" />
 
     </LinearLayout>
     <TextView
@@ -35,6 +35,6 @@
         android:id="@+id/tvDetailsTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
+        android:text="" />
 
 </LinearLayout>

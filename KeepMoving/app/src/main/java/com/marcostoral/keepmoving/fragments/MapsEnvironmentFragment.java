@@ -2,16 +2,14 @@ package com.marcostoral.keepmoving.fragments;
 
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.LauncherApps;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.activities.MapsActivity;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
-import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,6 +52,8 @@ public class MapsEnvironmentFragment extends Fragment {
     static final int REQUEST_IMAGE_CAPTURE = 2;
 
     private long milliseconds;
+    private int type;
+    private int gpsSignal;
 
     public MapsEnvironmentFragment() {
         // Required empty public constructor
@@ -69,33 +68,45 @@ public class MapsEnvironmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_maps_environment, container, false);
-        init(view);
+        this.init(view);
 
         return view;
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        isGPSEnabled();
+    }
 
+    /**
+     * Salvo el estado de los botones start/stop y los milisegundos transcurridos con el cronómetro en marcha.
+     * @param outState
+     */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //  long chronoState = chronometer.getBase();
         long milliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
         int startState = btnStart.getVisibility();
         int stopState = btnStop.getVisibility();
 
-        //   outState.putLong("chrono",chronoState);
         outState.putLong("milliseconds",milliseconds);
         outState.putInt("start",startState);
         outState.putInt("stop",stopState);
 
     }
 
+    /**
+     * Restaura los valores almacenados. Estado botones start/stop, milisegundos.
+     * @param savedInstanceState
+     */
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState!=null){
 
+            //Caso: actividad en curso.
             if(savedInstanceState.getInt("start")==4){
                 milliseconds = savedInstanceState.getLong("milliseconds");
                 startChronometer();
@@ -107,6 +118,8 @@ public class MapsEnvironmentFragment extends Fragment {
                 btnWaypoint.setEnabled(false);
             }
 
+            ///Reestructurar código. Esto se puede mejorar.
+            //Caso del botón
             if(savedInstanceState.getInt("stop")==4)
             {
                 btnStop.setVisibility(View.INVISIBLE);
@@ -184,6 +197,9 @@ public class MapsEnvironmentFragment extends Fragment {
 
     public void init(View view){
 
+        Bundle bundle = getActivity().getIntent().getExtras();
+        type = Integer.parseInt(bundle.getString("type"));
+
         waypointDialog = generateDialogCaptureWaypoint();
         saveConfirmationDialog = saveRouteConfirmation();
 
@@ -196,20 +212,34 @@ public class MapsEnvironmentFragment extends Fragment {
 
         btnWaypoint.setEnabled(false);
 
+
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btnStart.setVisibility(View.INVISIBLE);
-                btnWaypoint.setEnabled(true);
-                myRoute = new Route();
 
-                startChronometer();
+                try {
+                gpsSignal = Settings.Secure.getInt(getActivity().getContentResolver(), Settings.Secure.LOCATION_MODE);
+                //Comprueba por segunda vez que el GPS esté activado.
+                if (gpsSignal == 0) {
+                    //Si no lo está, nos muestra mensaje que conduce a configuración.
+                    showInfoAlert();
+                } else {
+                    //Si está habilitado.
 
-                Toast.makeText(getContext(),"lanzo servicio "+myRoute.toString(),Toast.LENGTH_SHORT).show();
+                    btnStart.setVisibility(View.INVISIBLE);
+                    btnWaypoint.setEnabled(true);
+                    myRoute = new Route();
 
-                //Lanzo servicio
+                    startChronometer();
 
-                btnStop.setVisibility(View.VISIBLE);
+                    Toast.makeText(getContext(),myRoute.toString(),Toast.LENGTH_LONG).show();
+                    //Lanzo servicio
+
+                    btnStop.setVisibility(View.VISIBLE);
+                }
+                } catch (Settings.SettingNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -218,8 +248,12 @@ public class MapsEnvironmentFragment extends Fragment {
             public void onClick(View v) {
                 btnStop.setVisibility(View.INVISIBLE);
                 btnWaypoint.setEnabled(false);
+
+                
                 chronometer.stop();
-                myRoute.setTime(chronometer.getText().toString());
+
+                getRouteParameters();
+
                 saveConfirmationDialog.show();
 
                 Toast.makeText(getContext(),"detengo servicio "+myRoute.toString(),Toast.LENGTH_LONG).show();
@@ -243,6 +277,17 @@ public class MapsEnvironmentFragment extends Fragment {
         });
     }
 
+    /**
+     * Al dar a Stop asignamos los valores a ROute.
+     */
+    private void getRouteParameters(){
+
+        myRoute.setDate(new Date());
+        myRoute.setType(type);
+        myRoute.setDistance(tvCurrentDistance.getText().toString());
+        myRoute.setTime(chronometer.getText().toString());
+
+    }
     private void startChronometer(){
         chronometer.setBase(SystemClock.elapsedRealtime() - milliseconds);
         chronometer.start();
@@ -256,15 +301,12 @@ public class MapsEnvironmentFragment extends Fragment {
 
             switch (Integer.parseInt(type)){
                 case 0:
-                   // Toast.makeText(getContext(),type,Toast.LENGTH_SHORT).show();
                     ivCurrentType.setImageResource(R.drawable.cycling);
                     break;
                 case 1:
-                   // Toast.makeText(getContext(),type,Toast.LENGTH_SHORT).show();
                     ivCurrentType.setImageResource(R.drawable.running);
                     break;
                 case 2:
-                   // Toast.makeText(getContext(),type,Toast.LENGTH_SHORT).show();
                     ivCurrentType.setImageResource(R.drawable.hiking);
                     break;
             }
@@ -290,6 +332,39 @@ public class MapsEnvironmentFragment extends Fragment {
         if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
+    }
+
+    /**
+     * Comprueba que le GPS esté activado. Si no lo está muestra un AlertDialog que nos conduce a
+     * la configuración del GPS.
+     */
+    private void isGPSEnabled() {
+        try {
+            gpsSignal = Settings.Secure.getInt(getActivity().getContentResolver(), Settings.Secure.LOCATION_MODE);
+            if (gpsSignal == 0) {
+                showInfoAlert();
+            }
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * AlertDialog
+     */
+    private void showInfoAlert() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("GPS Signal")
+                .setMessage("You don't have GPS signal enabled. Would you like to enable the GPS signal now?")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("CANCEL", null)
+                .show();
     }
 
 

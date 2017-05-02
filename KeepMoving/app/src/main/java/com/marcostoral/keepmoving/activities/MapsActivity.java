@@ -1,22 +1,12 @@
 package com.marcostoral.keepmoving.activities;
 
-import android.Manifest;
-import android.app.Dialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,8 +18,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
-
-import static java.security.AccessController.getContext;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -57,8 +45,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             type = extras.getString("type");
             MapsEnvironmentFragment mapsFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
             mapsFragment.routeTypeIconReceptor(type);
-
         }
+
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -70,10 +59,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
-        //Save the fragment's instance
-
-        //  getSupportFragmentManager().putFragment(outState, "fragment_environment", environmentFragment);
-
     }
 
     /**
@@ -128,35 +113,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ///////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////
 
-    private boolean isGPSEnabled() {
-        try {
-            int gpsSignal = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
-
-            if (gpsSignal == 0) {
-                return false;
-            } else {
-                return true;
-            }
-        } catch (Settings.SettingNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private void showInfoAlert() {
-        new AlertDialog.Builder(this)
-                .setTitle("GPS Signal")
-                .setMessage("You don't have GPS signal enabled. Would you like to enable the GPS signal now?")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton("CANCEL", null)
-                .show();
-    }
 
 /*
     private void checkGPS(){

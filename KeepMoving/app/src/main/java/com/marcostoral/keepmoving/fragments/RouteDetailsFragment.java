@@ -55,7 +55,7 @@ public class RouteDetailsFragment extends Fragment {
 
     public void renderRoute(Route route) {
         wrapper.setVisibility(View.VISIBLE);
-        tvDate.setText(route.getDate());
+       // tvDate.setText(route.getDate());
         tvDistance.setText(route.getDistance());
         tvTime.setText(route.getTime());
         switch (route.getType()){

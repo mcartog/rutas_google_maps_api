@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle(R.string.title_dialog_route_type);
         builder.setItems(R.array.route_type, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-                Toast.makeText(MainActivity.this,"Opción elegida: " + items[item],Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                 intent.putExtra("type",items[item]);
                 startActivity(intent);
