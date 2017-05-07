@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -26,6 +27,8 @@ import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
 import java.util.Date;
+
+import io.realm.Realm;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,6 +57,9 @@ public class MapsEnvironmentFragment extends Fragment {
     private long milliseconds;
     private int type;
     private int gpsSignal;
+
+    private Realm realm;
+
 
     public MapsEnvironmentFragment() {
         // Required empty public constructor
@@ -90,7 +96,8 @@ public class MapsEnvironmentFragment extends Fragment {
         long milliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
         int startState = btnStart.getVisibility();
         int stopState = btnStop.getVisibility();
-
+       //Meter un parcel de Route??
+        outState.putParcelable("myRoute",myRoute);
         outState.putLong("milliseconds",milliseconds);
         outState.putInt("start",startState);
         outState.putInt("stop",stopState);
@@ -110,6 +117,7 @@ public class MapsEnvironmentFragment extends Fragment {
             if(savedInstanceState.getInt("start")==4){
                 milliseconds = savedInstanceState.getLong("milliseconds");
                 startChronometer();
+                myRoute = savedInstanceState.getParcelable("myRoute");
                 btnStart.setVisibility(View.INVISIBLE);
                 btnWaypoint.setEnabled(true);
 
@@ -177,6 +185,15 @@ public class MapsEnvironmentFragment extends Fragment {
         builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(getContext(),"lanzo el procedimiento de salvar",Toast.LENGTH_SHORT).show();
+                /////////Proceso de salvado (meter en un método)
+                realm.beginTransaction();
+                //User user = realm.createObject(User.class);       Lo llamo al crear la ruta en startbutton
+                //realm.createObject(myRoute);
+                //realm.executeTransaction(s);
+
+                Route realmRoute = realm.copyToRealm(myRoute);  //Crearla normal y luego grabarla así
+                realm.commitTransaction();
+
                 dialog.cancel();
             }
         });
@@ -199,6 +216,9 @@ public class MapsEnvironmentFragment extends Fragment {
 
         Bundle bundle = getActivity().getIntent().getExtras();
         type = Integer.parseInt(bundle.getString("type"));
+
+        // Obtain a Realm instance
+        realm = Realm.getDefaultInstance();
 
         waypointDialog = generateDialogCaptureWaypoint();
         saveConfirmationDialog = saveRouteConfirmation();
@@ -225,13 +245,12 @@ public class MapsEnvironmentFragment extends Fragment {
                     showInfoAlert();
                 } else {
                     //Si está habilitado.
-
                     btnStart.setVisibility(View.INVISIBLE);
                     btnWaypoint.setEnabled(true);
                     myRoute = new Route();
+                  //  myRoute = realm.createObject(Route.class);
 
                     startChronometer();
-
                     Toast.makeText(getContext(),myRoute.toString(),Toast.LENGTH_LONG).show();
                     //Lanzo servicio
 
@@ -249,10 +268,9 @@ public class MapsEnvironmentFragment extends Fragment {
                 btnStop.setVisibility(View.INVISIBLE);
                 btnWaypoint.setEnabled(false);
 
-                
                 chronometer.stop();
 
-                getRouteParameters();
+//                setRouteParameters();
 
                 saveConfirmationDialog.show();
 
@@ -280,9 +298,9 @@ public class MapsEnvironmentFragment extends Fragment {
     /**
      * Al dar a Stop asignamos los valores a ROute.
      */
-    private void getRouteParameters(){
+    private void setRouteParameters(){
 
-        myRoute.setDate(new Date());
+        //myRoute.setDate(new Date());
         myRoute.setType(type);
         myRoute.setDistance(tvCurrentDistance.getText().toString());
         myRoute.setTime(chronometer.getText().toString());

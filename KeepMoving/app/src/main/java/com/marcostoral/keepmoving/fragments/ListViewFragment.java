@@ -20,13 +20,19 @@ import com.marcostoral.keepmoving.dto.Route;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ListViewFragment extends Fragment {
+public class ListViewFragment extends Fragment implements RealmChangeListener<RealmResults<Route>> {
 
+    private Realm realm;
     private ListView lvHistory;
-    private ArrayList<Route> arrayRoutes = new ArrayList<>();
+//    private ArrayList<Route> arrayRoutes = new ArrayList<>();
+    private RealmResults<Route> routes;
     private ListViewAdapter adapter;
 
     private OnFragmentInteractionListener mListener;
@@ -44,8 +50,11 @@ public class ListViewFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_view, container, false);
 
-        init(view);
+        realm = Realm.getDefaultInstance();
+        routes = realm.where(Route.class).findAll();
+        routes.addChangeListener(this);
 
+        init(view);
 
         return view;
     }
@@ -65,6 +74,11 @@ public class ListViewFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onChange(RealmResults<Route> element) {
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -116,7 +130,8 @@ public class ListViewFragment extends Fragment {
             case R.id.action_delete:
                 //Ejemplo borrar elemento
                 //Borar item seleccionado
-                this.arrayRoutes.remove(inf.position);
+                deleteRoute(inf.position);
+//                this.arrayRoutes.remove(inf.position);        asi funciona
                 //Notificar el cambio
                 this.adapter.notifyDataSetChanged();
                 return true;
@@ -135,14 +150,14 @@ public class ListViewFragment extends Fragment {
 
         lvHistory = (ListView) view.findViewById(R.id.lvRoutes);
 
-        adapter = new ListViewAdapter(getContext(),arrayRoutes);
+        adapter = new ListViewAdapter(getContext(),routes);    //cambio el arrayRoutes por routes
         lvHistory.setAdapter(adapter);
 
         lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                mListener.onListClick(arrayRoutes.get(position));
+                mListener.onListClick(routes.get(position));   //cambio el arrayRoutes por routes
 
             }
         });
@@ -155,6 +170,8 @@ public class ListViewFragment extends Fragment {
      */
 
     public void cargaRutas(){
+
+
 /*
         arrayRoutes.add(new Route("10km","1h",R.drawable.running,"15/02/2004"));
         arrayRoutes.add(new Route("20km","1h10m",R.drawable.cycling,"15/02/2005"));
@@ -174,6 +191,12 @@ public class ListViewFragment extends Fragment {
         arrayRoutes.add(new Route("40km","1h30m",R.drawable.cycling,"15/02/2014"));
 */
 
+    }
+
+    private void deleteRoute(int position) {
+        realm.beginTransaction();
+        routes.get(position).deleteFromRealm();
+        realm.commitTransaction();
     }
 
 }

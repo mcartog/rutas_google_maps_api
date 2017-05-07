@@ -3,6 +3,7 @@ package com.marcostoral.keepmoving.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.marcostoral.keepmoving.KeepMovinApp;
 import com.marcostoral.keepmoving.utils.Utils;
 
 import java.text.DateFormat;
@@ -11,31 +12,35 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by marcostoral on 3/04/17.
  */
 
-public class Route implements Parcelable{
+public class Route extends RealmObject implements Parcelable {
 
+    @PrimaryKey
     private int id;
-    //Cambiar a Date
     private Date date;
     private int type;
     private String distance;
     private String time;
-    private List<Waypoint> waypointList;
+    private RealmList<Waypoint> waypointList;
     //private polilinea? arrayXY??? KML???
 
+
+
     public Route() {
-        this.id = 001;
+        this.id = KeepMovinApp.RouteID.incrementAndGet();
         this.date = new Date();
-        this.waypointList = new ArrayList<Waypoint>();
+        this.waypointList = new RealmList<Waypoint>();
     }
 
-    public Route (Parcel p){
-
+    public Route(Parcel p){
         readFromParcel(p);
-
     }
 
     //Este consturctor es aapra la prueba de diseño
@@ -97,12 +102,16 @@ public class Route implements Parcelable{
         this.time = time;
     }
 
-    public List<Waypoint> getWaypointList() {
+    public RealmList<Waypoint> getWaypointList() {
         return waypointList;
     }
 
-    public void setWaypointList(List<Waypoint> waypointList) {
+    public void setWaypointList(RealmList<Waypoint> waypointList) {
         this.waypointList = waypointList;
+    }
+
+    public static Creator<Waypoint> getCREATOR() {
+        return CREATOR;
     }
 
     public void addWaypoint (Waypoint waypoint){

@@ -15,6 +15,9 @@ import com.marcostoral.keepmoving.dto.Route;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.RealmList;
+import io.realm.RealmResults;
+
 /**
  * Created by marcostoral on 4/04/17.
  */
@@ -22,10 +25,9 @@ import java.util.List;
 public class ListViewAdapter extends ArrayAdapter {
 
     private Context context;
-    private ArrayList<Route> routeList;
+    private RealmResults<Route> routeList;
 
-
-    public ListViewAdapter(Context context, ArrayList<Route> routeList) {
+    public ListViewAdapter(Context context, RealmResults<Route> routeList) {
         super(context, R.layout.lv_item, routeList);
         this.context = context;
         this.routeList = routeList;
@@ -61,17 +63,19 @@ public class ListViewAdapter extends ArrayAdapter {
         holder.type.setImageResource(routeList.get(position).getType());
         holder.distance.setText(routeList.get(position).getDistance());
         holder.time.setText(routeList.get(position).getTime());
-        holder.date.setText((CharSequence) routeList.get(position).getDate());
+        //holder.date.setText((CharSequence) routeList.get(position).getDate());
+//        hay que discurrir como pasar la fecha
+
 
         return item;
     }
 
     public static class RouteHolder{
 
-        ImageView type;
-        TextView distance;
-        TextView time;
-        TextView date;
+        public ImageView type;
+        public TextView distance;
+        public TextView time;
+        public TextView date;
 
     }
 }

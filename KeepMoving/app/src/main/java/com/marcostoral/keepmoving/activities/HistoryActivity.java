@@ -15,7 +15,12 @@ import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+
 public class HistoryActivity extends AppCompatActivity implements ListViewFragment.OnFragmentInteractionListener{
+
 
 
   //  private ArrayList<Route> routeList = new ArrayList<>();
@@ -50,6 +55,7 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
             Intent intent = new Intent(this, RouteDetailsActivity.class);
 
             //Aquí habrá que poner un objeto Route.
+
             intent.putExtra("distance", route.getDistance());
             intent.putExtra("time",route.getTime());
             intent.putExtra("type", route.getType());
@@ -62,5 +68,6 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
     private void setMultiPanel() {
         isMultiPanel = (getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute) != null);
     }
+
 
 }

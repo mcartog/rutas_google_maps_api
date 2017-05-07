@@ -3,12 +3,18 @@ package com.marcostoral.keepmoving.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.marcostoral.keepmoving.KeepMovinApp;
+
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
 /**
  * Created by marcostoral on 3/04/17.
  */
 
-public class Waypoint implements Parcelable {
+public class Waypoint extends RealmObject implements Parcelable {
 
+    @PrimaryKey
     private int id;
     private long ltd;
     private long lng;
@@ -16,12 +22,55 @@ public class Waypoint implements Parcelable {
     //foto o video o audio?
 
     public Waypoint() {
+        this.id = KeepMovinApp.RouteID.incrementAndGet();
     }
 
-    public Waypoint(long ltd, long lng, String path) {
-        this.ltd = ltd;
-        this.lng = lng;
-        this.path = path;
+//    public Waypoint(long ltd, long lng, String path) {
+//        this.ltd = ltd;
+//        this.lng = lng;
+//        this.path = path;
+//    }
+
+    protected Waypoint(Parcel in) {
+        id = in.readInt();
+        ltd = in.readLong();
+        lng = in.readLong();
+        path = in.readString();
+    }
+
+    public static final Creator<Waypoint> CREATOR = new Creator<Waypoint>() {
+        @Override
+        public Waypoint createFromParcel(Parcel in) {
+            return new Waypoint(in);
+        }
+
+        @Override
+        public Waypoint[] newArray(int size) {
+            return new Waypoint[size];
+        }
+    };
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeInt(id);
+        dest.writeLong(ltd);
+        dest.writeLong(lng);
+        dest.writeString(path);
+
+    }
+
+    public void readFromParcel (Parcel in){
+
+        id = in.readInt();
+        ltd =  in.readLong();
+        lng = in.readLong();
+        path = in.readString();
+
     }
 
     public int getId() {
@@ -56,13 +105,4 @@ public class Waypoint implements Parcelable {
         this.path = path;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-    }
 }
