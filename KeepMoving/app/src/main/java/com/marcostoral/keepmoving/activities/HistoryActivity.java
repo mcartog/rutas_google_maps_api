@@ -5,10 +5,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.ListViewAdapter;
+import com.marcostoral.keepmoving.adapters.RouteAdapter;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.fragments.ListViewFragment;
 import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
@@ -24,6 +26,11 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
 
 
   //  private ArrayList<Route> routeList = new ArrayList<>();
+  private Realm realm;
+
+    private RealmResults<Route> routes;
+    private RouteAdapter adapter;
+    private ListView lvHistory;
   //  private ListViewAdapter adapter;
 
     private boolean isMultiPanel;

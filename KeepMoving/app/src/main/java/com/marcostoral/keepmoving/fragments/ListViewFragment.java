@@ -2,8 +2,11 @@ package com.marcostoral.keepmoving.fragments;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -15,33 +18,35 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.activities.RouteDetailsActivity;
 import com.marcostoral.keepmoving.adapters.ListViewAdapter;
+import com.marcostoral.keepmoving.adapters.RouteAdapter;
 import com.marcostoral.keepmoving.dto.Route;
 
 import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import io.realm.RealmList;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ListViewFragment extends Fragment implements RealmChangeListener<RealmResults<Route>> {
+public class ListViewFragment extends ListFragment implements RealmChangeListener<RealmResults<Route>>, AdapterView.OnItemClickListener {
 
     private Realm realm;
-    private ListView lvHistory;
-//    private ArrayList<Route> arrayRoutes = new ArrayList<>();
+
     private RealmResults<Route> routes;
-    private ListViewAdapter adapter;
+    private RouteAdapter adapter;
+    private ListView lvHistory;
 
     private OnFragmentInteractionListener mListener;
-
 
     public ListViewFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,8 +55,12 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_view, container, false);
 
+
+        // Db Realm: Llamada a db y consulta de todas las rutas.
         realm = Realm.getDefaultInstance();
+
         routes = realm.where(Route.class).findAll();
+
         routes.addChangeListener(this);
 
         init(view);
@@ -59,6 +68,11 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        realm.close();
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -79,6 +93,15 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
     @Override
     public void onChange(RealmResults<Route> element) {
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        Intent intent = new Intent(getActivity(), RouteDetailsActivity.class);
+        intent.putExtra("id", routes.get(position).getId());
+        startActivity(intent);
+
     }
 
 
@@ -117,19 +140,19 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         AdapterView.AdapterContextMenuInfo inf = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         //Funcionamiento del switch, en función del id del elemento menú clicado podremos hacer direferentes cosas
         switch (item.getItemId()) {
+            //SHARE: Consultar  https://developers.facebook.com/docs/sharing/android
             case R.id.action_share:
-                //Aquí van las acciones que hará esto: borrar elemento de una lista, editarlo, añadir elemento a una lista, iniciar una actividad...
-                Toast.makeText(getContext(), "Compartir en red social",Toast.LENGTH_SHORT).show();
-              /* Consulta cómo hacer esto en:
-              https://developers.facebook.com/docs/sharing/android
 
+                Toast.makeText(getContext(), "Compartir... EN OBRAS",Toast.LENGTH_SHORT).show();
+              /*
                 ShareButton shareButton = (ShareButton)findViewById(R.id.fb_share_button);
                 shareButton.setShareContent(content);
                 */
                 return true;
+
+            //DELETE: Elimina ruta seleccionada
             case R.id.action_delete:
-                //Ejemplo borrar elemento
-                //Borar item seleccionado
+
                 deleteRoute(inf.position);
 //                this.arrayRoutes.remove(inf.position);        asi funciona
                 //Notificar el cambio
@@ -146,12 +169,13 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
      * @param view
      */
     public void init(View view){
-        cargaRutas();
+
+        adapter = new RouteAdapter(getContext(),routes,R.layout.lv_item);
 
         lvHistory = (ListView) view.findViewById(R.id.lvRoutes);
-
-        adapter = new ListViewAdapter(getContext(),routes);    //cambio el arrayRoutes por routes
         lvHistory.setAdapter(adapter);
+
+        lvHistory.setOnItemClickListener(this);
 
         lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
@@ -165,11 +189,22 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         registerForContextMenu(lvHistory);
     }
 
+
     /**
      * Metodo que carga datos, BORRAR cuando ya no sea necesario
      */
 
     public void cargaRutas(){
+
+        realm = Realm.getDefaultInstance();
+        // Build the query looking at all users:
+        RealmQuery<Route> query = realm.where(Route.class);
+        // Execute the query:
+        routes = query.findAll();
+
+//       routes = realm.where(Route.class).findAll();
+         routes.addChangeListener(this);
+
 
 
 /*
