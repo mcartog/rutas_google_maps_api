@@ -69,6 +69,8 @@ public class RouteAdapter extends BaseAdapter {
 
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
+
+
         routeHolder.type.setImageResource(devuelveTipo(position));
         routeHolder.distance.setText(routeList.get(position).getDistance().toString());
         routeHolder.time.setText(routeList.get(position).getTime().toString());

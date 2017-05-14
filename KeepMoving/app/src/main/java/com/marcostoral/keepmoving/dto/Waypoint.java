@@ -15,7 +15,7 @@ import io.realm.annotations.PrimaryKey;
 public class Waypoint extends RealmObject implements Parcelable {
 
     @PrimaryKey
-    private int id;
+    private long id;
     private long ltd;
     private long lng;
     private String path;
@@ -57,7 +57,7 @@ public class Waypoint extends RealmObject implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
-        dest.writeInt(id);
+        dest.writeLong(id);
         dest.writeLong(ltd);
         dest.writeLong(lng);
         dest.writeString(path);
@@ -66,18 +66,18 @@ public class Waypoint extends RealmObject implements Parcelable {
 
     public void readFromParcel (Parcel in){
 
-        id = in.readInt();
+        id = in.readLong();
         ltd =  in.readLong();
         lng = in.readLong();
         path = in.readString();
 
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

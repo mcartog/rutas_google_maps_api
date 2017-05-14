@@ -3,6 +3,7 @@ package com.marcostoral.keepmoving.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
@@ -38,14 +39,8 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
         } else {
 
             Intent intent = new Intent(this, RouteDetailsActivity.class);
-
-            //Aquí habrá que poner un objeto Route.
-
-            intent.putExtra("distance", route.getDistance());
-            intent.putExtra("time",route.getTime());
-            intent.putExtra("type", route.getType());
-            intent.putExtra("date", route.getDate());
-
+            //No podemos pasar el objetro ruta directamente, apsamos su id para hacer una consulta.
+            intent.putExtra("routeID", route.getId());
             startActivity(intent);
         }
     }

@@ -23,7 +23,7 @@ import io.realm.annotations.PrimaryKey;
 public class Route extends RealmObject implements Parcelable {
 
     @PrimaryKey
-    private int id;
+    private long id;
     private Date date;
     private int type;
     private String distance;
@@ -43,14 +43,6 @@ public class Route extends RealmObject implements Parcelable {
         readFromParcel(p);
     }
 
-    //Este consturctor es aapra la prueba de diseño
-    public Route(String distance, String time,int type, Date date) {
-        this.date = date;
-        this.type = type;
-        this.distance = distance;
-        this.time = time;
-    }
-
     public static final Parcelable.Creator<Waypoint> CREATOR = new Parcelable.Creator<Waypoint>() {
         public Waypoint createFromParcel(Parcel in) {
             return new Waypoint();
@@ -62,11 +54,11 @@ public class Route extends RealmObject implements Parcelable {
     };
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -127,7 +119,7 @@ public class Route extends RealmObject implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
-        dest.writeInt(id);
+        dest.writeLong(id);
         dest.writeLong(date.getTime());
         dest.writeInt(type);
         dest.writeString(distance);

@@ -9,16 +9,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmQuery;
+import io.realm.RealmResults;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class RouteDetailsFragment extends Fragment {
 
-    //UI
+        //UI
     private TextView tvDate;
     private TextView tvDistance;
     private TextView tvTime;
@@ -36,10 +45,10 @@ public class RouteDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_details_route, container, false);
+
         init(view);
+
         return view;
-
-
     }
 
     public void init(View view){
@@ -52,20 +61,25 @@ public class RouteDetailsFragment extends Fragment {
 
     }
 
-
+    /**
+     * Renderiza la ruta a partir de los datos de la db.
+     * @param route
+     */
     public void renderRoute(Route route) {
         wrapper.setVisibility(View.VISIBLE);
-       // tvDate.setText(route.getDate());
+
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy 'start at' HH:mm");
+        tvDate.setText(df.format(route.getDate()));
         tvDistance.setText(route.getDistance());
         tvTime.setText(route.getTime());
         switch (route.getType()){
-            case R.drawable.cycling:
+            case 0:
                 ivType.setImageResource(R.drawable.cycling);
                 break;
-            case R.drawable.running:
+            case 1:
                 ivType.setImageResource(R.drawable.running);
                 break;
-            case R.drawable.hiking:
+            case 2:
                 ivType.setImageResource(R.drawable.hiking);
                 break;
             default:
@@ -73,6 +87,5 @@ public class RouteDetailsFragment extends Fragment {
         }
 
     }
-
 
 }
