@@ -4,18 +4,13 @@ package com.marcostoral.keepmoving.fragments;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-
-
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Parcel;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,14 +26,9 @@ import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import io.realm.Realm;
-
-import static android.support.v4.content.ContextCompat.getExternalFilesDirs;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,20 +48,17 @@ public class MapsEnvironmentFragment extends Fragment {
 
     //DIALOGS
     private Dialog waypointDialog;
-    private Dialog saveRouteConfirmationDialog;
+    private Dialog saveConfirmationDialog;
 
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_VIDEO_CAPTURE = 2;
+    static final int REQUEST_VIDEO_CAPTURE = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 2;
 
     private long milliseconds;
     private int type;
     private int gpsSignal;
 
     private Realm realm;
-
-
-    String mCurrentPhotoPath;
 
     public MapsEnvironmentFragment() {
         // Required empty public constructor
@@ -109,7 +96,6 @@ public class MapsEnvironmentFragment extends Fragment {
         int startState = btnStart.getVisibility();
         int stopState = btnStop.getVisibility();
        //Meter un parcel de Route??
-
         outState.putParcelable("myRoute",myRoute);
         outState.putLong("milliseconds",milliseconds);
         outState.putInt("start",startState);
@@ -153,7 +139,72 @@ public class MapsEnvironmentFragment extends Fragment {
         }
     }
 
+    ///////////////////////////////////////////////////////
+    //////////////////  DIALOGS   /////////////////////////
+    ///////////////////////////////////////////////////////
+    /**
+     * Crea el diálogo de selección de tipo de media caputrado.
+     * @return
+     */
+    private Dialog generateDialogCaptureWaypoint(){
 
+        final String[] items = getResources().getStringArray(R.array.route_media_values);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle(R.string.title_dialog_media_type);
+        builder.setItems(R.array.media_type, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+
+                if(Integer.parseInt(items[item])==0){
+                    // Lanzo la actividad para caputrar foto.
+                    dispatchTakePictureIntent();
+
+                } else {
+
+                    //Lanzo la actividad para caputrar video.
+                    dispatchTakeVideoIntent();
+                }
+            }
+        });
+
+        return builder.create();
+    }
+
+    /**
+     * Crea el diálogo de selección de tipo de media caputrado.
+     * @return
+     */
+    private Dialog saveRouteConfirmation(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.title_dialog_persist_route);
+        builder.setMessage(R.string.msn_dialog_persist_route);
+
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(),"lanzo el procedimiento de salvar",Toast.LENGTH_SHORT).show();
+                /////////Proceso de salvado (meter en un método)
+                realm.beginTransaction();
+                //User user = realm.createObject(User.class);       Lo llamo al crear la ruta en startbutton
+                //realm.createObject(myRoute);
+                //realm.executeTransaction(s);
+                setRouteParameters();
+                realm.copyToRealm(myRoute);  //Crearla normal y luego grabarla así
+                realm.commitTransaction();
+
+                dialog.cancel();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getContext(),"cancelo",Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+
+        return builder.create();
+    }
 
 
     ///////////////////////////////////////////////////////
@@ -169,7 +220,7 @@ public class MapsEnvironmentFragment extends Fragment {
         realm = Realm.getDefaultInstance();
 
         waypointDialog = generateDialogCaptureWaypoint();
-        saveRouteConfirmationDialog = saveRouteConfirmation();
+        saveConfirmationDialog = saveRouteConfirmation();
 
         btnWaypoint = (ImageButton) view.findViewById(R.id.ibWaypoint);
         chronometer = (Chronometer) view.findViewById(R.id.chrono);
@@ -218,15 +269,14 @@ public class MapsEnvironmentFragment extends Fragment {
 
                 chronometer.stop();
 
-//                setRouteParameters();
+                setRouteParameters();
 
-                saveRouteConfirmation().show();
-
-
+                saveConfirmationDialog.show();
 
                 Toast.makeText(getContext(),"detengo servicio "+myRoute.toString(),Toast.LENGTH_LONG).show();
 
                 btnStart.setVisibility(View.VISIBLE);
+                btnStart.setEnabled(false);
             }
         });
 
@@ -282,59 +332,6 @@ public class MapsEnvironmentFragment extends Fragment {
         }
 
 
-
-
-    /**
-     * Dispara la petición de foto.
-     * Se lanza el intent y crea el fichero, si tiene éxito su creación guarda la imagen en él.
-     */
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(getContext(),
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
-    }
-
-
-    /**
-     * Crea un fichero imagen con formato JPG_20170511_172510_.jpg
-     * @return
-     * @throws IOException
-     */
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-
-        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
     /**
      * Método por el que se dispara la petición de video
      */
@@ -342,6 +339,16 @@ public class MapsEnvironmentFragment extends Fragment {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (takeVideoIntent.resolveActivity(getActivity().getPackageManager())!= null) {
             startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+        }
+    }
+
+    /**
+     * Dispara la petición de foto.
+     */
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
@@ -360,77 +367,6 @@ public class MapsEnvironmentFragment extends Fragment {
         }
     }
 
-
-
-    ///////////////////////////////////////////////////////
-    //////////////////  DIALOGS   /////////////////////////
-    ///////////////////////////////////////////////////////
-    /**
-     * Crea el diálogo de selección de tipo de media caputrado.
-     * @return
-     */
-    private Dialog generateDialogCaptureWaypoint(){
-
-        final String[] items = getResources().getStringArray(R.array.route_media_values);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-        builder.setTitle(R.string.title_dialog_media_type);
-        builder.setItems(R.array.media_type, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int item) {
-
-                if(Integer.parseInt(items[item])==0){
-                    // Lanzo la actividad para caputrar foto.
-                    dispatchTakePictureIntent();
-
-                } else {
-
-                    //Lanzo la actividad para caputrar video.
-                    dispatchTakeVideoIntent();
-                }
-            }
-        });
-
-        return builder.create();
-    }
-
-    /**
-     * Crea el diálogo de selección de tipo de media caputrado.
-     * @return
-     */
-    private Dialog saveRouteConfirmation(){
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(R.string.title_dialog_persist_route);
-        builder.setMessage(R.string.msn_dialog_persist_route);
-
-        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getContext(),"salvar",Toast.LENGTH_SHORT).show();
-                /////////Proceso de salvado (meter en un método)
-
-                setRouteParameters();
-                realm.beginTransaction();
-                //User user = realm.createObject(User.class);       Lo llamo al crear la ruta en startbutton
-                //realm.createObject(myRoute);
-                //realm.executeTransaction(s);
-
-                realm.copyToRealm(myRoute);  //Crearla normal y luego grabarla así
-                realm.commitTransaction();
-
-                dialog.cancel();
-            }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getContext(),"cancelo",Toast.LENGTH_SHORT).show();
-
-                dialog.cancel();
-            }
-        });
-
-        return builder.create();
-    }
     /**
      * AlertDialog
      */

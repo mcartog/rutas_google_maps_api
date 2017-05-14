@@ -25,12 +25,8 @@ public class KeepMovinApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration
-                .Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        Realm.setDefaultConfiguration(config);
+//      Configura la base de datos Realm
+        setUpRealmConfig();
 
         Realm realm = Realm.getDefaultInstance();
         RouteID = getIdByTable(realm, Route.class);
@@ -38,6 +34,15 @@ public class KeepMovinApp extends Application {
         realm.close();
     }
 
+
+    /**
+     * Configuración de la base de datos.
+     */
+    private void setUpRealmConfig() {
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+        Realm.setDefaultConfiguration(config);
+    }
 
     private <T extends RealmObject> AtomicInteger getIdByTable(Realm realm, Class<T> anyClass) {
         RealmResults<T> results = realm.where(anyClass).findAll();

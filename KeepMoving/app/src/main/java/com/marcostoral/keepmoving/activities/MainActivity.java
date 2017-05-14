@@ -17,6 +17,7 @@ import com.google.android.gms.common.api.GoogleApiActivity;
 import com.marcostoral.keepmoving.R;
 
 public class MainActivity extends AppCompatActivity {
+
     //UI
     private Button btnMaps;
     private Button btnHistory;
@@ -88,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         btnStadistics.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "estadisticas",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivity.this, StadisticsActivity.class);
                 startActivity(intent);
             }

@@ -13,18 +13,17 @@ import io.realm.RealmResults;
 
 public class StadisticsActivity extends AppCompatActivity {
 
-    Realm realm;
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stadistics);
 
-
         realm = Realm.getDefaultInstance();
         // Query Realm for all dogs younger than 2 years old
 
-        final RealmResults<Waypoint> routes = realm.where(Waypoint.class).findAll();
+        final RealmResults<Route> routes = realm.where(Route.class).findAll();
 
         Toast.makeText(this, "El tamaño es "+routes.size(),Toast.LENGTH_LONG).show();
 

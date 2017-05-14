@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -65,13 +67,30 @@ public class RouteAdapter extends BaseAdapter {
             routeHolder = (RouteHolder) convertView.getTag();
         }
 
-        routeHolder.type.setImageResource(routeList.get(position).getType());
-        routeHolder.distance.setText(routeList.get(position).getDistance());
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+
+        routeHolder.type.setImageResource(devuelveTipo(position));
+        routeHolder.distance.setText(routeList.get(position).getDistance().toString());
         routeHolder.time.setText(routeList.get(position).getTime().toString());
-        routeHolder.date.setText(routeList.get(position).getDate().toString());
+        routeHolder.date.setText(df.format(routeList.get(position).getDate()));
 
         return convertView;
     }
+
+
+    public int devuelveTipo(int position) {
+        switch (routeList.get(position).getType()) {
+            case 0:
+                return R.drawable.cycling;
+            case 1:
+                return R.drawable.running;
+            case 2:
+                return R.drawable.hiking;
+            default:
+                return -1;
+        }
+    }
+
 
     public class RouteHolder {
 
@@ -80,4 +99,6 @@ public class RouteAdapter extends BaseAdapter {
         public TextView time;
         public TextView date;
     }
+
+
 }
