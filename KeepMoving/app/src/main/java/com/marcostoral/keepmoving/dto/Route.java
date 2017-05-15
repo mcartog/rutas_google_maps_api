@@ -3,6 +3,7 @@ package com.marcostoral.keepmoving.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.maps.model.Polyline;
 import com.marcostoral.keepmoving.KeepMovinApp;
 import com.marcostoral.keepmoving.utils.Utils;
 
@@ -29,9 +30,7 @@ public class Route extends RealmObject implements Parcelable {
     private String distance;
     private String time;
     private RealmList<Waypoint> waypointList;
-    //private polilinea? arrayXY??? KML???
-
-
+//    private Polyline track;
 
     public Route() {
         this.id = KeepMovinApp.RouteID.incrementAndGet();
@@ -94,6 +93,14 @@ public class Route extends RealmObject implements Parcelable {
         this.time = time;
     }
 
+//    public Polyline getTrack() {
+//        return track;
+//    }
+//
+//    public void setTrack(Polyline track) {
+//        this.track = track;
+//    }
+
     public RealmList<Waypoint> getWaypointList() {
         return waypointList;
     }
@@ -125,6 +132,7 @@ public class Route extends RealmObject implements Parcelable {
         dest.writeString(distance);
         dest.writeString(time);
         dest.writeTypedList(waypointList);
+//        dest.writear
 
     }
 

@@ -47,6 +47,11 @@ public class RouteDetailsActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Método que devuelve la ruta seleccionada en la base de datos a apartir de su id.
+     * @param id  Id de la ruta seleccionada
+     * @return Ruta seleccionada en base de datos.
+     */
     public Route getRoute (long id){
 
         realm = Realm.getDefaultInstance();
