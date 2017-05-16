@@ -1,6 +1,8 @@
 package com.marcostoral.keepmoving;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
@@ -16,7 +18,7 @@ import io.realm.RealmResults;
  * Created by marcostoral on 6/05/17.
  */
 
-public class KeepMovinApp extends Application {
+public class KeepMovinApp extends MultiDexApplication {
 
     public static AtomicInteger RouteID = new AtomicInteger();
     public static AtomicInteger WaypointID = new AtomicInteger();
@@ -48,4 +50,5 @@ public class KeepMovinApp extends Application {
         RealmResults<T> results = realm.where(anyClass).findAll();
         return (results.size() > 0) ? new AtomicInteger(results.max("id").intValue()) : new AtomicInteger();
     }
+
 }

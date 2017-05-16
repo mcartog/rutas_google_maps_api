@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,17 +31,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private Location currentLocation;
 
+    private boolean isTracking;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        isTracking = false;
+
         //Recibo el tipo de actividad y lo paso al fragment.
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             type = extras.getString("type");
-            MapsEnvironmentFragment mapsFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
-            mapsFragment.routeTypeIconReceptor(type);
+            MapsEnvironmentFragment mapsEnvironmentFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
+            mapsEnvironmentFragment.routeTypeIconReceptor(type);
         }
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -52,6 +58,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
     }
+
+    /**
+     * Anula el botón back si hay una ruta en proceso de captura.
+     */
+    @Override
+    public void onBackPressed() {
+
+        isTracking = isTracking();
+
+//        if (mapsEnvironmentFragment.btnStartState() == View.INVISIBLE) {
+            //Si el trackeo está en curso.
+            Toast.makeText(this, "Finaliza la ruta"+mapsEnvironmentFragment.btnStartState(), Toast.LENGTH_LONG).show();
+//        } else {
+//            super.onBackPressed();
+//        }
+
+    }
+
+    public boolean isTracking() {
+        if (mapsEnvironmentFragment.btnStartState() == 4){
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Manipulates the map once available.

@@ -88,6 +88,8 @@ public class MapsEnvironmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_maps_environment, container, false);
+
+
         this.init(view);
 
         return view;
@@ -104,6 +106,8 @@ public class MapsEnvironmentFragment extends Fragment {
         super.onDestroy();
         realm.close();
     }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -167,8 +171,9 @@ public class MapsEnvironmentFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
         if(savedInstanceState!=null){
 
-            //Caso: actividad en curso. Start == Invisible
-            if(savedInstanceState.getInt("start")==View.INVISIBLE && savedInstanceState.getBoolean("stopEnable")!=false){
+
+            if(savedInstanceState.getInt("start")==View.INVISIBLE && savedInstanceState.getBoolean("stopEnable")==true){
+                //Caso: actividad en curso. Start == Invisible  &&  Stop == Enable(true)
                 milliseconds = savedInstanceState.getLong("milliseconds");
                 startChronometer();
                 myRoute = savedInstanceState.getParcelable("myRoute");
@@ -176,11 +181,19 @@ public class MapsEnvironmentFragment extends Fragment {
                 btnStop.setVisibility(View.VISIBLE);
                 btnWaypoint.setEnabled(true);
 
-            }else {
+
+            }else if (savedInstanceState.getInt("start")==View.INVISIBLE && savedInstanceState.getBoolean("stopEnable")==false){
+                //Caso: actividad en finalizada. Start == Invisible  &&  Stop == Enable(false)
                 btnStart.setVisibility(View.INVISIBLE);
                 btnStop.setVisibility(View.VISIBLE);
                 btnStop.setEnabled(false);
                 btnWaypoint.setEnabled(false);
+
+            } else {
+                //Caso: actividad en pendiente de empezar Start == Visible
+
+                btnWaypoint.setEnabled(false);
+
             }
 
         }
@@ -318,6 +331,11 @@ public class MapsEnvironmentFragment extends Fragment {
 
     }
 
+    public int btnStartState(){
+        Toast.makeText(getContext(), "Elemento "+btnStart.getVisibility(), Toast.LENGTH_SHORT).show();
+        return btnStart.getVisibility();
+    }
+
     private void startChronometer(){
         chronometer.setBase(SystemClock.elapsedRealtime() - milliseconds);
         chronometer.start();
@@ -420,7 +438,7 @@ public class MapsEnvironmentFragment extends Fragment {
         return builder.create();
     }
 
-    /**
+     /**
      * Crea el diálogo de selección de tipo de media caputrado.
      * @return
      */
