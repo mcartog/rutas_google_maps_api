@@ -9,12 +9,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +30,6 @@ import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -72,6 +69,8 @@ public class MapsEnvironmentFragment extends Fragment {
 
     private Polyline routeTrack;
 
+    public static boolean isTracking;
+
     //Realm
     private Realm realm;
 
@@ -88,7 +87,6 @@ public class MapsEnvironmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_maps_environment, container, false);
-
 
         this.init(view);
 
@@ -180,6 +178,7 @@ public class MapsEnvironmentFragment extends Fragment {
                 btnStart.setVisibility(View.INVISIBLE);
                 btnStop.setVisibility(View.VISIBLE);
                 btnWaypoint.setEnabled(true);
+                isTracking = true;
 
 
             }else if (savedInstanceState.getInt("start")==View.INVISIBLE && savedInstanceState.getBoolean("stopEnable")==false){
@@ -188,10 +187,10 @@ public class MapsEnvironmentFragment extends Fragment {
                 btnStop.setVisibility(View.VISIBLE);
                 btnStop.setEnabled(false);
                 btnWaypoint.setEnabled(false);
+                isTracking = false;
 
             } else {
                 //Caso: actividad en pendiente de empezar Start == Visible
-
                 btnWaypoint.setEnabled(false);
 
             }
@@ -207,6 +206,8 @@ public class MapsEnvironmentFragment extends Fragment {
 
         Bundle bundle = getActivity().getIntent().getExtras();
         type = Integer.parseInt(bundle.getString("type"));
+
+        isTracking = false;
 
         // Obtain a Realm instance
         realm = Realm.getDefaultInstance();
@@ -227,6 +228,8 @@ public class MapsEnvironmentFragment extends Fragment {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                isTracking = true;
 
                 try {
                 gpsSignal = Settings.Secure.getInt(getActivity().getContentResolver(), Settings.Secure.LOCATION_MODE);
@@ -261,6 +264,8 @@ public class MapsEnvironmentFragment extends Fragment {
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                isTracking = false;
 
                 //Anula botones
                 btnWaypoint.setEnabled(false);
@@ -305,8 +310,6 @@ public class MapsEnvironmentFragment extends Fragment {
 
     }
 
-
-
     ///////////////////////////////////////////////////////
     //////////////////  EVENTS   /////////////////////////
     ///////////////////////////////////////////////////////
@@ -331,14 +334,13 @@ public class MapsEnvironmentFragment extends Fragment {
 
     }
 
-    public int btnStartState(){
-        Toast.makeText(getContext(), "Elemento "+btnStart.getVisibility(), Toast.LENGTH_SHORT).show();
-        return btnStart.getVisibility();
-    }
-
     private void startChronometer(){
         chronometer.setBase(SystemClock.elapsedRealtime() - milliseconds);
         chronometer.start();
+    }
+
+    public static boolean isTrackingNow(){
+        return isTracking;
     }
 
     /**
@@ -493,5 +495,4 @@ public class MapsEnvironmentFragment extends Fragment {
                 .setNegativeButton("CANCEL", null)
                 .show();
     }
-
 }

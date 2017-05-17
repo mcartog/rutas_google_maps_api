@@ -8,8 +8,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -31,22 +33,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private Location currentLocation;
 
-    private boolean isTracking;
+    public boolean isTracking;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        isTracking = false;
-
         //Recibo el tipo de actividad y lo paso al fragment.
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             type = extras.getString("type");
-            MapsEnvironmentFragment mapsEnvironmentFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
+            mapsEnvironmentFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
             mapsEnvironmentFragment.routeTypeIconReceptor(type);
         }
+
+        //Al iniciar el trackeo está activado hasta pulsar el botón Start.
+        isTracking = false;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -59,30 +63,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onSaveInstanceState(outState, outPersistentState);
     }
 
+
     /**
      * Anula el botón back si hay una ruta en proceso de captura.
      */
     @Override
     public void onBackPressed() {
 
-        isTracking = isTracking();
+        isTracking = MapsEnvironmentFragment.isTrackingNow();
 
-//        if (mapsEnvironmentFragment.btnStartState() == View.INVISIBLE) {
+        if (isTracking == true){
             //Si el trackeo está en curso.
-            Toast.makeText(this, "Finaliza la ruta"+mapsEnvironmentFragment.btnStartState(), Toast.LENGTH_LONG).show();
-//        } else {
-//            super.onBackPressed();
-//        }
-
-    }
-
-    public boolean isTracking() {
-        if (mapsEnvironmentFragment.btnStartState() == 4){
-            return true;
+            Toast.makeText(this, "Finaliza la ruta antes de volver", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "puedes retornar", Toast.LENGTH_LONG).show();
+            super.onBackPressed();
         }
-        return false;
-    }
 
+    }
 
     /**
      * Manipulates the map once available.
@@ -122,4 +120,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onLocationChanged(Location location) {
 
     }
+
 }
