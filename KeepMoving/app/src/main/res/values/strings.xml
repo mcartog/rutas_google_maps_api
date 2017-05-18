@@ -25,6 +25,7 @@
     <string name="title_dialog_persist_route">Ruta generada</string>
     <string name="msn_dialog_persist_route">¿Quieres guardar la ruta?</string>
     <string name="routeTypeTitleDialog">Selecciona el tipo de ruta.</string>
+    <string name="pleaseStopTrackng">Finalice la grabación.</string>
 
 
 </resources>
