@@ -25,11 +25,11 @@ public class Waypoint extends RealmObject implements Parcelable {
         this.id = KeepMovinApp.RouteID.incrementAndGet();
     }
 
-//    public Waypoint(long ltd, long lng, String path) {
-//        this.ltd = ltd;
-//        this.lng = lng;
-//        this.path = path;
-//    }
+    public Waypoint(long ltd, long lng) {
+        this.id = KeepMovinApp.RouteID.incrementAndGet();
+        this.ltd = ltd;
+        this.lng = lng;
+    }
 
     protected Waypoint(Parcel in) {
         id = in.readInt();

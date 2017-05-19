@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Polyline;
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.activities.MapsActivity;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
@@ -96,46 +97,17 @@ public class MapsEnvironmentFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //Comprueba la disponibilidad del GPS.
         isGPSEnabled();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        //Cierra la base de datos.
         realm.close();
-    }
-
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        switch (requestCode) {
-            case REQUEST_IMAGE_CAPTURE:
-
-                if (resultCode == getActivity().RESULT_OK) {
-
-//                    String result = data.toUri(0);
-                    Bitmap cameraImage = (Bitmap) data.getExtras().get("data") ;
-                    mCurrentPhotoPath = cameraImage.toString();
-                    Toast.makeText(getContext(), mCurrentPhotoPath , Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), "There was an error with the picture, try again.", Toast.LENGTH_LONG).show();
-                }
-                break;
-
-            case REQUEST_VIDEO_CAPTURE:
-
-                if (resultCode == getActivity().RESULT_OK) {
-                    String result = data.toUri(0);
-                    Toast.makeText(getContext(), "Result: "+result, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getContext(), "There was an error with the video, try again.", Toast.LENGTH_LONG).show();
-                }
-                break;
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     /**
@@ -287,12 +259,22 @@ public class MapsEnvironmentFragment extends Fragment {
         btnWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Waypoint waypoint = new Waypoint();
+
+                //Recibe posición.
+
+                getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+
+
+
+                //Crea Waypoint (pasando Lat y Lng de parámetros).
+//                Waypoint waypoint = new Waypoint((long) location.getLatitude(), (long) location.getLongitude());
+
+                //Lanza dialog foto vs video.
                 waypointDialog.show();
 
-             //   waypoint.setLng();
-             //   waypoint.setLtd();
-                myRoute.addWaypoint(waypoint);
+
+                //Añade el Waypoint a la lista de waypoints del objeto ruta.
+//                myRoute.addWaypoint(waypoint);
 
                 Toast.makeText(getContext(), "captuar waypoint",Toast.LENGTH_LONG).show();
             }
@@ -334,11 +316,18 @@ public class MapsEnvironmentFragment extends Fragment {
 
     }
 
+    /**
+     * Inicia el cronómetro.
+     */
     private void startChronometer(){
         chronometer.setBase(SystemClock.elapsedRealtime() - milliseconds);
         chronometer.start();
     }
 
+    /**
+     * Controla la variable booleana que indica si está en funcionamiento o no.
+     * @return boolean true, cuando se está en medio de una actividad, false cuando está parado.
+     */
     public static boolean isTrackingNow(){
         return isTracking;
     }
@@ -369,6 +358,38 @@ public class MapsEnvironmentFragment extends Fragment {
     }
 
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        switch (requestCode) {
+            case REQUEST_IMAGE_CAPTURE:
+
+                if (resultCode == getActivity().RESULT_OK) {
+
+//                    String result = data.toUri(0);
+                    Bitmap cameraImage = (Bitmap) data.getExtras().get("data") ;
+                    mCurrentPhotoPath = cameraImage.toString();
+                    Toast.makeText(getContext(), mCurrentPhotoPath , Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "There was an error with the picture, try again.", Toast.LENGTH_LONG).show();
+                }
+                break;
+
+            case REQUEST_VIDEO_CAPTURE:
+
+                if (resultCode == getActivity().RESULT_OK) {
+                    String result = data.toUri(0);
+                    Toast.makeText(getContext(), "Result: "+result, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "There was an error with the video, try again.", Toast.LENGTH_LONG).show();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private String getPictureName(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String timestamp = sdf.format(new Date());
@@ -394,7 +415,7 @@ public class MapsEnvironmentFragment extends Fragment {
 
 
     /**
-     * Comprueba que le GPS esté activado. Si no lo está muestra un AlertDialog que nos conduce a
+     * Comprueba que el GPS esté activado. Si no lo está muestra un AlertDialog que nos conduce a
      * la configuración del GPS.
      */
     private void isGPSEnabled() {
@@ -478,6 +499,8 @@ public class MapsEnvironmentFragment extends Fragment {
         realm.commitTransaction();
     }
 
+
+
     /**
      * AlertDialog: Informa de que el GPS no está activado.
      */
@@ -495,4 +518,5 @@ public class MapsEnvironmentFragment extends Fragment {
                 .setNegativeButton("CANCEL", null)
                 .show();
     }
+
 }

@@ -14,25 +14,32 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.dto.Waypoint;
 import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, com.google.android.gms.location.LocationListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     //Map
     private GoogleMap mMap;
+    private CameraPosition camera;
 
     private String type;
     private MapsEnvironmentFragment mapsEnvironmentFragment;
 
+    //Location
     private LocationManager locationManager;
     private Location currentLocation;
 
+    //Control
     public boolean isTracking;
 
 
@@ -49,7 +56,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mapsEnvironmentFragment.routeTypeIconReceptor(type);
         }
 
-        //Al iniciar el trackeo está activado hasta pulsar el botón Start.
+
+        //Al iniciar la actividad el trackeo está desactivado hasta pulsar el botón Start.
         isTracking = false;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -72,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         isTracking = MapsEnvironmentFragment.isTrackingNow();
 
-        if (isTracking == true){
+        if (isTracking == true) {
             //Si el trackeo está en curso.
             Toast.makeText(this, "Finaliza la ruta antes de volver", Toast.LENGTH_LONG).show();
         } else {
@@ -94,6 +102,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+//        camera = new CameraPosition(currentLocation);
+
+        //Defino unos limites entre los que se manejará el zoom de la aplicación.
+        mMap.setMaxZoomPreference(5);
+        mMap.setMinZoomPreference(5);
+
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -106,19 +120,92 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mMap.setMyLocationEnabled(true);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);  //Desactivo el botón de localización de google de la interfaz
-       // mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);  //Coger esto de las prefes.
 
-        //Provedor de la señal, ms de refresco (3 seg), distancia de refresco, listener de cambio de ubicacion.
-//        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 1000, 0, (LocationListener) this);
- //       locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 3000, 30, (LocationListener) this);
+        //Las siguientes opciones mejoran el rendimiento del posicionamiento.
+        //Activar la localización permite conocer mi posición actual.
+        mMap.setMyLocationEnabled(true);
+        //Desactiva el boón de localización de la interfaz de usuario de GooogleMaps.
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        //Cuando implemente preferencias de usuario: tipo de mapa, color de polilinea, de marcadores...
+        // mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+
+        //Provedor de la señal, ms de refresco (se recomienda mínimo 60 seg), distancia de refresco, listener de cambio de ubicacion.
+        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 2000, 0, this);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 2000, 0, this);
+
+        Toast.makeText(this, "recibo ", Toast.LENGTH_LONG).show();
+
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Toast.makeText(this, "location change", Toast.LENGTH_LONG).show();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location == null) {
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        currentLocation = location;
+        if (currentLocation != null) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())));
+
+        }
 
     }
 
     @Override
-    public void onLocationChanged(Location location) {
+    public void onStatusChanged(String provider, int status, Bundle extras) {
 
     }
 
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    //Devuelve la posición actual.
+    public Location getLocationWaypoint() {
+        return currentLocation;
+    }
+
+    public LatLng getWaypointCoords() {
+        LatLng singlePoint;
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location == null) {
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
+        currentLocation = location;
+        if (currentLocation != null) {
+            singlePoint = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            return singlePoint;
+
+        }
+        return null;
+    }
 }
