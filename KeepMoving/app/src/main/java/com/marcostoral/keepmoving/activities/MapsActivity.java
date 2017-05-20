@@ -38,7 +38,10 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.dto.MyLatLng;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
@@ -46,6 +49,7 @@ import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import io.realm.Realm;
 
@@ -120,11 +124,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         boolean stopEnabled = btnStop.isEnabled();
 
 
+
         outState.putParcelable("myRoute", myRoute);
         outState.putLong("milliseconds", milliseconds);
         outState.putInt("start", startState);
         outState.putInt("stop", stopState);
         outState.putBoolean("stopEnable", stopEnabled);
+
 
     }
 
@@ -205,6 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+
 //        camera = new CameraPosition(currentLocation);
 
         //Defino unos limites entre los que se manejará el zoom de la aplicación.
@@ -273,6 +280,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        //Así se consigue que guarde la posición de los marcadores en el mapa.
+        mapFragment.setRetainInstance(true);
 
 
         // Instancio la interfaz gráfica vinculada al fragment entorno.
@@ -288,7 +297,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Establezco el tipo de ruta.
         routeTypeIconReceptor(type);
-
 
         //START
         btnStart.setOnClickListener(new View.OnClickListener() {
@@ -477,6 +485,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return null;
         }
     }
+
+    public void drawRoute(Location location){
+
+        //Punto procedente de location
+        LatLng mapPoint = new LatLng(location.getLatitude(), location.getLongitude());
+        //Transformo el punto a punto usado en Routes, y se añade a la lista.
+        MyLatLng myLatLng = new MyLatLng(mapPoint.latitude, mapPoint.longitude);
+        myRoute.addMyLatLng(myLatLng);
+
+        //Crear polilinea
+        Polyline routePolyline = mMap.addPolyline(new PolylineOptions());
+        //Requiere una lista de latlng
+//        routePolyline.setPoints();
+
+
+    }
+
 
     @Override
     public void onLocationChanged(Location location) {

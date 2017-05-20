@@ -29,8 +29,8 @@ public class Route extends RealmObject implements Parcelable {
     private int type;
     private String distance;
     private String time;
+    private RealmList<MyLatLng> pointList;
     private RealmList<Waypoint> waypointList;
-//    private Polyline track;
 
     public Route() {
         this.id = KeepMovinApp.RouteID.incrementAndGet();
@@ -49,6 +49,16 @@ public class Route extends RealmObject implements Parcelable {
 
         public Waypoint[] newArray(int size) {
             return new Waypoint[size];
+        }
+    };
+
+    public static final Parcelable.Creator<MyLatLng> CREATOR_POINT = new Parcelable.Creator<MyLatLng>() {
+        public MyLatLng createFromParcel(Parcel in) {
+            return new MyLatLng();
+        }
+
+        public MyLatLng[] newArray(int size) {
+            return new MyLatLng[size];
         }
     };
 
@@ -93,13 +103,13 @@ public class Route extends RealmObject implements Parcelable {
         this.time = time;
     }
 
-//    public Polyline getTrack() {
-//        return track;
-//    }
-//
-//    public void setTrack(Polyline track) {
-//        this.track = track;
-//    }
+    public RealmList<MyLatLng> getPointList() {
+        return pointList;
+    }
+
+    public void setPointList(RealmList<MyLatLng> pointList) {
+        this.pointList = pointList;
+    }
 
     public RealmList<Waypoint> getWaypointList() {
         return waypointList;
@@ -118,6 +128,11 @@ public class Route extends RealmObject implements Parcelable {
     }
 
 
+    public void addMyLatLng (MyLatLng point){
+        pointList.add(point);
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -132,7 +147,7 @@ public class Route extends RealmObject implements Parcelable {
         dest.writeString(distance);
         dest.writeString(time);
         dest.writeTypedList(waypointList);
-//        dest.writear
+        dest.writeTypedList(pointList);
 
     }
 
@@ -144,6 +159,7 @@ public class Route extends RealmObject implements Parcelable {
         distance = in.readString();
         time = in.readString();
         in.readTypedList(waypointList, CREATOR);
+        in.readTypedList(pointList, CREATOR_POINT);
     }
 
     @Override
