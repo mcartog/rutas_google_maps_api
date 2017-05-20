@@ -21,18 +21,25 @@ public class StadisticsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_stadistics);
 
         realm = Realm.getDefaultInstance();
-        // Query Realm for all dogs younger than 2 years old
 
         final RealmResults<Route> routes = realm.where(Route.class).findAll();
 
         Toast.makeText(this, "El tamaño es "+routes.size(),Toast.LENGTH_LONG).show();
 
-        for (int i = 0; i < routes.size(); i++) {
+        if(routes.size()>0){
+            for (int i = routes.size() -2; i < routes.size(); i++) {
 
-            Toast.makeText(this, routes.get(i).toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(this, routes.get(i).toString(),Toast.LENGTH_LONG).show();
 
+                if(routes.get(i).getWaypointList().size() > 0){
+                    for (int j = 0; j < routes.get(i).getWaypointList().size(); j++){
+                        Toast.makeText(this, routes.get(i).getWaypointList().get(j).toString(), Toast.LENGTH_LONG).show();
+                    }
+                }
 
+            }
         }
+
 
         realm.close();
 

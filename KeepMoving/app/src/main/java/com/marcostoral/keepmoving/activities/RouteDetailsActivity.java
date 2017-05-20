@@ -1,5 +1,9 @@
 package com.marcostoral.keepmoving.activities;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
@@ -15,11 +25,18 @@ import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class RouteDetailsActivity extends AppCompatActivity {
+public class RouteDetailsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    //Realm
     private Realm realm;
     private RealmResults<Route> routeById;
     private Route route;
+
+    //Map
+    private GoogleMap mMap;
+    private CameraPosition camera;
+
+
 
     private long id;
 
@@ -36,7 +53,11 @@ public class RouteDetailsActivity extends AppCompatActivity {
             RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
             detailsFragment.renderRoute(route);
 
+
         }
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapRouteDetails);
+        mapFragment.getMapAsync(this);
 
     }
 
@@ -59,5 +80,32 @@ public class RouteDetailsActivity extends AppCompatActivity {
         return routeById.get(0);
 
     }
+
+    /**
+     * Inserta los waypoints en el mapa.
+     * @param route
+     */
+    public void drawWaypoint(Route route){
+        //Redibuja marcadores.
+        if(route.getWaypointList().size() > 0){
+            for (int j = 0; j < route.getWaypointList().size(); j++){
+                LatLng waypoint = new LatLng(route.getWaypointList().get(j).getLtd(),route.getWaypointList().get(j).getLng());
+                Toast.makeText(RouteDetailsActivity.this, waypoint.toString(), Toast.LENGTH_SHORT).show();
+                mMap.addMarker(new MarkerOptions().position(waypoint));
+
+                }
+            }
+
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        mMap = googleMap;
+//        camera = CameraPosition
+        drawWaypoint(route);
+    }
+
 
 }

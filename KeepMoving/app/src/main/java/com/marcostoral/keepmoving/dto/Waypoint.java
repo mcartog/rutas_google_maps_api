@@ -16,8 +16,8 @@ public class Waypoint extends RealmObject implements Parcelable {
 
     @PrimaryKey
     private long id;
-    private long ltd;
-    private long lng;
+    private double ltd;
+    private double lng;
     private String path;
     //foto o video o audio?
 
@@ -25,7 +25,7 @@ public class Waypoint extends RealmObject implements Parcelable {
         this.id = KeepMovinApp.RouteID.incrementAndGet();
     }
 
-    public Waypoint(long ltd, long lng) {
+    public Waypoint(double ltd, double lng) {
         this.id = KeepMovinApp.RouteID.incrementAndGet();
         this.ltd = ltd;
         this.lng = lng;
@@ -58,8 +58,8 @@ public class Waypoint extends RealmObject implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
 
         dest.writeLong(id);
-        dest.writeLong(ltd);
-        dest.writeLong(lng);
+        dest.writeDouble(ltd);
+        dest.writeDouble(lng);
         dest.writeString(path);
 
     }
@@ -67,8 +67,8 @@ public class Waypoint extends RealmObject implements Parcelable {
     public void readFromParcel (Parcel in){
 
         id = in.readLong();
-        ltd =  in.readLong();
-        lng = in.readLong();
+        ltd =  in.readDouble();
+        lng = in.readDouble();
         path = in.readString();
 
     }
@@ -81,19 +81,19 @@ public class Waypoint extends RealmObject implements Parcelable {
         this.id = id;
     }
 
-    public long getLtd() {
+    public double getLtd() {
         return ltd;
     }
 
-    public void setLtd(long ltd) {
+    public void setLtd(double ltd) {
         this.ltd = ltd;
     }
 
-    public long getLng() {
+    public double getLng() {
         return lng;
     }
 
-    public void setLng(long lng) {
+    public void setLng(double lng) {
         this.lng = lng;
     }
 
@@ -105,4 +105,13 @@ public class Waypoint extends RealmObject implements Parcelable {
         this.path = path;
     }
 
+    @Override
+    public String toString() {
+        return "Waypoint{" +
+                "id=" + id +
+                ", ltd=" + ltd +
+                ", lng=" + lng +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }

@@ -10,7 +10,7 @@ import android.os.IBinder;
 import com.google.android.gms.common.api.GoogleApiActivity;
 import com.marcostoral.keepmoving.dto.Route;
 
-public class TrackMyRoute extends Service implements com.google.android.gms.location.LocationListener{
+public class TrackMyRoute extends Service {
 
     private LocationManager locman;
     private LocationListener loclis;
@@ -29,10 +29,6 @@ public class TrackMyRoute extends Service implements com.google.android.gms.loca
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    @Override
-    public void onLocationChanged(android.location.Location location) {
-
-    }
 
 
 }
