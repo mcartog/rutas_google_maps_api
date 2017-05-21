@@ -35,6 +35,7 @@ public class Route extends RealmObject implements Parcelable {
     public Route() {
         this.id = KeepMovinApp.RouteID.incrementAndGet();
         this.date = new Date();
+        this.pointList = new RealmList<MyLatLng>();
         this.waypointList = new RealmList<Waypoint>();
     }
 

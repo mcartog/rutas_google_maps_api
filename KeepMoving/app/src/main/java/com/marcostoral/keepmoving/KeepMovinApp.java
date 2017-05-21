@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
+import com.marcostoral.keepmoving.dto.MyLatLng;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
@@ -22,6 +23,7 @@ public class KeepMovinApp extends MultiDexApplication {
 
     public static AtomicInteger RouteID = new AtomicInteger();
     public static AtomicInteger WaypointID = new AtomicInteger();
+    public static AtomicInteger PointID = new AtomicInteger();
 
     @Override
     public void onCreate() {
@@ -33,6 +35,7 @@ public class KeepMovinApp extends MultiDexApplication {
         Realm realm = Realm.getDefaultInstance();
         RouteID = getIdByTable(realm, Route.class);
         WaypointID = getIdByTable(realm, Waypoint.class);
+        PointID = getIdByTable(realm, MyLatLng.class);
         realm.close();
     }
 
