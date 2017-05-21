@@ -251,8 +251,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         //Tipo de localización, tiempo mínimo en ms (se recomienda no menos de 60000), distancia mínima, listener.
-        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 5000, 0, this);
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 5000, 0, this);
+        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 60000, 0, this);
+        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 60000, 0, this);
 
         currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (currentLocation == null) {

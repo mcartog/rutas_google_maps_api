@@ -33,6 +33,7 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
 
         if (isMultiPanel) {
 
+            //No incluye mapa. Mejorar versión tablet o retirarla (tiene poco sentido usar esta app con una tablet)
             RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
             detailsFragment.renderRoute(route);
 
