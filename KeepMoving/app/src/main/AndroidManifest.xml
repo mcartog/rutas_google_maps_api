@@ -62,12 +62,6 @@
         <activity android:name=".activities.RouteDetailsActivity" />
 
 
-
-               <service
-            android:name=".services.TrackMyRoute"
-            android:enabled="true"
-            android:exported="true" />
-
     </application>
 
 </manifest>

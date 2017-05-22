@@ -3,13 +3,7 @@ package com.marcostoral.keepmoving.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.marcostoral.keepmoving.KeepMovinApp;
-
-import java.util.Date;
-
-import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by marcostoral on 20/05/17.
@@ -17,23 +11,19 @@ import io.realm.annotations.PrimaryKey;
 
 public class MyLatLng extends RealmObject implements Parcelable {
 
-    @PrimaryKey
-    private long id;
     private double latitude;
     private double longitude;
 
     public MyLatLng() {
-        this.id = KeepMovinApp.RouteID.incrementAndGet();
     }
 
     public MyLatLng(double latitude, double longitude) {
-        this.id = KeepMovinApp.RouteID.incrementAndGet();
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
     protected MyLatLng(Parcel in) {
-        id = in.readLong();
+
         latitude = in.readDouble();
         longitude = in.readDouble();
     }
@@ -49,14 +39,6 @@ public class MyLatLng extends RealmObject implements Parcelable {
             return new MyLatLng[size];
         }
     };
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public double getLatitude() {
         return latitude;
@@ -81,7 +63,7 @@ public class MyLatLng extends RealmObject implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
+
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
     }

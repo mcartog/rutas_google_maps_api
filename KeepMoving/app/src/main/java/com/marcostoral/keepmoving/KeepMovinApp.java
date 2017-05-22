@@ -23,7 +23,7 @@ public class KeepMovinApp extends MultiDexApplication {
 
     public static AtomicInteger RouteID = new AtomicInteger();
     public static AtomicInteger WaypointID = new AtomicInteger();
-    public static AtomicInteger PointID = new AtomicInteger();
+
 
     @Override
     public void onCreate() {
@@ -35,7 +35,7 @@ public class KeepMovinApp extends MultiDexApplication {
         Realm realm = Realm.getDefaultInstance();
         RouteID = getIdByTable(realm, Route.class);
         WaypointID = getIdByTable(realm, Waypoint.class);
-        PointID = getIdByTable(realm, MyLatLng.class);
+
         realm.close();
     }
 

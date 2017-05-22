@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
@@ -198,14 +199,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-
-//        camera = new CameraPosition(currentLocation);
+//      camera = new CameraPosition(currentLocation);
 
 //      Defino unos limites entre los que se manejará el zoom de la aplicación.
-//        mMap.setMaxZoomPreference(20);
+        mMap.setMaxZoomPreference(20);
         mMap.setMinZoomPreference(10);
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())));
 
+        initLocation();
 //        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -223,41 +224,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setMyLocationEnabled(true);
         //Desactiva el boón de localización de la interfaz de usuario de GooogleMaps.
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
         //Cuando implemente preferencias de usuario: tipo de mapa, color de polilinea, de marcadores...
         // mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        initLocation();
-
-//        //Provedor de la señal, ms de refresco (se recomienda mínimo 60 seg), distancia de refresco, listener de cambio de ubicacion.
-//        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 1000, 0, this);
-//        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 1000, 0, this);
-
 
     }
 
     public void initLocation() {
 
-        //LOCATION MANAGER: gestiona el acceso al sistema de localización
-        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        //Comprobar disponibilidad de GPS
+        if (isGPSEnabled() == false) {
 
-        //Provedor de la señal, ms de refresco (se recomienda mínimo 60 seg), distancia de refresco, listener de cambio de ubicacion.
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        //Tipo de localización, tiempo mínimo en ms (se recomienda no menos de 60000), distancia mínima, listener.
-        locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 60000, 0, this);
-        locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 60000, 0, this);
+            //Mostrar diálogo de aviso.
+            showInfoAlert();
 
-        currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (currentLocation == null) {
-            currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        } else {
+
+            //LOCATION MANAGER: gestiona el acceso al sistema de localización
+            locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+
+            //Provedor de la señal, ms de refresco (se recomienda mínimo 60 seg), distancia de refresco, listener de cambio de ubicacion.
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            //Tipo de localización, tiempo mínimo en ms (se recomienda no menos de 60000), distancia mínima, listener.
+            locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 2000, 0, this);
+            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 2000, 0, this);
+
+            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (currentLocation == null) {
+                currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            }
+
         }
+
+
 
     }
 
@@ -274,22 +282,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         locationManager.removeUpdates(this);
     }
-
-//    public void run(){
-//
-//        while ( isTracking == true ){
-//            //Recibe posición.
-//            LatLng pointCoords = getWaypointCoords(currentLocation);
-//            if(pointCoords != null){
-//
-//                //Crea Waypoint (pasando Lat y Lng de parámetros).
-//                MyLatLng point = new MyLatLng(pointCoords.latitude, pointCoords.longitude);
-//                myRoute.getPointList().add(point);
-////              Polyline routePolyline = mMap.addPolyline(new PolylineOptions());
-////              routePolyline.
-//                }
-//            }
-//    }
 
 
     ///////////////////////////////////////////////////////
@@ -522,14 +514,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void drawWaypoint (LatLng  waypointCoords) {
-        if(waypointCoords != null){
-            //Añade un marcador en el mapa
-            mMap.addMarker(new MarkerOptions().position(waypointCoords));
-            //Crea Waypoint (pasando Lat y Lng de parámetros).
-            Waypoint waypoint = new Waypoint(waypointCoords.latitude, waypointCoords.longitude);
-        }
-    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -575,21 +559,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .width(5)
                         .color(Color.RED);
 
-
-
-                routeTrack.addAll(latLngs);
-//                for (LatLng latLng : latLngs) {
-//
-//                }
+                for (LatLng latLng : latLngs) {
+                    routeTrack.addAll(latLngs);
+                }
 
                 mMap.addPolyline(routeTrack);
             }
         }
-
-
-
-
-
 
         Toast.makeText(this, "location CHANGE"+location.getProvider(), Toast.LENGTH_LONG).show();
 
@@ -607,6 +583,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onProviderDisabled(String provider) {
+
+    }
+
+
+    ///////////PERMISOS///////////
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
 
     }
 
