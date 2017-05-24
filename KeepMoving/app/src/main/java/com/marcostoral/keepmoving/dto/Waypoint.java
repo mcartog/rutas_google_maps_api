@@ -32,7 +32,7 @@ public class Waypoint extends RealmObject implements Parcelable {
     }
 
     protected Waypoint(Parcel in) {
-        id = in.readInt();
+        id = in.readLong();
         ltd = in.readLong();
         lng = in.readLong();
         path = in.readString();

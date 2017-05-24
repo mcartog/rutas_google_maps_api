@@ -7,18 +7,22 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+//import android.location.Location;
+//import android.location.LocationListener;
+//import android.location.LocationManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +32,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -51,12 +60,12 @@ import java.util.List;
 
 import io.realm.Realm;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
     //Map
     private GoogleMap mMap;
     private PolylineOptions routeTrack;
-    private CameraPosition camera;
 
     //Realm
     private Realm realm;
@@ -64,8 +73,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Route myRoute;
 
     //Location
-    private LocationManager locationManager;
+//    private LocationManager locationManager;
     private Location currentLocation;
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient mGoogleApiClient;
 
     //Fragments
     private MapsEnvironmentFragment mapsEnvironmentFragment;
@@ -88,6 +99,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean isTracking;
     private int type;
     private long milliseconds;
+    private long distance;
+    private long totalDistance;
+    private long partialDistance;
     private List<LatLng> latLngs;
 
     //Photo & video
@@ -96,6 +110,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String mCurrentPhotoPath;
     private String mCurrentVideoPath;
 
+    ///////////////////////////////////////////////////////
+    /////////////////   CALLBACKS   ///////////////////////
+    ///////////////////////////////////////////////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         outState.putParcelable("myRoute", myRoute);
         outState.putLong("milliseconds", milliseconds);
+        outState.putLong("distance", totalDistance);
         outState.putInt("start", startState);
         outState.putInt("stop", stopState);
         outState.putBoolean("stopEnable", stopEnabled);
@@ -133,9 +151,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 //Caso: actividad en curso. Start == Invisible  &&  Stop == Enable(true)
 
+                myRoute = savedInstanceState.getParcelable("myRoute");
                 milliseconds = savedInstanceState.getLong("milliseconds");
                 startChronometer();
-                myRoute = savedInstanceState.getParcelable("myRoute");
+                totalDistance = savedInstanceState.getLong("distance");
                 btnStart.setVisibility(View.INVISIBLE);
                 btnStop.setVisibility(View.VISIBLE);
                 btnStop.setEnabled(true);
@@ -154,11 +173,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 isTracking = false;
 
             } else {
+
                 //Caso: actividad en pendiente de empezar Start == Visible
 
                 btnWaypoint.setEnabled(false);
 
             }
+
         }
     }
 
@@ -186,132 +207,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-
-        mMap = googleMap;
-//      camera = new CameraPosition(currentLocation);
-
-//      Defino unos limites entre los que se manejará el zoom de la aplicación.
-        mMap.setMaxZoomPreference(20);
-        mMap.setMinZoomPreference(10);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())));
-
-        initLocation();
-//        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        //Las siguientes opciones mejoran el rendimiento del posicionamiento.
-        //Activar la localización permite conocer mi posición actual.
-        mMap.setMyLocationEnabled(true);
-        //Desactiva el boón de localización de la interfaz de usuario de GooogleMaps.
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-
-        //Cuando implemente preferencias de usuario: tipo de mapa, color de polilinea, de marcadores...
-        // mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-
-    }
-
-    public void initLocation() {
-
-        //Comprobar disponibilidad de GPS
-        if (isGPSEnabled() == false) {
-
-            //Mostrar diálogo de aviso.
-            showInfoAlert();
-
-        } else {
-
-            //LOCATION MANAGER: gestiona el acceso al sistema de localización
-            locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
-
-            //Provedor de la señal, ms de refresco (se recomienda mínimo 60 seg), distancia de refresco, listener de cambio de ubicacion.
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            //Tipo de localización, tiempo mínimo en ms (se recomienda no menos de 60000), distancia mínima, listener.
-            locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 2000, 0, this);
-            locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 2000, 0, this);
-
-            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if (currentLocation == null) {
-                currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }
-
-        }
-
-
-
-    }
-
-    public void stopLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.removeUpdates(this);
-    }
-
-
     ///////////////////////////////////////////////////////
     /////////////////////  UI   ///////////////////////////
     ///////////////////////////////////////////////////////
 
 
+    /**
+     * Inicialización general de la activity.
+     */
     public void init() {
 
-        latLngs = new ArrayList<>();
+
         //Al iniciar la actividad el trackeo está desactivado hasta pulsar el botón Start.
         isTracking = false;
+        totalDistance = 0;
+
         // Obtain a Realm instance
         realm = Realm.getDefaultInstance();
 
-        // Instancio los dialogos
+        // Instancia dialogos
         waypointDialog = generateDialogCaptureWaypoint();
         saveConfirmationDialog = saveRouteConfirmation();
 
-        //Recibo el tipo de actividad.
+        //Recibe el tipo de actividad.
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
 
-            //Recojo el tipo de ruta y lo convierto a int.
+            //Recoge el tipo de ruta y lo convierte a int.
             String routeType = extras.getString("type");
             type = Integer.parseInt(routeType);
 
         }
 
-        //Capturo los fragments de entorno y mapa
+        //Captura los fragments de entorno y mapa
         mapsEnvironmentFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
         mapsEnvironment = mapsEnvironmentFragment.getView();
 
@@ -322,7 +250,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.setRetainInstance(true);
 
 
-        // Instancio la interfaz gráfica vinculada al fragment entorno.
+        // Instancia la interfaz gráfica vinculada al fragment entorno.
         btnWaypoint = (ImageButton) mapsEnvironment.findViewById(R.id.ibWaypoint);
         chronometer = (Chronometer) mapsEnvironment.findViewById(R.id.chrono);
         tvCurrentDistance = (TextView) mapsEnvironment.findViewById(R.id.tvCurrentDistance);
@@ -330,11 +258,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnStart = (Button) mapsEnvironment.findViewById(R.id.btnStart);
         btnStop = (Button) mapsEnvironment.findViewById(R.id.btnStop);
 
-        //Deshabilito el botón captura waypoint.
+        //Deshabilita el botón captura waypoint.
         btnWaypoint.setEnabled(false);
 
-        //Establezco el tipo de ruta.
+        //Establece el tipo de ruta.
         routeTypeIconReceptor(type);
+
+        //Establezce el cuentakilómetros
+        tvCurrentDistance.setText((int) totalDistance + " Km");
 
         //START
         btnStart.setOnClickListener(new View.OnClickListener() {
@@ -348,10 +279,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     showInfoAlert();
 
                 } else {
+
                     // Si está habilitado, se inicia la actividad.
                     isTracking = true;
+                    latLngs = new ArrayList<>();
 
 //                    initLocation();
+
+                    distance = 0;
 
                     // Se oculta botón start. Se muestra el botón stop. Se activa botón Waypoints.
                     btnStart.setVisibility(View.INVISIBLE);
@@ -364,13 +299,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Inicia cronómetro
                     startChronometer();
 
-//               currentLocation = startTracking();
-
-
                     }
-
-                    Toast.makeText(MapsActivity.this, myRoute.toString(), Toast.LENGTH_LONG).show();
-
 
             }
         });
@@ -397,11 +326,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //Inicia dialogo de persistencia.
                 saveConfirmationDialog.show();
 
-                //Stop location
-                stopLocation();
-
-
-
             }
         });
 
@@ -410,7 +334,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
 
-                Waypoint waypoint;
 
                 //Recibe posición.
                 LatLng waypointCoords = getWaypointCoords(currentLocation);
@@ -419,11 +342,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Añade un marcador en el mapa
                     mMap.addMarker(new MarkerOptions().position(waypointCoords));
                     //Crea Waypoint (pasando Lat y Lng de parámetros).
-                    waypoint = new Waypoint(waypointCoords.latitude, waypointCoords.longitude);
-                } else {
-                    //Crea un Waypoint sin coordenadas. ELIMINAR ESTA PARTE.
-                    waypoint = new Waypoint();
-                }
+                    Waypoint waypoint = new Waypoint(waypointCoords.latitude, waypointCoords.longitude);
+//                    saveWaypoint(waypoint);
+
+
+                Toast.makeText(MapsActivity.this, getPictureName(), Toast.LENGTH_LONG).show();
+
 
                 //Lanza dialog foto vs video.
 //                waypointDialog.show();
@@ -431,10 +355,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //Añade el Waypoint a la lista de waypoints del objeto ruta.
                 myRoute.addWaypoint(waypoint);
 
+                }
+
             }
         });
-
-
     }
 
     /**
@@ -466,12 +390,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
+     *
+     *
+     */
+    public void setOdometer(){
+        totalDistance = totalDistance + distance;
+        tvCurrentDistance.setText((int)totalDistance + "Km");
+    }
+
+    /**
      * Al dar a Stop asignamos los valores a ROute.
      */
     public void setRouteParameters(){
 
         myRoute.setType(type);
-        myRoute.setDistance(tvCurrentDistance.getText().toString());
+        myRoute.setDistance(totalDistance);
         myRoute.setTime(chronometer.getText().toString());
 
     }
@@ -479,6 +412,145 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ///////////////////////////////////////////////////////
     /////////////////////  LOCATION  //////////////////////
     ///////////////////////////////////////////////////////
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        mMap = googleMap;
+
+//      Defino unos limites entre los que se manejará el zoom de la aplicación.
+        mMap.setMaxZoomPreference(20);
+        mMap.setMinZoomPreference(10);
+
+        //Initialize Google Play Services
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                //Location Permission already granted
+                buildGoogleApiClient();
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            } else {
+                //Request Location Permission
+                checkLocationPermission();
+            }
+        }
+        else {
+            buildGoogleApiClient();
+            mMap.setMyLocationEnabled(true);
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle("Location Permission Needed")
+                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MapsActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION );
+                            }
+                        })
+                        .create()
+                        .show();
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION );
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(this,
+                            Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        if (mGoogleApiClient == null) {
+                            buildGoogleApiClient();
+                        }
+                        mMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+
+    @Override
+    public void onConnectionSuspended(int i) {}
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {}
+
     /**
      * Comprueba que el GPS esté activado. Si no lo está muestra un AlertDialog que nos conduce a
      * la configuración del GPS.
@@ -518,23 +590,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        if (location == null) {
-            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        }
         currentLocation = location;
         if (currentLocation != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude())));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),15));
         }
 
         //Recibe posición.
@@ -543,58 +601,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if(pointCoords != null){
 
             //Crea point (pasando Lat y Lng de parámetros).
-            MyLatLng point = new MyLatLng(pointCoords.latitude, pointCoords.longitude);
+            Waypoint waypoint = new Waypoint(pointCoords.latitude, pointCoords.longitude);
 
             if(myRoute != null){
-                myRoute.addMyLatLng(point);
 
-                if(myRoute.getPointList().size() > 0){
-                    for (int j = 0; j < myRoute.getPointList().size(); j++){
-                        LatLng lastPoint = new LatLng(myRoute.getPointList().get(j).getLatitude(),myRoute.getPointList().get(j).getLongitude());
-                        latLngs.add(j, lastPoint);
-                    }
-                }
+                //Limpia el mapa
+//                mMap.clear();
+//                saveWaypoint(waypoint);
+                myRoute.addWaypoint(waypoint);
 
-                routeTrack = new PolylineOptions()
-                        .width(5)
-                        .color(Color.RED);
+//
+//                if(myRoute.getPointList().size() > 0){
+//                    for (int j = 0; j < myRoute.getPointList().size(); j++){
+//                        LatLng lastPoint = new LatLng(myRoute.getPointList().get(j).getLatitude(),myRoute.getPointList().get(j).getLongitude());
+//                        latLngs.add(j, lastPoint);
+//                    }
+//
+                    routeTrack = new PolylineOptions()
+                            .width(5)
+                            .color(Color.RED)
+                            .geodesic(true);
+//
+//                    for (LatLng latLng : latLngs) {
+//                        routeTrack.addAll(latLngs);
+//                    }
+//
+                    //Dibuja polilinea
+                    mMap.addPolyline(routeTrack);
+                    //Redibuja los waypoints de la ruta.
+//                redrawWaypoints(myRoute);
 
-                for (LatLng latLng : latLngs) {
-                    routeTrack.addAll(latLngs);
-                }
+//                }
 
-                mMap.addPolyline(routeTrack);
             }
         }
-
-        Toast.makeText(this, "location CHANGE"+location.getProvider(), Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 
 
     ///////////PERMISOS///////////
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-
-    }
 
 
     ///////////////////////////////////////////////////////
@@ -690,10 +736,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @param r
      */
     public void saveRoute(Route r){
+
         realm.beginTransaction();
-        realm.copyToRealm(myRoute);
+        realm.copyToRealm(r);
         realm.commitTransaction();
     }
+
+    /**
+     * Persiste objeto Waypoint
+     * @param w
+     */
+    public void saveWaypoint(Waypoint w){
+
+        realm.beginTransaction();
+        realm.copyToRealm(w);
+        realm.commitTransaction();
+    }
+
+
 
     ///////////////////////////////////////////////////////
     //////////////////  DIALOGS   /////////////////////////
@@ -773,6 +833,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setNegativeButton("CANCEL", null)
                 .show();
     }
+
 
 
 }

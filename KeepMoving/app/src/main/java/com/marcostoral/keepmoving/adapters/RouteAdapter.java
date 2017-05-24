@@ -72,7 +72,7 @@ public class RouteAdapter extends BaseAdapter {
 
 
         routeHolder.type.setImageResource(devuelveTipo(position));
-        routeHolder.distance.setText(routeList.get(position).getDistance().toString());
+        routeHolder.distance.setText((int) routeList.get(position).getDistance()+" Km");
         routeHolder.time.setText(routeList.get(position).getTime().toString());
         routeHolder.date.setText(df.format(routeList.get(position).getDate()));
 

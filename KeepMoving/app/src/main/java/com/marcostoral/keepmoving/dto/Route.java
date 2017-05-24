@@ -15,6 +15,7 @@ import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -27,15 +28,13 @@ public class Route extends RealmObject implements Parcelable {
     private long id;
     private Date date;
     private int type;
-    private String distance;
+    private long distance;
     private String time;
-    private RealmList<MyLatLng> pointList;
     private RealmList<Waypoint> waypointList;
 
     public Route() {
         this.id = KeepMovinApp.RouteID.incrementAndGet();
         this.date = new Date();
-        this.pointList = new RealmList<MyLatLng>();
         this.waypointList = new RealmList<Waypoint>();
     }
 
@@ -52,17 +51,6 @@ public class Route extends RealmObject implements Parcelable {
             return new Waypoint[size];
         }
     };
-
-    public static final Parcelable.Creator<MyLatLng> CREATOR_POINT = new Parcelable.Creator<MyLatLng>() {
-        public MyLatLng createFromParcel(Parcel in) {
-            return new MyLatLng();
-        }
-
-        public MyLatLng[] newArray(int size) {
-            return new MyLatLng[size];
-        }
-    };
-
 
     public long getId() {
         return id;
@@ -88,11 +76,11 @@ public class Route extends RealmObject implements Parcelable {
         this.type = type;
     }
 
-    public String getDistance() {
+    public long getDistance() {
         return distance;
     }
 
-    public void setDistance(String distance) {
+    public void setDistance(long distance) {
         this.distance = distance;
     }
 
@@ -102,14 +90,6 @@ public class Route extends RealmObject implements Parcelable {
 
     public void setTime(String time) {
         this.time = time;
-    }
-
-    public RealmList<MyLatLng> getPointList() {
-        return pointList;
-    }
-
-    public void setPointList(RealmList<MyLatLng> pointList) {
-        this.pointList = pointList;
     }
 
     public RealmList<Waypoint> getWaypointList() {
@@ -128,12 +108,6 @@ public class Route extends RealmObject implements Parcelable {
         waypointList.add(waypoint);
     }
 
-
-    public void addMyLatLng (MyLatLng point){
-        pointList.add(point);
-    }
-
-
     @Override
     public int describeContents() {
         return 0;
@@ -145,33 +119,32 @@ public class Route extends RealmObject implements Parcelable {
         dest.writeLong(id);
         dest.writeLong(date.getTime());
         dest.writeInt(type);
-        dest.writeString(distance);
+        dest.writeLong(distance);
         dest.writeString(time);
         dest.writeTypedList(waypointList);
-        dest.writeTypedList(pointList);
 
     }
 
     public void readFromParcel (Parcel in){
 
-        id = in.readInt();
+        id = in.readLong();
         date =  new Date(in.readLong());
         type = in.readInt();
-        distance = in.readString();
+        distance = in.readLong();
         time = in.readString();
         in.readTypedList(waypointList, CREATOR);
-        in.readTypedList(pointList, CREATOR_POINT);
+
     }
 
     @Override
     public String toString() {
         return "Route{" +
                 "id=" + id +
-                ", date=" + date +
+//                ", date=" + date +
                 ", type=" + type +
                 ", distance='" + distance + '\'' +
-                ", time='" + time + '\'' +
-                ", waypointList=" + waypointList +
+//                ", time='" + time + '\'' +
+                 waypointList.size() +
                 '}';
     }
 }
