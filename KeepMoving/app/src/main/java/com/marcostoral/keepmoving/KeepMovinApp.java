@@ -1,10 +1,7 @@
 package com.marcostoral.keepmoving;
 
-import android.app.Application;
-import android.content.Context;
 import android.support.multidex.MultiDexApplication;
 
-import com.marcostoral.keepmoving.dto.MyLatLng;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 
