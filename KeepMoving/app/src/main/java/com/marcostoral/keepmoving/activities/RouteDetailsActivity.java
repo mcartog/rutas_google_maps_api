@@ -113,9 +113,9 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
                 .color(Color.RED)
                 .geodesic(true);
 
-        for (LatLng latLng : latLngs) {
-            routeTrack.add(latLng);
-        }
+//        for (LatLng latLng : latLngs) {
+            routeTrack.addAll(latLngs);
+//        }
 
         mMap.addPolyline(routeTrack);
 

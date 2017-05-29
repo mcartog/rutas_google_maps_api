@@ -28,7 +28,7 @@ public class Route extends RealmObject implements Parcelable {
     private long id;
     private Date date;
     private int type;
-    private long distance;
+    private float distance;
     private String time;
     private RealmList<Waypoint> waypointList;
 
@@ -76,11 +76,11 @@ public class Route extends RealmObject implements Parcelable {
         this.type = type;
     }
 
-    public long getDistance() {
+    public float getDistance() {
         return distance;
     }
 
-    public void setDistance(long distance) {
+    public void setDistance(float distance) {
         this.distance = distance;
     }
 
@@ -119,7 +119,7 @@ public class Route extends RealmObject implements Parcelable {
         dest.writeLong(id);
         dest.writeLong(date.getTime());
         dest.writeInt(type);
-        dest.writeLong(distance);
+        dest.writeFloat(distance);
         dest.writeString(time);
         dest.writeTypedList(waypointList);
 
