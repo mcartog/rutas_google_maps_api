@@ -438,7 +438,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setRouteParameters(){
 
         myRoute.setType(type);
-        myRoute.setDistance(totalDistance);
+        myRoute.setDistance(totalDistance/1000);
         myRoute.setTime(chronometer.getText().toString());
 
     }
@@ -654,12 +654,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //...y si hay más de un punto...
                 if(myRoute.getWaypointList().size() > 0) {
 
-                    //... se recorre la lista y transforma los puntos a tipo LatLng, añadiéndos a la lista inicializada en START BUTTON.
-//                    for (int j = 0; j < myRoute.getWaypointList().size(); j++) {
-//                        LatLng pointLatLng = new LatLng(myRoute.getWaypointList().get(j).getLtd(), myRoute.getWaypointList().get(j).getLng());
-                        LatLng pointLatLng = new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng());
-                        latLngs.add(pointLatLng);
-//                    }
+                    LatLng pointLatLng = new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng());
+                    latLngs.add(pointLatLng);
 
                     routeTrack = new PolylineOptions()
                             .width(5)

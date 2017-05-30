@@ -33,6 +33,7 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
 
+    //dto id
     private long id;
 
     @Override
@@ -62,6 +63,21 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
         realm.close();
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        mMap = googleMap;
+
+        //Obtiene el primer punto de la ruta, lo convierte a LatLng y mueve la cámara hacia él.
+        LatLng initialPoint = new LatLng(route.getWaypointList().get(0).getLtd(),route.getWaypointList().get(0).getLng());
+
+        mMap.setMinZoomPreference(5);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPoint,15));
+
+        drawWaypoint(route);
+        drawRoute(route);
+
+    }
 
     /**
      * Método que devuelve la ruta seleccionada en la base de datos a apartir de su id.
@@ -113,33 +129,10 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
                 .color(Color.RED)
                 .geodesic(true);
 
-//        for (LatLng latLng : latLngs) {
             routeTrack.addAll(latLngs);
-//        }
 
         mMap.addPolyline(routeTrack);
 
     }
-
-
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-
-        mMap = googleMap;
-
-        //Obtiene el primer punto de la ruta, lo convierte a LatLng y mueve la cámara hacia él.
-        LatLng initialPoint = new LatLng(route.getWaypointList().get(0).getLtd(),route.getWaypointList().get(0).getLng());
-
-//        LatLng initialPoint = new LatLng(route.getPointList().get(0).getLatitude(),route.getPointList().get(0).getLatitude());
-        mMap.setMinZoomPreference(5);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPoint,15));
-
-        drawWaypoint(route);
-        drawRoute(route);
-
-
-    }
-
 
 }

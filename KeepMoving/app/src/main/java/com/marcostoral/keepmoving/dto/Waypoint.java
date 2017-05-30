@@ -19,14 +19,14 @@ public class Waypoint extends RealmObject implements Parcelable {
     private double ltd;
     private double lng;
     private String path;
-    //foto o video o audio?
+
 
     public Waypoint() {
-        this.id = KeepMovinApp.RouteID.incrementAndGet();
+        this.id = KeepMovinApp.WaypointID.incrementAndGet();
     }
 
     public Waypoint(double ltd, double lng) {
-        this.id = KeepMovinApp.RouteID.incrementAndGet();
+        this.id = KeepMovinApp.WaypointID.incrementAndGet();
         this.ltd = ltd;
         this.lng = lng;
     }
