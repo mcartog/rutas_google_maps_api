@@ -12,6 +12,7 @@
         android:layout_gravity="right"
         android:orientation="vertical"
        >
+
         <ImageButton
             android:layout_width="match_parent"
             android:layout_height="90dp"
@@ -19,13 +20,10 @@
             android:background="@color/colorAccent"
             android:id="@+id/ibWaypoint"
             android:contentDescription="@string/caputure_waypoint" />
-        <Chronometer
-            android:id="@+id/chrono"
+
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:textSize="30sp"
-            android:padding="5dp"
+            android:layout_height="15sp"
             />
 
         <ImageView
@@ -35,12 +33,22 @@
             android:layout_gravity="center"
             />
 
-        <TextView
-            android:text="TextView"
+        <Chronometer
+            android:id="@+id/chrono"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:textSize="30sp"
+            android:textAlignment="center"
             android:padding="5dp"
+            />
+
+        <TextView
+            android:textSize="18sp"
+            android:textAlignment="center"
             android:layout_gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30sp"
             android:id="@+id/tvCurrentDistance"
             />
 
