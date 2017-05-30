@@ -93,11 +93,6 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         super.onCreateContextMenu(menu, v, menuInfo);
 
         MenuInflater inflater = new MenuInflater(getContext());
-
-        //Añade un titulo (estas 2 líneas son opcionales, pero muy elegantes.
-       // AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-       // menu.setHeaderTitle((CharSequence) this.arrayRoutes.get(info.position));
-
         inflater.inflate(R.menu.lv_ctx_menu,menu);
 
     }

@@ -70,7 +70,7 @@ public class RouteDetailsFragment extends Fragment {
 
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy 'start at' HH:mm");
         tvDate.setText(df.format(route.getDate()));
-        tvDistance.setText((int) route.getDistance() + " Km");
+        tvDistance.setText(String.format("%.3f", route.getDistance())+ " Km");
         tvTime.setText(route.getTime());
         switch (route.getType()){
             case 0:

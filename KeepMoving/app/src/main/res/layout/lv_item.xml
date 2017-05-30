@@ -9,29 +9,30 @@
 
     <ImageView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        app:srcCompat="@drawable/running"
         android:id="@+id/ivType"
-        android:padding="2dp"
-        android:layout_weight=".8" />
+        android:padding="5dp"
+        android:layout_weight="2" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight=".3"
+        android:layout_weight="1"
         android:orientation="vertical"
         >
+
         <TextView
-            android:text="@string/distance"
+            android:text="@string/time"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:gravity="center_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-
         <TextView
-            android:text="@string/time"
+            android:text="@string/distance"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:gravity="center_horizontal"
             android:layout_width="wrap_content"
@@ -48,17 +49,18 @@
         <TextView
 
             android:gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/tvDistance"
-            android:layout_weight="1" />
-
-        <TextView
-
-            android:gravity="center_horizontal"
+            android:textSize="15sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tvTime"
+            android:layout_weight="1" />
+        <TextView
+
+            android:gravity="center_horizontal"
+            android:textSize="15sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvDistance"
             android:layout_weight="1" />
 
     </LinearLayout>
@@ -67,7 +69,7 @@
     <TextView
 
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/tvDate"

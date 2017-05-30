@@ -3,19 +3,12 @@ package com.marcostoral.keepmoving.dto;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.android.gms.maps.model.Polyline;
 import com.marcostoral.keepmoving.KeepMovinApp;
-import com.marcostoral.keepmoving.utils.Utils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**

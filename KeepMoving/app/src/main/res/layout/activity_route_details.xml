@@ -9,7 +9,7 @@
     <fragment
         android:id="@+id/fragmentDetailsRoute"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="90dp"
         android:name="com.marcostoral.keepmoving.fragments.RouteDetailsFragment"
         tools:layout="@layout/fragment_details_route"
 
@@ -20,7 +20,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="90dp"
         tools:context="com.marcostoral.keepmoving.activities.RouteDetailsActivity" />
 
 
