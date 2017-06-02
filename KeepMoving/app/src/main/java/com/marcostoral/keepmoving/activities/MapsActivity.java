@@ -7,15 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-//import android.location.Location;
-//import android.location.LocationListener;
-//import android.location.LocationManager;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -88,10 +84,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btnStart;
     private Button btnStop;
 
-    //Dialogs
-    private Dialog waypointDialog;
-    private Dialog saveConfirmationDialog;
-
     //Control
     public boolean isTracking;
     private int type;
@@ -107,6 +99,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private String mCurrentPhotoPath;
     private String mCurrentVideoPath;
+
+    //Dialogs
+    private Dialog waypointDialog;
+    private Dialog saveConfirmationDialog;
+
+    //Permissions
 
     ///////////////////////////////////////////////////////
     /////////////////   CALLBACKS   ///////////////////////
@@ -167,29 +165,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 btnStart.setVisibility(View.INVISIBLE);
                 btnStop.setVisibility(View.VISIBLE);
+                milliseconds = savedInstanceState.getLong("milliseconds");
+                startChronometer();
+                totalDistance = savedInstanceState.getFloat("distance");
+                setKm(totalDistance);
                 btnStop.setEnabled(false);
                 btnWaypoint.setEnabled(false);
                 isTracking = false;
-
-
 
             } else {
 
                 //Caso: actividad en pendiente de empezar Start == Visible
 
                 btnWaypoint.setEnabled(false);
-                if(myRoute == null){
-
-                    Toast.makeText(this,"null",Toast.LENGTH_LONG);
-                } else {
-
-                    Toast.makeText(this, myRoute.toString(),Toast.LENGTH_LONG);
-                }
 
             }
-        } else {
-
-            Toast.makeText(this, "NO salva instance",Toast.LENGTH_LONG);
         }
     }
 
@@ -428,6 +418,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setKm (float totalDistance){
         float km = totalDistance / 1000;
         tvCurrentDistance.setText( km + " Km");
+        tvCurrentDistance.notify();
 
     }
 
@@ -438,7 +429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setRouteParameters(){
 
         myRoute.setType(type);
-        myRoute.setDistance(totalDistance/1000);
+        myRoute.setDistance(totalDistance);
         myRoute.setTime(chronometer.getText().toString());
 
     }

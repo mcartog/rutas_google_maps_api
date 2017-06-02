@@ -54,7 +54,6 @@ public class MapsEnvironmentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_maps_environment, container, false);
-
         return view;
     }
 

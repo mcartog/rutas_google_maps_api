@@ -1,5 +1,7 @@
 package com.marcostoral.keepmoving.activities;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -133,6 +136,24 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 
         mMap.addPolyline(routeTrack);
 
+    }
+
+
+    public void displayPhoto (String path){
+
+
+        ///sdcard/Images/test_image.jpg"
+//        File imgFile = new  File(path);
+//
+//        if(imgFile.exists()){
+//
+//            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+//
+//            ImageView myImage = (ImageView) findViewById(R.id.imageviewTest);
+//
+//            myImage.setImageBitmap(myBitmap);
+
+//        }
     }
 
 }

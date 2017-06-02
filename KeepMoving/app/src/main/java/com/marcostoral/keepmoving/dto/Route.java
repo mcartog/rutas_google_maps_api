@@ -129,15 +129,4 @@ public class Route extends RealmObject implements Parcelable {
 
     }
 
-    @Override
-    public String toString() {
-        return "Route{" +
-                "id=" + id +
-//                ", date=" + date +
-                ", type=" + type +
-                ", distance='" + distance + '\'' +
-//                ", time='" + time + '\'' +
-                 waypointList.size() +
-                '}';
-    }
 }
