@@ -2,9 +2,11 @@ package com.marcostoral.keepmoving.activities;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
@@ -18,6 +20,7 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
@@ -43,13 +46,17 @@ import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.dto.Waypoint;
 import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -341,47 +348,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if(myRoute.getWaypointList().size()>0){
 
-
-                    //Añade un marcador en el mapa, añadiendo un LatLng
-                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
-                    mMap.addMarker(new MarkerOptions().position(point));
-
-
-                    myRoute.getWaypointList().last().setPath(getPictureName());
-                    Toast.makeText(MapsActivity.this, getPictureName(), Toast.LENGTH_LONG).show();
                     //Lanza dialog foto vs video.
                     waypointDialog.show();
+
+//                    //Añade un marcador en el mapa, añadiendo un LatLng
+//                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+//                    mMap.addMarker(new MarkerOptions().position(point));
+//                    myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
 
                 } else {
                     Toast.makeText(MapsActivity.this, "wooo", Toast.LENGTH_LONG).show();
                 }
-
-
-
-//                if (currentLocation != null) {
-//
-//                    //Si hay localización generar las coordenadas de un punto.
-//                    LatLng pointCoords = getWaypointCoords(currentLocation);
-//
-//                    //Si la recuperación de coordenadas es exitosa..
-//                    if (pointCoords != null) {
-//
-//                        //Crea point (pasando Lat y Lng de parámetros).
-//                        currentWaypoint = new Waypoint(pointCoords.latitude, pointCoords.longitude);
-//                        //Añade un marcador en el mapa
-//                        mMap.addMarker(new MarkerOptions().position(new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng())));
-//
-//                        //Añadir al waytpoint un path
-//                        currentWaypoint.setPath(getPictureName());
-//
-//                        Toast.makeText(MapsActivity.this, getPictureName(), Toast.LENGTH_LONG).show();
-//                        //Lanza dialog foto vs video.
-//                        waypointDialog.show();
-//                        // Añade el Waypoint a la lista de waypoints del objeto ruta.
-//                        myRoute.addWaypoint(currentWaypoint);
-//
-//                    }
-//                }
             }
 
         });
@@ -418,7 +395,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setKm (float totalDistance){
         float km = totalDistance / 1000;
         tvCurrentDistance.setText( km + " Km");
-        tvCurrentDistance.notify();
 
     }
 
@@ -576,7 +552,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
     @Override
     public void onConnectionSuspended(int i) {}
 
@@ -702,31 +677,87 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Dispara la petición de foto. Indicando el directorio público de imágetes, Crea un fichero imagen y un Uri apra pasar al intetn.
      */
     public void dispatchTakePictureIntent() {
-
-        //camera stuff
-        Intent takePictureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        //Nombre imagen
-        String pictureName = getPictureName();
-
-//        File imagesFolder = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), pictureName);
-//        imagesFolder.mkdirs();
-
-        //Fichero en directorio standard de imágenes.
-        File image = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), pictureName);
-        Uri uriSavedImage = Uri.fromFile(image);
-
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
-//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 //
-//        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-//        String pictureName = getPictureName();
-//        File imageFile = new File(pictureDirectory,pictureName);
-//        Uri pictureUri = Uri.fromFile(imageFile);
-//        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
-//        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+//
+//
+//
+//
+//            Nombre imagen y directorio
+//            String pictureName = getPictureName();
+//            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//
+//            String path = pictureDirectory +"/"+ pictureName;
+//            Toast.makeText(MapsActivity.this, path, Toast.LENGTH_LONG).show();
+//
+//            //Fichero imagen
+//            File imageFile = new File(pictureDirectory,pictureName);
+//
+//            Uri pictureUri = Uri.fromFile(imageFile);
+//
+//            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
+//
+//
+//
+//            ANDROID
+//            // Create the File where the photo should go
+//            File photoFile = null;
+//            try {
+//                photoFile = createImageFile();
+//            } catch (IOException ex) {
+//                // Error occurred while creating the File
+//
+//            }
+//            // Continue only if the File was successfully created
+//            if (photoFile != null) {
+//                Uri photoURI = FileProvider.getUriForFile(this,
+//                        "com.example.android.fileprovider",
+//                        photoFile);
+//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+//
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
+        }
+    }
+
+
+//    private File createImageFile() throws IOException {
+//
+//        // Crear fichero imagen
+//        String pictureName = getPictureName();
+//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+//        File image = File.createTempFile(
+//                pictureName,    /* prefix */
+//                ".jpg",         /* suffix */
+//                storageDir      /* directory */
+//        );
+//
+//        // Save a file: path for use with ACTION_VIEW intents
+//        mCurrentPhotoPath = image.getAbsolutePath();
+//        return image;
+//    }
+
+//    public Uri getVideoUri(Context inContext, Bitmap inImage) {
+//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+//        MediaStore.Video.Media.
+//        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+//        return Uri.parse(path);
+//    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+    public String getRealPathFromURI(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
     }
 
     @Override
@@ -735,20 +766,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         switch (requestCode) {
             case REQUEST_IMAGE_CAPTURE:
 
-                if (resultCode == this.RESULT_OK) {
+                if (resultCode == this.RESULT_OK  && data != null) {
 
-//                  String result = data.toUri(0);
-                    Bitmap cameraImage = (Bitmap) data.getExtras().get("data") ;
-                    mCurrentPhotoPath = cameraImage.toString();
-                    Toast.makeText(this, mCurrentPhotoPath , Toast.LENGTH_LONG).show();
+                    Bitmap photo = (Bitmap) data.getExtras().get("data");
+
+                    // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+                    Uri tempUri = getImageUri(getApplicationContext(), photo);
+
+                    // CALL THIS METHOD TO GET THE ACTUAL PATH
+                    File finalFile = new File(getRealPathFromURI(tempUri));
+
+                    mCurrentPhotoPath = finalFile.toString();
+
+                    //Añade un marcador en el mapa, añadiendo un LatLng
+                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+                    mMap.addMarker(new MarkerOptions().position(point));
+                    myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
+
+
                 } else {
                     Toast.makeText(this, "There was an error with the picture, try again.", Toast.LENGTH_LONG).show();
                 }
+
                 break;
 
             case REQUEST_VIDEO_CAPTURE:
 
-                if (resultCode == this.RESULT_OK) {
+                if (resultCode == this.RESULT_OK && data != null) {
                     String result = data.toUri(0);
                     Toast.makeText(this, "Result: "+result, Toast.LENGTH_LONG).show();
                 } else {
@@ -758,12 +802,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
+
     }
 
     private String getPictureName(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String timestamp = sdf.format(new Date());
-        return "KM"+timestamp+".jpg";
+        return "KM"+timestamp;
     }
     ///////////////////////////////////////////////////////////////////////////////////////
 //    private File createImageFile() throws IOException {
