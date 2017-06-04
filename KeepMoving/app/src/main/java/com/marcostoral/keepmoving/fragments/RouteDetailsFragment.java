@@ -11,27 +11,20 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.activities.RouteDetailsActivity;
 import com.marcostoral.keepmoving.activities.RouteGalleryActivity;
 import com.marcostoral.keepmoving.dto.Route;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class RouteDetailsFragment extends Fragment {
 
-        //UI
+    //UI
     private TextView tvDate;
     private TextView tvDistance;
     private TextView tvTime;

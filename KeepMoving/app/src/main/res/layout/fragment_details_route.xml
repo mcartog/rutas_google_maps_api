@@ -60,6 +60,7 @@
             android:layout_height="match_parent"
             android:layout_weight="25"
             android:layout_gravity="center"
+            android:background="@color/colorAccent"
             android:src="@android:drawable/ic_menu_gallery"
             />
 

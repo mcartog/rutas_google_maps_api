@@ -41,9 +41,6 @@ public class GelleryActivity extends AppCompatActivity {
         gvPhotosFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gvPicturesFragment);
         gvPhotos = gvPhotosFragment.getView();
 
-
-//        if(savedInstanceState == null) {
-
             realm = Realm.getDefaultInstance();
 
             final RealmResults<Route> routes = realm.where(Route.class).findAll();
@@ -60,12 +57,6 @@ public class GelleryActivity extends AppCompatActivity {
                 }
 
             }
-
-//        } else {
-
-//            waypointArrayList = savedInstanceState.getParcelableArrayList("waypointList");
-
-//        }
 
         gvPhoto = (GridView) gvPhotos.findViewById(R.id.gvPictures);
         adapter = new PhotoAdapter(this,waypointArrayList,R.layout.gv_photogrid_item);

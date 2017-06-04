@@ -58,10 +58,6 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
             detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
             detailsFragment.renderRoute(route);
 
-
-//            gphotoFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gv_fragment_photo);
-//            gphotoFragment.getWaypointList(route);
-
         }
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapRouteDetails);
@@ -150,26 +146,6 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
         mMap.addPolyline(routeTrack);
 
     }
-
-
-    public void displayPhoto(String path) {
-
-
-        ///sdcard/Images/test_image.jpg"
-//        File imgFile = new  File(path);
-//
-//        if(imgFile.exists()){
-//
-//            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-//
-//            ImageView myImage = (ImageView) findViewById(R.id.imageviewTest);
-//
-//            myImage.setImageBitmap(myBitmap);
-
-//        }
-    }
-
-
 
 }
 
