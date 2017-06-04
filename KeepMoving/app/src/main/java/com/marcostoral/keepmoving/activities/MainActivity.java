@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiActivity;
 import com.marcostoral.keepmoving.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         btnStadistics.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, StadisticsActivity.class);
+                Intent intent = new Intent(MainActivity.this, GelleryActivity.class);
                 startActivity(intent);
             }
         });

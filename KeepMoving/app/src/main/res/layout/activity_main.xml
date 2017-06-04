@@ -16,7 +16,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
+        android:textSize="35sp"
         android:id="@+id/tvAppName" />
+
+    <android.support.v4.widget.Space
+        android:layout_width="match_parent"
+        android:layout_height="100sp" />
 
     <Button
         android:text="@string/to_map"
@@ -36,7 +41,7 @@
         android:id="@+id/btnHistory" />
 
     <Button
-        android:text="@string/to_stadistics"
+        android:text="@string/to_gallery"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnHistory"

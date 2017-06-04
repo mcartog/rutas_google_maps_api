@@ -1,10 +1,12 @@
 package com.marcostoral.keepmoving.activities;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -18,7 +20,6 @@ import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.dto.Route;
 import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,11 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
 
+    //Fragments
+
+    private RouteDetailsFragment detailsFragment;
+
+
     //dto id
     private long id;
 
@@ -49,8 +55,12 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
         if (extras != null) {
             id = extras.getLong("routeID");
             route = getRoute(id);
-            RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
+            detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
             detailsFragment.renderRoute(route);
+
+
+//            gphotoFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gv_fragment_photo);
+//            gphotoFragment.getWaypointList(route);
 
         }
 
@@ -72,10 +82,10 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
         mMap = googleMap;
 
         //Obtiene el primer punto de la ruta, lo convierte a LatLng y mueve la cámara hacia él.
-        LatLng initialPoint = new LatLng(route.getWaypointList().get(0).getLtd(),route.getWaypointList().get(0).getLng());
+        LatLng initialPoint = new LatLng(route.getWaypointList().get(0).getLtd(), route.getWaypointList().get(0).getLng());
 
         mMap.setMinZoomPreference(5);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPoint,15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPoint, 15));
 
         drawWaypoint(route);
         drawRoute(route);
@@ -84,10 +94,11 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 
     /**
      * Método que devuelve la ruta seleccionada en la base de datos a apartir de su id.
-     * @param id  Id de la ruta seleccionada
+     *
+     * @param id Id de la ruta seleccionada
      * @return Ruta seleccionada en base de datos.
      */
-    public Route getRoute (long id){
+    public Route getRoute(long id) {
 
         realm = Realm.getDefaultInstance();
         routeById = realm.where(Route.class).equalTo("id", id).findAll();
@@ -97,14 +108,15 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 
     /**
      * Inserta los markers en el mapa.
+     *
      * @param route
      */
-    public void drawWaypoint(Route route){
+    public void drawWaypoint(Route route) {
         //Redibuja marcadores.
-        if(route.getWaypointList().size() > 0){
-            for (int j = 0; j < route.getWaypointList().size(); j++){
-                if(route.getWaypointList().get(j).getPath() != null){
-                    LatLng waypoint = new LatLng(route.getWaypointList().get(j).getLtd(),route.getWaypointList().get(j).getLng());
+        if (route.getWaypointList().size() > 0) {
+            for (int j = 0; j < route.getWaypointList().size(); j++) {
+                if (route.getWaypointList().get(j).getPath() != null) {
+                    LatLng waypoint = new LatLng(route.getWaypointList().get(j).getLtd(), route.getWaypointList().get(j).getLng());
                     Toast.makeText(RouteDetailsActivity.this, waypoint.toString(), Toast.LENGTH_SHORT).show();
                     mMap.addMarker(new MarkerOptions().position(waypoint));
                 }
@@ -114,15 +126,16 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 
     /**
      * Dibuja el path de la ruta. Polyline.
+     *
      * @param route
      */
-    public void drawRoute (Route route){
+    public void drawRoute(Route route) {
 
         List<LatLng> latLngs = new ArrayList<>();
 
-        if(route.getWaypointList().size() > 0){
-            for (int j = 0; j < route.getWaypointList().size(); j++){
-                LatLng point = new LatLng(route.getWaypointList().get(j).getLtd(),route.getWaypointList().get(j).getLng());
+        if (route.getWaypointList().size() > 0) {
+            for (int j = 0; j < route.getWaypointList().size(); j++) {
+                LatLng point = new LatLng(route.getWaypointList().get(j).getLtd(), route.getWaypointList().get(j).getLng());
                 latLngs.add(j, point);
             }
         }
@@ -132,14 +145,14 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
                 .color(Color.RED)
                 .geodesic(true);
 
-            routeTrack.addAll(latLngs);
+        routeTrack.addAll(latLngs);
 
         mMap.addPolyline(routeTrack);
 
     }
 
 
-    public void displayPhoto (String path){
+    public void displayPhoto(String path) {
 
 
         ///sdcard/Images/test_image.jpg"
@@ -156,4 +169,7 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 //        }
     }
 
+
+
 }
+

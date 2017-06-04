@@ -405,7 +405,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void setRouteParameters(){
 
         myRoute.setType(type);
-        myRoute.setDistance(totalDistance);
+        myRoute.setDistance(totalDistance/1000);
         myRoute.setTime(chronometer.getText().toString());
 
     }
@@ -891,7 +891,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(DialogInterface dialog, int which) {
 
                 saveRoute(myRoute);
-
                 dialog.cancel();
             }
         });
@@ -899,6 +898,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(DialogInterface dialog, int which) {
 
                 dialog.cancel();
+
             }
         });
 

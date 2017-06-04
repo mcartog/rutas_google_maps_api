@@ -1,17 +1,21 @@
 package com.marcostoral.keepmoving.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.activities.RouteDetailsActivity;
+import com.marcostoral.keepmoving.activities.RouteGalleryActivity;
 import com.marcostoral.keepmoving.dto.Route;
 
 import java.text.DateFormat;
@@ -32,6 +36,7 @@ public class RouteDetailsFragment extends Fragment {
     private TextView tvDistance;
     private TextView tvTime;
     private ImageView ivType;
+    private ImageButton ibGallery;
 
     private LinearLayout wrapper;
 
@@ -58,6 +63,7 @@ public class RouteDetailsFragment extends Fragment {
         tvDistance = (TextView) view.findViewById(R.id.tvDetailsDistance);
         tvTime = (TextView) view.findViewById(R.id.tvDetailsTime);
         ivType = (ImageView) view.findViewById(R.id.ivDetailsType);
+        ibGallery = (ImageButton) view.findViewById(R.id.ib_gallery);
 
     }
 
@@ -85,6 +91,19 @@ public class RouteDetailsFragment extends Fragment {
             default:
                 ivType = null;
         }
+
+        final long ref = route.getId();
+
+        ibGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), RouteGalleryActivity.class);
+
+                intent.putExtra("id",ref);
+                startActivity(intent);
+
+            }
+        });
 
     }
 

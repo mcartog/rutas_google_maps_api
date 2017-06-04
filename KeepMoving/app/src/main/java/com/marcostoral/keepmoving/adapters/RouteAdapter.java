@@ -69,8 +69,6 @@ public class RouteAdapter extends BaseAdapter {
 
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
-
-
         routeHolder.type.setImageResource(devuelveTipo(position));
 
         routeHolder.distance.setText(String.format("%.3f", routeList.get(position).getDistance())+ " Km");
