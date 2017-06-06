@@ -38,24 +38,21 @@ public class GelleryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
 
+        realm = Realm.getDefaultInstance();
+
         gvPhotosFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gvPicturesFragment);
         gvPhotos = gvPhotosFragment.getView();
 
-            realm = Realm.getDefaultInstance();
+        final RealmResults<Route> routes = realm.where(Route.class).findAll();
 
-            final RealmResults<Route> routes = realm.where(Route.class).findAll();
+        waypointArrayList = new ArrayList<Waypoint>();
 
-            realm.close();
-
-            waypointArrayList = new ArrayList<Waypoint>();
-            for (int i = 0; i < routes.size(); i++) {
-                for (int j = 0; j < routes.get(i).getWaypointList().size(); j++) {
-
-                    if (routes.get(i).getWaypointList().get(j).getPath() != null) {
-                        waypointArrayList.add(routes.get(i).getWaypointList().get(j));
+        for (int i = 0; i < routes.size(); i++) {
+            for (int j = 0; j < routes.get(i).getWaypointList().size(); j++) {
+                if (routes.get(i).getWaypointList().get(j).getPath() != null) {
+                    waypointArrayList.add(routes.get(i).getWaypointList().get(j));
                     }
                 }
-
             }
 
         gvPhoto = (GridView) gvPhotos.findViewById(R.id.gvPictures);
@@ -78,7 +75,7 @@ public class GelleryActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-//        realm.close();
+        realm.close();
     }
 
 //    @Override

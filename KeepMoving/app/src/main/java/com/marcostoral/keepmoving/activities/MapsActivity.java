@@ -930,21 +930,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(DialogInterface dialog, int item) {
 
                 if(Integer.parseInt(items[item])==0) {
+                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        // Si hay permisos: lanzar la actividad para caputrar foto.
+                        dispatchTakePictureIntent();
 
+                    } else {
 
-                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                                == PackageManager.PERMISSION_GRANTED) {
-
-                            // Lanzo la actividad para caputrar foto.
-                            dispatchTakePictureIntent();
-
-                        } else {
-                            //Request Location Permission
-                            checkWritePermission();
-                        }
+                        //Request write Permission
+                        checkWritePermission();
                     }
+                }
+                else {
+                    dispatchTakePictureIntent();
+                }
+
+
+//                if(Integer.parseInt(items[item])==0) {
+//                    // Lanzo la actividad para caputrar foto.
+//                    dispatchTakePictureIntent();
+//                } else {
+//
+//                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        if (ContextCompat.checkSelfPermission(MapsActivity.this,
+//                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                                == PackageManager.PERMISSION_GRANTED) {
+//
+//                            // Lanzo la actividad para caputrar foto.
+//                            dispatchTakePictureIntent();
+//
+//                        } else {
+//                            //Request Location Permission
+//                            checkWritePermission();
+//                        }
+//                    }
                 }
             }
         });
