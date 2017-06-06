@@ -29,7 +29,46 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         init();
+
+    }
+
+    ///////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
+
+    private void init(){
+
+        btnMaps = (Button) findViewById(R.id.btnMaps);
+        btnStadistics = (Button) findViewById(R.id.btnStadistics);
+        btnHistory = (Button) findViewById(R.id.btnHistory);
+
+        dialogRouteType = generateDialogRouteType();
+
+        btnMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogRouteType.show();
+                  }
+        });
+
+        btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnStadistics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, GelleryActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     ///////////////////////////////////////////////////////
@@ -58,50 +97,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-
-    private void init(){
-        btnMaps = (Button) findViewById(R.id.btnMaps);
-        btnStadistics = (Button) findViewById(R.id.btnStadistics);
-        btnHistory = (Button) findViewById(R.id.btnHistory);
-
-        dialogRouteType = generateDialogRouteType();
-
-
-        btnMaps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialogRouteType.show();
-                  }
-        });
-
-        btnHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        btnStadistics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, GelleryActivity.class);
-                startActivity(intent);
-            }
-        });
-
-    }
-
 
     ///////////////////////////////////////////////////////
     /////////////////   DIALOGS  //////////////////////////
     ///////////////////////////////////////////////////////
     /**
-     * Crea el diálogo de selección de tipo de actividad.
-     * @return
+     * Genera el diálogo de selección de tipo de actividad.
+     * @return Dialog selección de tipo de actividad.
      */
     private Dialog generateDialogRouteType(){
 

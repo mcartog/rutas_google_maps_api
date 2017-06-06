@@ -33,16 +33,14 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
     private RealmResults<Route> routeById;
     private Route route;
 
-    //Map
+    //Map Fragment
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
 
-    //Fragments
-
+    //Fragment
     private RouteDetailsFragment detailsFragment;
 
-
-    //dto id
+    //Model id
     private long id;
 
     @Override
@@ -50,7 +48,7 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_details);
 
-        //Recibo el id de la ruta y se lo paso al fragment para renderizar la ruta.
+        //Recibe el id de la ruta y lo pasa al fragment para renderizar la ruta seleccionada.
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             id = extras.getLong("routeID");
@@ -60,6 +58,7 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 
         }
 
+        //Map fragment
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapRouteDetails);
         mapFragment.getMapAsync(this);
         mapFragment.setRetainInstance(true);
@@ -77,10 +76,11 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 
         mMap = googleMap;
 
-        //Obtiene el primer punto de la ruta, lo convierte a LatLng y mueve la cámara hacia él.
+        //Obtiene el primer punto de la ruta, lo convierte a LatLng.
         LatLng initialPoint = new LatLng(route.getWaypointList().get(0).getLtd(), route.getWaypointList().get(0).getLng());
 
-        mMap.setMinZoomPreference(5);
+        //Establece el zoom mínimo y centra la cámara en el primer punto de la ruta.
+        mMap.setMinZoomPreference(10);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPoint, 15));
 
         drawWaypoint(route);
@@ -89,7 +89,7 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
     }
 
     /**
-     * Método que devuelve la ruta seleccionada en la base de datos a apartir de su id.
+     * Retorna ruta seleccionada en la base de datos a apartir de su id.
      *
      * @param id Id de la ruta seleccionada
      * @return Ruta seleccionada en base de datos.
@@ -103,9 +103,9 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
     }
 
     /**
-     * Inserta los markers en el mapa.
+     * Inserta en el mapa los puntos (markers) en los que se han capturado fotografías.
      *
-     * @param route
+     * @param route Ruta (Route) seleccionada en db.
      */
     public void drawWaypoint(Route route) {
         //Redibuja marcadores.
@@ -121,9 +121,9 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
     }
 
     /**
-     * Dibuja el path de la ruta. Polyline.
+     * Dibuja path (polyline) de la ruta.
      *
-     * @param route
+     * @param route Ruta (Route) seleccionada en db.
      */
     public void drawRoute(Route route) {
 

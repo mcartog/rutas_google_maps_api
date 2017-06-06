@@ -22,15 +22,19 @@ import io.realm.RealmResults;
 
 public class RouteGalleryActivity extends AppCompatActivity {
 
+    //Realm
     private Realm realm;
     private RealmResults<Route> routeById;
 
+    //Model
     private Route route;
     private long id;
 
+    //Fragment
     private GridPhotoViewFragment gvPhotosFragment;
     private View gvPhotos;
 
+    //GridView
     private GridView gvPhoto;
     private ArrayList<Waypoint> waypointArrayList;
     private PhotoAdapter adapter;
@@ -44,7 +48,6 @@ public class RouteGalleryActivity extends AppCompatActivity {
         gvPhotos = gvPhotosFragment.getView();
 
         id = getIntent().getExtras().getLong("id");
-        Toast.makeText(this, "hola" + id,Toast.LENGTH_SHORT).show();
 
         route = getRoute(id);
 
@@ -64,7 +67,8 @@ public class RouteGalleryActivity extends AppCompatActivity {
         gvPhoto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Uri path = Uri.parse("content:/"+waypointArrayList.get(position).getPath());
+
+                //Abre galería de imágenes
                 Intent intent = new Intent(Intent.ACTION_VIEW,  Uri.parse("content://media/internal/images/media"));
                 startActivity(intent);
             }
@@ -73,7 +77,7 @@ public class RouteGalleryActivity extends AppCompatActivity {
     }
 
     /**
-     * Método que devuelve la ruta seleccionada en la base de datos a apartir de su id.
+     * Devuelve la ruta seleccionada en la base de datos a apartir de su id.
      *
      * @param id Id de la ruta seleccionada
      * @return Ruta seleccionada en base de datos.
@@ -85,6 +89,5 @@ public class RouteGalleryActivity extends AppCompatActivity {
         return routeById.get(0);
 
     }
-
 
 }

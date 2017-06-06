@@ -95,8 +95,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public boolean isTracking;
     private int type;
     private long milliseconds;
-    private float distance;
-    private float totalDistance;
+    public float distance;
+    public float totalDistance;
     private LatLng newPoint;
     private LatLng lastPoint;
     public List<LatLng> latLngs;
@@ -129,6 +129,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        setStartButton();
+        setStopButton();
+        setWaypointButton();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -139,11 +148,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         outState.putParcelable("myRoute", myRoute);
         outState.putLong("milliseconds", milliseconds);
-        outState.putFloat("distance", totalDistance);
+        outState.putLong("distance",(long) this.totalDistance);
         outState.putInt("start", startState);
         outState.putInt("stop", stopState);
         outState.putBoolean("stopEnable", stopEnabled);
-//        outState.putParcelable("location",currentLocation);
 
     }
 
@@ -160,7 +168,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myRoute = savedInstanceState.getParcelable("myRoute");
                 milliseconds = savedInstanceState.getLong("milliseconds");
                 startChronometer();
-                totalDistance = savedInstanceState.getFloat("distance");
+                totalDistance = (float) savedInstanceState.getLong("distance");
                 setKm(totalDistance);
                 btnStart.setVisibility(View.INVISIBLE);
                 btnStop.setVisibility(View.VISIBLE);
@@ -176,7 +184,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 btnStop.setVisibility(View.VISIBLE);
                 milliseconds = savedInstanceState.getLong("milliseconds");
                 startChronometer();
-                totalDistance = savedInstanceState.getFloat("distance");
+                totalDistance = (float) savedInstanceState.getLong("distance");
                 setKm(totalDistance);
                 btnStop.setEnabled(false);
                 btnWaypoint.setEnabled(false);
@@ -224,15 +232,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Inicialización general de la activity.
      */
-    public void init() {
-
-
-        //Al iniciar la actividad el trackeo está desactivado hasta pulsar el botón Start.
-        isTracking = false;
-        totalDistance = 0;
+    private void init() {
 
         // Obtain a Realm instance
         realm = Realm.getDefaultInstance();
+
+        //Al iniciar la actividad el trackeo está desactivado hasta pulsar el botón Start.
+        isTracking = false;
+//        totalDistance = 0;
+//        distance = 0;
 
         // Instancia dialogos
         waypointDialog = generateDialogCaptureWaypoint();
@@ -273,11 +281,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Establece el tipo de ruta.
         routeTypeIconReceptor(type);
 
-        //Establezce el cuentakilómetros
-        setKm(totalDistance);
+        //Establece el cuentakilómetros
+        setKm(0);
 
+    }
 
-        //START
+    private void setStartButton(){
+
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -297,8 +307,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Inicia la localización.
                     initLocation();
 
-                    distance = 0;
-
                     // Se oculta botón start. Se muestra el botón stop. Se activa botón Waypoints.
                     btnStart.setVisibility(View.INVISIBLE);
                     btnStop.setVisibility(View.VISIBLE);
@@ -310,13 +318,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Inicia cronómetro
                     startChronometer();
 
-                    }
-
+                }
             }
         });
+    }
 
+    private void setStopButton(){
 
-        // STOP
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -342,8 +350,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+    }
 
-        // WAYPOINT
+    private void setWaypointButton(){
+
         btnWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -353,13 +363,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Lanza dialog foto vs video.
                     waypointDialog.show();
 
-//                    //Añade un marcador en el mapa, añadiendo un LatLng
-//                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
-//                    mMap.addMarker(new MarkerOptions().position(point));
-//                    myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
-
                 } else {
-                    Toast.makeText(MapsActivity.this, "wooo", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MapsActivity.this, "Esperando posicionamiento", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -395,6 +400,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void setKm (float totalDistance){
+
         float km = totalDistance / 1000;
         tvCurrentDistance.setText( km + " Km");
 
@@ -510,55 +516,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
 
-        currentLocation = location;
-        if (currentLocation != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),15));
-        }
+        float distanciaListener = this.totalDistance;
 
-        //Obtiene las coordenadas de un punto a partir de una localización.
-        newPoint = getWaypointCoords(currentLocation);
+               currentLocation = location;
+               if (currentLocation != null) {
+                   mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),15));
+               }
 
-        //Si la recuperación de coordenadas es exitosa..
-        if(newPoint != null){
+               //Obtiene las coordenadas de un punto a partir de una localización.
+               newPoint = getWaypointCoords(currentLocation);
 
-            //Crea point (pasando Lat y Lng de parámetros).
-            currentWaypoint = new Waypoint(newPoint.latitude, newPoint.longitude);
+               //Si la recuperación de coordenadas es exitosa..
+               if(newPoint != null){
 
-            //...y la ruta se ha iniciado...
-            if(myRoute != null){
+                   //Crea point (pasando Lat y Lng de parámetros).
+                   currentWaypoint = new Waypoint(newPoint.latitude, newPoint.longitude);
 
-                //Añadir punto a ruta.
-                myRoute.addWaypoint(currentWaypoint);
+                   //...y la ruta se ha iniciado...
+                   if(myRoute != null){
 
-                //...y si hay más de un punto...
-                if(myRoute.getWaypointList().size() > 0) {
+                       //Añadir punto a ruta.
+                       myRoute.addWaypoint(currentWaypoint);
 
-                    LatLng pointLatLng = new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng());
-                    latLngs.add(pointLatLng);
+                       //...y si hay más de un punto...
+                       if(myRoute.getWaypointList().size() > 0) {
 
-                    routeTrack = new PolylineOptions()
-                            .width(5)
-                            .color(Color.RED)
-                            .geodesic(true);
+                           LatLng pointLatLng = new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng());
+                           latLngs.add(pointLatLng);
 
-                    routeTrack.addAll(latLngs);
+                           routeTrack = new PolylineOptions()
+                                   .width(5)
+                                   .color(Color.RED)
+                                   .geodesic(true);
 
-                    //Dibuja polilinea
-                    mMap.addPolyline(routeTrack);
+                           routeTrack.addAll(latLngs);
 
-                }
-            }
+                           //Dibuja polilinea
+                           mMap.addPolyline(routeTrack);
 
-            if(lastLocation != null){
+                       }
+                   }
 
-                distance = (long) calculateDistance(lastLocation, currentLocation);
-                totalDistance = totalDistance + distance;
-                setKm(totalDistance);
+                   if(lastLocation != null){
 
-            }
+                       distance = (long) calculateDistance(lastLocation, currentLocation);
+                       this.totalDistance = distanciaListener + distance;
+                       setKm(this.totalDistance);
 
-            lastLocation = currentLocation;
-        }
+                   }
+
+                   lastLocation = currentLocation;
+               }
+
+
     }
 
     public float calculateDistance (Location lastLocation, Location currentLocation){
@@ -594,7 +604,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     /**
-     * Comprobar permisos
+     * Comprueba permisos de localización. En caso de no disponer de ellos permite activación en AlertDialog.
      */
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -631,6 +641,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Comprueba los permisos de escritura. En caso de no disponer de ellos permite activación en AlertDialog.
+     */
     public void checkWritePermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -669,7 +682,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
-            //Permisos de localización
+            //Permiso de localización
             case PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
@@ -696,6 +709,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return;
             }
 
+            //Permiso de escritura
             case PERMISSIONS_REQUEST_WRITE_DATA: {
 
                 if (grantResults.length > 0
@@ -746,11 +760,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
-//
-//
-//
-//
-//
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
 //            Nombre imagen y directorio
 //            String pictureName = getPictureName();
 //            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -782,8 +793,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                        "com.example.android.fileprovider",
 //                        photoFile);
 //                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-//
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
         }
     }
@@ -837,22 +846,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     Bitmap photo = (Bitmap) data.getExtras().get("data");
 
-                    // CALL THIS METHOD TO GET THE URI FROM THE BITMAP
+                    // Obtiene Uri de Bitmap
                     Uri tempUri = getImageUri(getApplicationContext(), photo);
-
-                    // CALL THIS METHOD TO GET THE ACTUAL PATH
+                    // Obtiene el path del fichero
                     File finalFile = new File(getRealPathFromURI(tempUri));
 
-                    mCurrentPhotoPath = finalFile.toString();
+                    mCurrentPhotoPath = finalFile.getPath();
 
                     //Añade un marcador en el mapa, añadiendo un LatLng
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                     mMap.addMarker(new MarkerOptions().position(point));
                     myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
 
-
                 } else {
-                    Toast.makeText(this, "There was an error with the picture, try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.no_photo, Toast.LENGTH_LONG).show();
                 }
 
                 break;
@@ -860,10 +867,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case REQUEST_VIDEO_CAPTURE:
 
                 if (resultCode == this.RESULT_OK && data != null) {
-                    String result = data.toUri(0);
-                    Toast.makeText(this, "Result: "+result, Toast.LENGTH_LONG).show();
+
+                    mCurrentVideoPath = data.getData().getPath(); //data.toUri(0);//
+
+                    //Añade un marcador en el mapa, añadiendo un LatLng
+                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+                    mMap.addMarker(new MarkerOptions().position(point));
+                    myRoute.getWaypointList().last().setPath(mCurrentVideoPath);
+
+
                 } else {
-                    Toast.makeText(this, "There was an error with the video, try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, R.string.no_video, Toast.LENGTH_LONG).show();
                 }
                 break;
             default:
@@ -929,44 +943,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setItems(R.array.media_type, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
 
-                if(Integer.parseInt(items[item])==0) {
-                if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (ContextCompat.checkSelfPermission(MapsActivity.this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        // Si hay permisos: lanzar la actividad para caputrar foto.
-                        dispatchTakePictureIntent();
+                switch (Integer.parseInt(items[item])){
 
-                    } else {
+                    //FOTOGRAFÍA
+                    case 0:
 
-                        //Request write Permission
-                        checkWritePermission();
-                    }
+                        //Comprueba la versión de Android para la gestión de permisos
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    == PackageManager.PERMISSION_GRANTED) {
+                                // Si hay permisos: lanzar la actividad para caputrar foto.
+                                dispatchTakePictureIntent();
+
+                            } else {
+
+                                //Comprueba permiso de escritura
+                                checkWritePermission();
+                            }
+                        }
+                        else {
+
+                            //Lanza cámara para capturar imagen
+                            dispatchTakePictureIntent();
+                        }
+
+                        break;
+
+                    //VÍDEO
+                    case 1:
+                        //Comprueba la versión de Android para la gestión de permisos
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            if (ContextCompat.checkSelfPermission(MapsActivity.this,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    == PackageManager.PERMISSION_GRANTED) {
+                                // Si hay permisos: lanzar la actividad para caputrar video.
+                                dispatchTakeVideoIntent();
+
+                            } else {
+
+                                //Comprueba permiso de escritura
+                                checkWritePermission();
+                            }
+                        }
+                        else {
+
+                            //Lanza cámara para capturar video
+                            dispatchTakeVideoIntent();
+                        }
+
+                    break;
                 }
-                else {
-                    dispatchTakePictureIntent();
-                }
 
-
-//                if(Integer.parseInt(items[item])==0) {
-//                    // Lanzo la actividad para caputrar foto.
-//                    dispatchTakePictureIntent();
-//                } else {
-//
-//                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                        if (ContextCompat.checkSelfPermission(MapsActivity.this,
-//                                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                                == PackageManager.PERMISSION_GRANTED) {
-//
-//                            // Lanzo la actividad para caputrar foto.
-//                            dispatchTakePictureIntent();
-//
-//                        } else {
-//                            //Request Location Permission
-//                            checkWritePermission();
-//                        }
-//                    }
-                }
             }
         });
 

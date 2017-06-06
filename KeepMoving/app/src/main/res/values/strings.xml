@@ -27,6 +27,8 @@
     <string name="msn_dialog_persist_route">¿Quieres guardar la ruta?</string>
     <string name="routeTypeTitleDialog">Selecciona el tipo de ruta.</string>
     <string name="pleaseStopTrackng">Finalice la grabación.</string>
+    <string name="no_photo">No se ha realizado ninguna fotografía</string>
+    <string name="no_video">No se ha realizado ningún vídeo</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

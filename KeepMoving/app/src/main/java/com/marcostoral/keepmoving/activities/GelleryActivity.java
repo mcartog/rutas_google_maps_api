@@ -21,17 +21,17 @@ import io.realm.RealmResults;
 
 public class GelleryActivity extends AppCompatActivity {
 
-
+    //Realm
     private Realm realm;
 
+    //Fragment
     private GridPhotoViewFragment gvPhotosFragment;
     private View gvPhotos;
 
+    //GridView
     private GridView gvPhoto;
     private ArrayList<Waypoint> waypointArrayList;
     private PhotoAdapter adapter;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,7 @@ public class GelleryActivity extends AppCompatActivity {
         gvPhotosFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gvPicturesFragment);
         gvPhotos = gvPhotosFragment.getView();
 
+        //Consulta todas las rutas almacenadas en la db.
         final RealmResults<Route> routes = realm.where(Route.class).findAll();
 
         waypointArrayList = new ArrayList<Waypoint>();
@@ -62,7 +63,8 @@ public class GelleryActivity extends AppCompatActivity {
         gvPhoto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Uri path = Uri.parse("content:/"+waypointArrayList.get(position).getPath());
+
+                //A la galería de imágenes
                 Intent intent = new Intent(Intent.ACTION_VIEW,  Uri.parse("content://media/internal/images/media"));
                 startActivity(intent);
             }
@@ -78,19 +80,4 @@ public class GelleryActivity extends AppCompatActivity {
         realm.close();
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        outState.putParcelableArrayList("waypointList", waypointArrayList);
-//
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        waypointArrayList = savedInstanceState.getParcelableArrayList("waypointList");
-//
-//    }
 }

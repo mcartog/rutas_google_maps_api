@@ -67,7 +67,7 @@ public class RouteDetailsFragment extends Fragment {
     public void renderRoute(Route route) {
         wrapper.setVisibility(View.VISIBLE);
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy 'start at' HH:mm");
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy '\n' HH:mm");
         tvDate.setText(df.format(route.getDate()));
         tvDistance.setText(String.format("%.3f", route.getDistance())+ " Km");
         tvTime.setText(route.getTime());
