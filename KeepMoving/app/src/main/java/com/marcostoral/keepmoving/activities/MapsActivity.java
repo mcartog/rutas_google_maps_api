@@ -333,7 +333,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 isTracking = false;
 
                 //Desconecta ApiGoogleClient
-//                stopLocation();
+                stopLocation();
 
                 //Anula botones
                 btnWaypoint.setEnabled(false);
@@ -465,7 +465,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void stopLocation(){
-//        mGoogleApiClient.disconnect();
+        mGoogleApiClient.disconnect();
     }
 
     protected synchronized void buildGoogleApiClient() {
