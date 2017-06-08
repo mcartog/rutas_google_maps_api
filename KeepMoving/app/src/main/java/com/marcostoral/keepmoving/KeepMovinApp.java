@@ -2,8 +2,8 @@ package com.marcostoral.keepmoving;
 
 import android.support.multidex.MultiDexApplication;
 
-import com.marcostoral.keepmoving.dto.Route;
-import com.marcostoral.keepmoving.dto.Waypoint;
+import com.marcostoral.keepmoving.models.Route;
+import com.marcostoral.keepmoving.models.Waypoint;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

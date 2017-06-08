@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.dto.Waypoint;
+import com.marcostoral.keepmoving.models.Waypoint;
 
 import java.util.ArrayList;
 

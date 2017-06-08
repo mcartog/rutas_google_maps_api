@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.dto.Route;
+import com.marcostoral.keepmoving.models.Route;
 
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;

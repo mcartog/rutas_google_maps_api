@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.activities.RouteGalleryActivity;
-import com.marcostoral.keepmoving.dto.Route;
+import com.marcostoral.keepmoving.models.Route;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

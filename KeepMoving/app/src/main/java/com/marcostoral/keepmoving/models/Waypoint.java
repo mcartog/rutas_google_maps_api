@@ -1,4 +1,4 @@
-package com.marcostoral.keepmoving.dto;
+package com.marcostoral.keepmoving.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

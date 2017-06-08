@@ -13,14 +13,12 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
@@ -29,10 +27,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -42,13 +43,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.dto.Route;
-import com.marcostoral.keepmoving.dto.Waypoint;
+import com.marcostoral.keepmoving.models.Route;
+import com.marcostoral.keepmoving.models.Waypoint;
 import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,31 +56,15 @@ import java.util.List;
 
 import io.realm.Realm;
 
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
-
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 
-    //Map
-    private GoogleMap mMap;
-    private PolylineOptions routeTrack;
-
     //Realm
     private Realm realm;
-    //dto instance
+
+    //Models
     private Route myRoute;
     private Waypoint currentWaypoint;
-    public Waypoint lastWaypoint;
-
-    //Location
-    public Location currentLocation;
-    public Location lastLocation;
-    private LocationRequest mLocationRequest;
-    private GoogleApiClient mGoogleApiClient;
-
-    //Fragments
-    private MapsEnvironmentFragment mapsEnvironmentFragment;
-    private SupportMapFragment mapFragment;
 
     //UI & Views
     private View mapsEnvironment;
@@ -91,6 +75,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Button btnStart;
     private Button btnStop;
 
+    //Fragments
+    private MapsEnvironmentFragment mapsEnvironmentFragment;
+    private SupportMapFragment mapFragment;
+
+    //Location
+    public Location currentLocation;
+    public Location lastLocation;
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient mGoogleApiClient;
+
+    //Map
+    private GoogleMap mMap;
+    private PolylineOptions routeTrack;
+
     //Control
     public boolean isTracking;
     private int type;
@@ -98,7 +96,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public float distance;
     public float totalDistance;
     private LatLng newPoint;
-    private LatLng lastPoint;
     public List<LatLng> latLngs;
 
     //Photo & video
@@ -465,8 +462,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void stopLocation(){
+
         mGoogleApiClient.disconnect();
+
     }
+
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -479,10 +479,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(Bundle bundle) {
+        //Configuración de peticion de actualización.
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(2000);
-        mLocationRequest.setFastestInterval(2000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setInterval(1000);     //1seg
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -511,6 +513,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return null;
         }
     }
+
+
+
 
 
     @Override
@@ -568,8 +573,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                    lastLocation = currentLocation;
                }
 
-
     }
+
 
     public float calculateDistance (Location lastLocation, Location currentLocation){
 
@@ -868,13 +873,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (resultCode == this.RESULT_OK && data != null) {
 
+
                     mCurrentVideoPath = data.getData().getPath(); //data.toUri(0);//
 
                     //Añade un marcador en el mapa, añadiendo un LatLng
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                     mMap.addMarker(new MarkerOptions().position(point));
                     myRoute.getWaypointList().last().setPath(mCurrentVideoPath);
-
 
                 } else {
                     Toast.makeText(this, R.string.no_video, Toast.LENGTH_LONG).show();

@@ -1,18 +1,24 @@
 package com.marcostoral.keepmoving.activities;
 
+import android.content.ContentProvider;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.print.PrintHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.PhotoAdapter;
-import com.marcostoral.keepmoving.dto.Route;
-import com.marcostoral.keepmoving.dto.Waypoint;
+import com.marcostoral.keepmoving.models.Route;
+import com.marcostoral.keepmoving.models.Waypoint;
 import com.marcostoral.keepmoving.fragments.GridPhotoViewFragment;
 
 import java.util.ArrayList;
@@ -69,6 +75,7 @@ public class RouteGalleryActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 //Abre galería de imágenes
+//                Intent intent = new Intent(Intent.ACTION_GET_CONTENT,  Uri.parse("content://media/internal/images/media"));
                 Intent intent = new Intent(Intent.ACTION_VIEW,  Uri.parse("content://media/internal/images/media"));
                 startActivity(intent);
             }

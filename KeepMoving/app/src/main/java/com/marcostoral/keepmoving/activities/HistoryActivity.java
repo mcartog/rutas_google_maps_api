@@ -3,10 +3,9 @@ package com.marcostoral.keepmoving.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.dto.Route;
+import com.marcostoral.keepmoving.models.Route;
 import com.marcostoral.keepmoving.fragments.ListViewFragment;
 import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
 

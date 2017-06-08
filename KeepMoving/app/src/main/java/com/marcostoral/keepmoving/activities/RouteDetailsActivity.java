@@ -1,12 +1,8 @@
 package com.marcostoral.keepmoving.activities;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,7 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.dto.Route;
+import com.marcostoral.keepmoving.models.Route;
 import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
 
 import java.util.ArrayList;
@@ -113,7 +109,6 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
             for (int j = 0; j < route.getWaypointList().size(); j++) {
                 if (route.getWaypointList().get(j).getPath() != null) {
                     LatLng waypoint = new LatLng(route.getWaypointList().get(j).getLtd(), route.getWaypointList().get(j).getLng());
-                    Toast.makeText(RouteDetailsActivity.this, waypoint.toString(), Toast.LENGTH_SHORT).show();
                     mMap.addMarker(new MarkerOptions().position(waypoint));
                 }
             }

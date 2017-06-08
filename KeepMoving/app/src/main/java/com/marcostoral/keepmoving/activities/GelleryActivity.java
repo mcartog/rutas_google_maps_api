@@ -10,8 +10,8 @@ import android.widget.GridView;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.PhotoAdapter;
-import com.marcostoral.keepmoving.dto.Route;
-import com.marcostoral.keepmoving.dto.Waypoint;
+import com.marcostoral.keepmoving.models.Route;
+import com.marcostoral.keepmoving.models.Waypoint;
 import com.marcostoral.keepmoving.fragments.GridPhotoViewFragment;
 
 import java.util.ArrayList;

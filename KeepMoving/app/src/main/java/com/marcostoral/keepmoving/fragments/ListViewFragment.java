@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.RouteAdapter;
-import com.marcostoral.keepmoving.dto.Route;
+import com.marcostoral.keepmoving.models.Route;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -38,6 +38,9 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         // Required empty public constructor
     }
 
+    ///////////////////////////////////////////////////////
+    ///////////////////   CALLBACK    /////////////////////
+    ///////////////////////////////////////////////////////
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,19 +77,47 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
 
     /**
-     * Interface propia para la que habrá que definir el método propio onListClic que recibe como
+     * Interface propia para la que habrá que definir el método propio onListClicK que recibe como
      * parámetro un elemento de la lista.
      */
     public interface OnFragmentInteractionListener {
         void onListClick(Route route);
     }
 
+    ///////////////////////////////////////////////////////
+    /////////////////////   UI    /////////////////////////
+    ///////////////////////////////////////////////////////
+
+    /**
+     * Instancia la interfaz gráfica.
+     * @param view
+     */
+    public void init(View view){
+
+        cargaRutas();
+
+        lvHistory = (ListView) view.findViewById(R.id.lvRoutes);
+
+        adapter = new RouteAdapter(getContext(),routes,R.layout.lv_item);
+        lvHistory.setAdapter(adapter);
+
+        lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                mListener.onListClick(routes.get(position));   //cambio el arrayRoutes por routes
+
+            }
+        });
+
+        registerForContextMenu(lvHistory);
+    }
+
 
     ///////////////////////////////////////////////////////
-    ////////////////////   MENUS   ////////////////////////
+    /////////////////   CONTEXT MENU    ///////////////////
     ///////////////////////////////////////////////////////
 
-    ////////////////////   CONTEXT MENU   /////////////////
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -122,34 +153,11 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         }
     }
 
+    ///////////////////////////////////////////////////////
+    ////////////////////   REALM    ///////////////////////
+    ///////////////////////////////////////////////////////
 
-    /**
-     * Instancia la interfaz gráfica.
-     * @param view
-     */
-    public void init(View view){
-
-        cargaRutas();
-
-        lvHistory = (ListView) view.findViewById(R.id.lvRoutes);
-
-        adapter = new RouteAdapter(getContext(),routes,R.layout.lv_item);
-        lvHistory.setAdapter(adapter);
-
-        lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                mListener.onListClick(routes.get(position));   //cambio el arrayRoutes por routes
-
-            }
-        });
-
-        registerForContextMenu(lvHistory);
-    }
-
-
-    /**
+     /**
      *  Instancia la base de datos y realiza una búsqueda de todas las rutas.
      */
     public void cargaRutas(){
