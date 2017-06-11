@@ -66,8 +66,8 @@ public class PhotoAdapter extends BaseAdapter {
             waypointPhotoHolder = (WaypointPhotoHolder) convertView.getTag();
         }
 
-            waypointPhotoHolder.latitude.setText("Latitud: "+ String.valueOf(waypointList.get(position).getLtd()));
-            waypointPhotoHolder.longitude.setText("Longitud: " + String.valueOf(waypointList.get(position).getLng()));
+            waypointPhotoHolder.latitude.setText("Ltd: "+ String.valueOf(waypointList.get(position).getLtd()));
+            waypointPhotoHolder.longitude.setText("Lng: " + String.valueOf(waypointList.get(position).getLng()));
 
             Bitmap myPhoto = BitmapFactory.decodeFile(waypointList.get(position).getPath());
             waypointPhotoHolder.photo.setImageBitmap(myPhoto);

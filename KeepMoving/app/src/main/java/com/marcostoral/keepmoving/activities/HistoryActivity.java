@@ -18,7 +18,7 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        setMultiPanel();
+//        setMultiPanel();
 
     }
 
@@ -30,24 +30,24 @@ public class HistoryActivity extends AppCompatActivity implements ListViewFragme
     @Override
     public void onListClick(Route route) {
 
-        if (isMultiPanel) {
+//        if (isMultiPanel) {
 
-            //No incluye mapa. Mejorar versión tablet o retirarla (tiene poco sentido usar esta app con una tablet)
-            RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
-            detailsFragment.renderRoute(route);
-
-        } else {
+//            //No incluye mapa. Mejorar versión tablet o retirarla (tiene poco sentido usar esta app con una tablet)
+//            RouteDetailsFragment detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
+//            detailsFragment.renderRoute(route);
+//
+//        } else {
 
             Intent intent = new Intent(this, RouteDetailsActivity.class);
             //No podemos pasar el objetro ruta directamente, apsamos su id para hacer una consulta.
             intent.putExtra("routeID", route.getId());
             startActivity(intent);
         }
-    }
+//    }
 
-    private void setMultiPanel() {
-        isMultiPanel = (getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute) != null);
-    }
+//    private void setMultiPanel() {
+//        isMultiPanel = (getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute) != null);
+//    }
 
 
 }

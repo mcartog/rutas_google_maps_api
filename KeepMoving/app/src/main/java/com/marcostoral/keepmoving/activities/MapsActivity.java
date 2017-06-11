@@ -2,17 +2,22 @@ package com.marcostoral.keepmoving.activities;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -20,6 +25,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -49,12 +55,16 @@ import com.marcostoral.keepmoving.fragments.MapsEnvironmentFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+
+import static android.R.attr.bitmap;
+import static android.R.attr.thumb;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -101,6 +111,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Photo & video
     static final int REQUEST_VIDEO_CAPTURE = 1;
     static final int REQUEST_IMAGE_CAPTURE = 2;
+    private String mCurrentPhotoFile;
     private String mCurrentPhotoPath;
     private String mCurrentVideoPath;
 
@@ -125,77 +136,75 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//
+//    }
 
-        setStartButton();
-        setStopButton();
-        setWaypointButton();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        long milliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
-        int startState = btnStart.getVisibility();
-        int stopState = btnStop.getVisibility();
-        boolean stopEnabled = btnStop.isEnabled();
-
-        outState.putParcelable("myRoute", myRoute);
-        outState.putLong("milliseconds", milliseconds);
-        outState.putLong("distance",(long) this.totalDistance);
-        outState.putInt("start", startState);
-        outState.putInt("stop", stopState);
-        outState.putBoolean("stopEnable", stopEnabled);
-
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        if (savedInstanceState != null) {
-
-            if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == true) {
-
-                //Caso: actividad en curso. Start == Invisible  &&  Stop == Enable(true)
-
-                myRoute = savedInstanceState.getParcelable("myRoute");
-                milliseconds = savedInstanceState.getLong("milliseconds");
-                startChronometer();
-                totalDistance = (float) savedInstanceState.getLong("distance");
-                setKm(totalDistance);
-                btnStart.setVisibility(View.INVISIBLE);
-                btnStop.setVisibility(View.VISIBLE);
-                btnStop.setEnabled(true);
-                btnWaypoint.setEnabled(true);
-                isTracking = true;
-
-            } else if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == false) {
-
-                //Caso: actividad en finalizada. Start == Invisible  &&  Stop == Enable(false)
-
-                btnStart.setVisibility(View.INVISIBLE);
-                btnStop.setVisibility(View.VISIBLE);
-                milliseconds = savedInstanceState.getLong("milliseconds");
-                startChronometer();
-                totalDistance = (float) savedInstanceState.getLong("distance");
-                setKm(totalDistance);
-                btnStop.setEnabled(false);
-                btnWaypoint.setEnabled(false);
-                isTracking = false;
-
-            } else {
-
-                //Caso: actividad en pendiente de empezar Start == Visible
-
-                btnWaypoint.setEnabled(false);
-
-            }
-        }
-    }
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//
+//        long milliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
+//        int startState = btnStart.getVisibility();
+//        int stopState = btnStop.getVisibility();
+//        boolean stopEnabled = btnStop.isEnabled();
+//
+//        outState.putParcelable("myRoute", myRoute);
+//        outState.putLong("milliseconds", milliseconds);
+//        outState.putLong("distance",(long) this.totalDistance);
+//        outState.putInt("start", startState);
+//        outState.putInt("stop", stopState);
+//        outState.putBoolean("stopEnable", stopEnabled);
+//
+//    }
+//
+//    @Override
+//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//
+//        if (savedInstanceState != null) {
+//
+//            if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == true) {
+//
+//                //Caso: actividad en curso. Start == Invisible  &&  Stop == Enable(true)
+//
+//                myRoute = savedInstanceState.getParcelable("myRoute");
+//                milliseconds = savedInstanceState.getLong("milliseconds");
+//                startChronometer();
+//                totalDistance = (float) savedInstanceState.getLong("distance");
+//                setKm(totalDistance);
+//                btnStart.setVisibility(View.INVISIBLE);
+//                btnStop.setVisibility(View.VISIBLE);
+//                btnStop.setEnabled(true);
+//                btnWaypoint.setEnabled(true);
+//                isTracking = true;
+//
+//            } else if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == false) {
+//
+//                //Caso: actividad en finalizada. Start == Invisible  &&  Stop == Enable(false)
+//
+//                btnStart.setVisibility(View.INVISIBLE);
+//                btnStop.setVisibility(View.VISIBLE);
+//                milliseconds = savedInstanceState.getLong("milliseconds");
+//                startChronometer();
+//                totalDistance = (float) savedInstanceState.getLong("distance");
+//                setKm(totalDistance);
+//                btnStop.setEnabled(false);
+//                btnWaypoint.setEnabled(false);
+//                isTracking = false;
+//
+//            } else {
+//
+//                //Caso: actividad en pendiente de empezar Start == Visible
+//
+//                btnWaypoint.setEnabled(false);
+//
+//            }
+//        }
+//    }
 
     @Override
     public void onDestroy() {
@@ -280,6 +289,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Establece el cuentakilómetros
         setKm(0);
+
+        setStartButton();
+        setStopButton();
+        setWaypointButton();
 
     }
 
@@ -403,6 +416,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    public float calculateDistance (Location lastLocation, Location currentLocation){
+
+        return currentLocation.distanceTo(lastLocation);
+
+    }
+
 
     /**
      * Al dar a Stop asignamos los valores a ROute.
@@ -515,9 +534,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-
-
     @Override
     public void onLocationChanged(Location location) {
 
@@ -525,7 +541,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                currentLocation = location;
                if (currentLocation != null) {
-                   mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),15));
+                   mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),17));
                }
 
                //Obtiene las coordenadas de un punto a partir de una localización.
@@ -536,6 +552,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                    //Crea point (pasando Lat y Lng de parámetros).
                    currentWaypoint = new Waypoint(newPoint.latitude, newPoint.longitude);
+                   currentWaypoint.setAlt(currentLocation.getAltitude());
 
                    //...y la ruta se ha iniciado...
                    if(myRoute != null){
@@ -572,13 +589,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                    lastLocation = currentLocation;
                }
-
-    }
-
-
-    public float calculateDistance (Location lastLocation, Location currentLocation){
-
-        return currentLocation.distanceTo(lastLocation);
 
     }
 
@@ -762,75 +772,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * Dispara la petición de foto. Indicando el directorio público de imágetes, Crea un fichero imagen y un Uri apra pasar al intetn.
      */
     public void dispatchTakePictureIntent() {
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        mCurrentPhotoFile = getPictureName();
+        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File imageFile = new File(pictureDirectory,mCurrentPhotoFile);
+        Uri pictureUri = Uri.fromFile(imageFile);
+
+        mCurrentPhotoPath = imageFile.getPath();
+
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
+
+
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
-//            Nombre imagen y directorio
-//            String pictureName = getPictureName();
-//            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-//
-//            String path = pictureDirectory +"/"+ pictureName;
-//            Toast.makeText(MapsActivity.this, path, Toast.LENGTH_LONG).show();
-//
-//            //Fichero imagen
-//            File imageFile = new File(pictureDirectory,pictureName);
-//
-//            Uri pictureUri = Uri.fromFile(imageFile);
-//
-//            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
-//
-//
-//
-//            ANDROID
-//            // Create the File where the photo should go
-//            File photoFile = null;
-//            try {
-//                photoFile = createImageFile();
-//            } catch (IOException ex) {
-//                // Error occurred while creating the File
-//
-//            }
-//            // Continue only if the File was successfully created
-//            if (photoFile != null) {
-//                Uri photoURI = FileProvider.getUriForFile(this,
-//                        "com.example.android.fileprovider",
-//                        photoFile);
-//                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-
         }
     }
 
-
-//    private File createImageFile() throws IOException {
-//
-//        // Crear fichero imagen
-//        String pictureName = getPictureName();
-//        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//        File image = File.createTempFile(
-//                pictureName,    /* prefix */
-//                ".jpg",         /* suffix */
-//                storageDir      /* directory */
-//        );
-//
-//        // Save a file: path for use with ACTION_VIEW intents
-//        mCurrentPhotoPath = image.getAbsolutePath();
-//        return image;
-//    }
-
-//    public Uri getVideoUri(Context inContext, Bitmap inImage) {
-//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-//        MediaStore.Video.Media.
-//        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
-//        return Uri.parse(path);
-//    }
+    private String getPictureName(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String timestamp = sdf.format(new Date());
+        return "KM"+timestamp;
+    }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "KEEP_MOVIN", null);
         return Uri.parse(path);
     }
 
@@ -846,26 +818,90 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (requestCode) {
             case REQUEST_IMAGE_CAPTURE:
+                switch (resultCode){
+                    case RESULT_OK:
+                        if(data == null){
+                            //Al usar EXTRA_OUTPUT la imagen se guarda en el path que yo le haya pasado, el data vendrá vacío.
 
-                if (resultCode == this.RESULT_OK  && data != null) {
+                            //Nombre imagen thumbnail
+                            String mCurrentPhotoThumb = mCurrentPhotoFile+"_thumb";
+                            //Fichero imagen thumbnail.
+                            File imThumb = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), mCurrentPhotoThumb);
 
-                    Bitmap photo = (Bitmap) data.getExtras().get("data");
+                            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
 
-                    // Obtiene Uri de Bitmap
-                    Uri tempUri = getImageUri(getApplicationContext(), photo);
-                    // Obtiene el path del fichero
-                    File finalFile = new File(getRealPathFromURI(tempUri));
+                            BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
 
-                    mCurrentPhotoPath = finalFile.getPath();
+                            Bitmap thumbnail = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
 
-                    //Añade un marcador en el mapa, añadiendo un LatLng
-                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
-                    mMap.addMarker(new MarkerOptions().position(point));
-                    myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
+                            // Obtiene Uri de Bitmap
+                            Uri tempUri = getImageUri(getApplicationContext(), thumbnail);
 
-                } else {
-                    Toast.makeText(this, R.string.no_photo, Toast.LENGTH_LONG).show();
+                            //Añade un marcador en el mapa, añadiendo un LatLng
+                            LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+                            mMap.addMarker(new MarkerOptions().position(point));
+                            myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
+
+                        }else{
+
+                            //Guarda el thumbnail pero no la foto a todo trapo. Esto funciona siempre que no temgamos el .EXTRAOUTPUT en el intent.
+                            Bitmap photo = (Bitmap) data.getExtras().get("data");
+                            // Obtiene Uri de Bitmap
+                            Uri tempUri = getImageUri(getApplicationContext(), photo);
+                            // Obtiene el path del fichero
+                            File finalFile = new File(getRealPathFromURI(tempUri));
+
+                            mCurrentPhotoPath = finalFile.getPath();
+
+                            //Añade un marcador en el mapa, añadiendo un LatLng
+                            LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+                            mMap.addMarker(new MarkerOptions().position(point));
+                            myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
+                        }
+                    case RESULT_CANCELED:
+                        Toast.makeText(this, R.string.no_photo, Toast.LENGTH_LONG).show();
                 }
+
+//                if (resultCode == this.RESULT_OK  && data != null) {
+//
+//                    //Guarda el thumbnail pero no la foto a todo trapo. Esto funciona siempre que no temgamos el .EXTRAOUTPUT en el intent.
+//                    Bitmap photo = (Bitmap) data.getExtras().get("data");
+//                    // Obtiene Uri de Bitmap
+//                    Uri tempUri = getImageUri(getApplicationContext(), photo);
+//                    // Obtiene el path del fichero
+//                    File finalFile = new File(getRealPathFromURI(tempUri));
+//
+//                    mCurrentPhotoPath = finalFile.getPath();
+//
+//                    //Añade un marcador en el mapa, añadiendo un LatLng
+//                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+//                    mMap.addMarker(new MarkerOptions().position(point));
+//                    myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
+//
+//                } else {
+//
+//                    //Al usar EXTRA_OUTPUT la imagen se guarda en el path que yo le haya pasado, el data vendrá vacío.
+//
+//                    //Nombre imagen thumbnail
+//                    String mCurrentPhotoThumb = mCurrentPhotoFile+"_thumb";
+//                    //Fichero imagen thumbnail.
+//                    File imThumb = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), mCurrentPhotoThumb);
+//
+//                    BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//
+//                    BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
+//
+//                    Bitmap thumbnail = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
+//
+//                    // Obtiene Uri de Bitmap
+//                    Uri tempUri = getImageUri(getApplicationContext(), thumbnail);
+//
+//                    //Añade un marcador en el mapa, añadiendo un LatLng
+//                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+//                    mMap.addMarker(new MarkerOptions().position(point));
+//                    myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
+//
+//                }
 
                 break;
 
@@ -873,8 +909,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (resultCode == this.RESULT_OK && data != null) {
 
-
-                    mCurrentVideoPath = data.getData().getPath(); //data.toUri(0);//
+                    mCurrentVideoPath = data.getData().getPath();
 
                     //Añade un marcador en el mapa, añadiendo un LatLng
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
@@ -891,27 +926,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private String getPictureName(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-        String timestamp = sdf.format(new Date());
-        return "KM"+timestamp;
-    }
-    ///////////////////////////////////////////////////////////////////////////////////////
-//    private File createImageFile() throws IOException {
-//        // Create an image file name
-//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-//        String imageFileName = "JPEG_" + timeStamp + "_";
-//        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-//        File image = File.createTempFile(
-//                imageFileName,  /* prefix */
-//                ".jpg",         /* suffix */
-//                storageDir      /* directory */
-//        );
-//
-//        // Save a file: path for use with ACTION_VIEW intents
-//        mCurrentPhotoPath = image.getAbsolutePath();
-//        return image;
-//    }
 
 
     ///////////////////////////////////////////////////////

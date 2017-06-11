@@ -15,7 +15,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by marcostoral on 3/04/17.
  */
 
-public class Route extends RealmObject implements Parcelable {
+public class Route extends RealmObject {
 
     @PrimaryKey
     private long id;
@@ -31,19 +31,19 @@ public class Route extends RealmObject implements Parcelable {
         this.waypointList = new RealmList<Waypoint>();
     }
 
-    public Route(Parcel p){
-        readFromParcel(p);
-    }
-
-    public static final Parcelable.Creator<Waypoint> CREATOR = new Parcelable.Creator<Waypoint>() {
-        public Waypoint createFromParcel(Parcel in) {
-            return new Waypoint();
-        }
-
-        public Waypoint[] newArray(int size) {
-            return new Waypoint[size];
-        }
-    };
+//    public Route(Parcel p){
+//        readFromParcel(p);
+//    }
+//
+//    public static final Parcelable.Creator<Waypoint> CREATOR = new Parcelable.Creator<Waypoint>() {
+//        public Waypoint createFromParcel(Parcel in) {
+//            return new Waypoint();
+//        }
+//
+//        public Waypoint[] newArray(int size) {
+//            return new Waypoint[size];
+//        }
+//    };
 
     public long getId() {
         return id;
@@ -93,40 +93,40 @@ public class Route extends RealmObject implements Parcelable {
         this.waypointList = waypointList;
     }
 
-    public static Creator<Waypoint> getCREATOR() {
-        return CREATOR;
-    }
+//    public static Creator<Waypoint> getCREATOR() {
+//        return CREATOR;
+//    }
 
     public void addWaypoint (Waypoint waypoint){
         waypointList.add(waypoint);
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-        dest.writeLong(id);
-        dest.writeLong(date.getTime());
-        dest.writeInt(type);
-        dest.writeFloat(distance);
-        dest.writeString(time);
-        dest.writeTypedList(waypointList);
-
-    }
-
-    public void readFromParcel (Parcel in){
-
-        id = in.readLong();
-        date =  new Date(in.readLong());
-        type = in.readInt();
-        distance = in.readLong();
-        time = in.readString();
-        in.readTypedList(waypointList, CREATOR);
-
-    }
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//
+//        dest.writeLong(id);
+//        dest.writeLong(date.getTime());
+//        dest.writeInt(type);
+//        dest.writeFloat(distance);
+//        dest.writeString(time);
+//        dest.writeTypedList(waypointList);
+//
+//    }
+//
+//    public void readFromParcel (Parcel in){
+//
+//        id = in.readLong();
+//        date =  new Date(in.readLong());
+//        type = in.readInt();
+//        distance = in.readLong();
+//        time = in.readString();
+//        in.readTypedList(waypointList, CREATOR);
+//
+//    }
 
 }
