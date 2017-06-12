@@ -112,6 +112,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static final int REQUEST_VIDEO_CAPTURE = 1;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     private String mCurrentPhotoFile;
+    private String mCurrentVideoFile;
     private String mCurrentPhotoPath;
     private String mCurrentVideoPath;
 
@@ -763,6 +764,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void dispatchTakeVideoIntent() {
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+
+        mCurrentVideoFile = getPictureName()+".mp4";
+        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+//        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File videoFile = new File(pictureDirectory,mCurrentVideoFile);
+        Uri videoUri = Uri.fromFile(videoFile);
+
+        mCurrentPhotoPath = videoFile.getPath();
+
+        takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+
+
         if (takeVideoIntent.resolveActivity(this.getPackageManager())!= null) {
             startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
         }
@@ -775,8 +788,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        mCurrentPhotoFile = getPictureName();
-        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        mCurrentPhotoFile = getPictureName()+".jpg";
+        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+//        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         File imageFile = new File(pictureDirectory,mCurrentPhotoFile);
         Uri pictureUri = Uri.fromFile(imageFile);
 
@@ -915,6 +929,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                     mMap.addMarker(new MarkerOptions().position(point));
                     myRoute.getWaypointList().last().setPath(mCurrentVideoPath);
+                    myRoute.getWaypointList().last().setVideo(true);
 
                 } else {
                     Toast.makeText(this, R.string.no_video, Toast.LENGTH_LONG).show();

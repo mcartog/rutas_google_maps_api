@@ -20,16 +20,20 @@ public class Waypoint extends RealmObject {
     private double lng;
     private double alt;
     private String path;
+    private String filePath;
+    private boolean isVideo;
 
 
     public Waypoint() {
         this.id = KeepMovinApp.WaypointID.incrementAndGet();
+        this.isVideo = false;
     }
 
     public Waypoint(double ltd, double lng) {
         this.id = KeepMovinApp.WaypointID.incrementAndGet();
         this.ltd = ltd;
         this.lng = lng;
+        this.isVideo = false;
     }
 
 //    protected Waypoint(Parcel in) {
@@ -114,4 +118,19 @@ public class Waypoint extends RealmObject {
         this.path = path;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public boolean isVideo() {
+        return isVideo;
+    }
+
+    public void setVideo(boolean video) {
+        isVideo = video;
+    }
 }

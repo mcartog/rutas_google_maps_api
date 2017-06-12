@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.PhotoAdapter;
@@ -33,6 +35,8 @@ public class GelleryActivity extends AppCompatActivity {
     private ArrayList<Waypoint> waypointArrayList;
     private PhotoAdapter adapter;
 
+    private ImageView showPhoto;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,8 @@ public class GelleryActivity extends AppCompatActivity {
 
         gvPhotosFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gvPicturesFragment);
         gvPhotos = gvPhotosFragment.getView();
+
+        showPhoto = (ImageView) findViewById(R.id.iv_show_photo);
 
         //Consulta todas las rutas almacenadas en la db.
         final RealmResults<Route> routes = realm.where(Route.class).findAll();
@@ -64,12 +70,29 @@ public class GelleryActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //A la galería de imágenes
-                Intent intent = new Intent(Intent.ACTION_VIEW,  Uri.parse("content://media/internal/images/media"));
-                startActivity(intent);
+                if(waypointArrayList.get(position).isVideo() == true){
+
+                    String path =   waypointArrayList.get(position).getPath();
+                    Intent intentVideo = new Intent(Intent.ACTION_VIEW, Uri.parse(path) );
+                    intentVideo.setDataAndType(Uri.parse(path), "video/mp4");
+                    startActivity(intentVideo);
+                } else {
+
+                    String path =   waypointArrayList.get(position).getPath();
+                    showPhoto.setImageURI(Uri.parse(path));
+                    showPhoto.setVisibility(View.VISIBLE);
+
+                }
             }
         });
 
+        showPhoto.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                showPhoto.setVisibility(View.INVISIBLE);
+                return false;
+            }
+        });
 
     }
 
