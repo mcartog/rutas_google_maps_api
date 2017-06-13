@@ -9,6 +9,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <uses-feature
         android:name="android.hardware.location.gps"
@@ -35,7 +36,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.HistoryActivity" />
-        <activity android:name=".activities.GelleryActivity" />
+        <activity android:name=".activities.MainGelleryActivity" />
         <!--
         The API key for Google Maps-based APIs is defined as a string resource.
         (See the file "res/values/google_maps_api.xml").
@@ -61,6 +62,17 @@
         </activity>
         <activity android:name=".activities.RouteDetailsActivity" />
         <activity android:name=".activities.RouteGalleryActivity"></activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.marcostoral.keepmoving.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
+
     </application>
 
 </manifest>

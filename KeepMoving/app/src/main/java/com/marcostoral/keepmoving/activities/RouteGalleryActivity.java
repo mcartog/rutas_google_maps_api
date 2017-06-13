@@ -78,16 +78,12 @@ public class RouteGalleryActivity extends AppCompatActivity {
 
                 if(waypointArrayList.get(position).isVideo() == true){
 
-                    String path =   waypointArrayList.get(position).getPath();
-                    Intent intentVideo = new Intent(Intent.ACTION_VIEW, Uri.parse(path) );
-                    intentVideo.setDataAndType(Uri.parse(path), "video/mp4");
-                    startActivity(intentVideo);
+                    showVideo(position);
+
 
                 } else {
 
-                    String path =   waypointArrayList.get(position).getPath();
-                    showPhoto.setImageURI(Uri.parse(path));
-                    showPhoto.setVisibility(View.VISIBLE);
+                    showImage(position);
 
                 }
             }
@@ -100,6 +96,25 @@ public class RouteGalleryActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+    }
+
+
+
+    private void showImage(int position) {
+
+        String path =   waypointArrayList.get(position).getPath();
+        showPhoto.setImageURI(Uri.parse(path));
+        showPhoto.setVisibility(View.VISIBLE);
+
+    }
+
+    private void showVideo(int position) {
+
+        String path =   waypointArrayList.get(position).getPath();
+        Intent intentVideo = new Intent(Intent.ACTION_VIEW, Uri.parse(path) );
+        intentVideo.setDataAndType(Uri.parse(path), "video/mp4");
+        startActivity(intentVideo);
 
     }
 

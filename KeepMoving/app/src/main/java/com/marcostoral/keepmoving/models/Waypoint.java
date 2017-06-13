@@ -19,6 +19,7 @@ public class Waypoint extends RealmObject {
     private double ltd;
     private double lng;
     private double alt;
+    private double time;
     private String path;
     private String filePath;
     private boolean isVideo;
@@ -108,6 +109,14 @@ public class Waypoint extends RealmObject {
 
     public void setAlt(double alt) {
         this.alt = alt;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
     }
 
     public String getPath() {
