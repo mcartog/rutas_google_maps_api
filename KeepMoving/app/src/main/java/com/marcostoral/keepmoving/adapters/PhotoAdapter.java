@@ -1,10 +1,7 @@
 package com.marcostoral.keepmoving.adapters;
 
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +11,8 @@ import android.widget.TextView;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.models.Waypoint;
+import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -54,7 +50,6 @@ public class PhotoAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(layout, null);
 
@@ -70,15 +65,17 @@ public class PhotoAdapter extends BaseAdapter {
             waypointPhotoHolder = (WaypointPhotoHolder) convertView.getTag();
         }
 
-            waypointPhotoHolder.latitude.setText("Ltd: "+ String.valueOf(waypointList.get(position).getLtd()));
-            waypointPhotoHolder.longitude.setText("Lng: " + String.valueOf(waypointList.get(position).getLng()));
+        waypointPhotoHolder.latitude.setText("Ltd: " + String.valueOf(waypointList.get(position).getLtd()));
+        waypointPhotoHolder.longitude.setText("Lng: " + String.valueOf(waypointList.get(position).getLng()));
 
-//            Bitmap myPhoto = BitmapFactory.decodeFile(waypointList.get(position).getPath());
-//            waypointPhotoHolder.photo.setImageBitmap(myPhoto);
-
-//        ImageLoader loadBitmap = new ImageLoader();
-//        loadBitmap.execute(waypointPhotoHolder.photo , waypointList.get(position).getPath());
+//        Bitmap myPhoto = BitmapFactory.decodeFile(waypointList.get(position).getPath());
 //        waypointPhotoHolder.photo.setImageBitmap(myPhoto);
+
+          String path = waypointList.get(position).getPath();
+          Uri uri = Uri.parse("file://"+path);
+          Picasso.with(context).load(uri).into(waypointPhotoHolder.photo);
+
+
 
         return convertView;
     }
@@ -89,33 +86,4 @@ public class PhotoAdapter extends BaseAdapter {
         public TextView latitude;
         public TextView longitude;
     }
-
-
-//    public class ImageLoader extends AsyncTask<Object, String, Bitmap> {
-//
-//        private View view;
-//        private Bitmap myPhoto = null;
-//
-//        @Override
-//        protected Bitmap doInBackground(Object... parameters) {
-//
-//            // Get the passed arguments here
-//            view = (View) parameters[0];
-//            String uri = (String)parameters[1];
-//
-//            myPhoto = BitmapFactory.decodeFile(uri);
-//
-//            return myPhoto;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap bitmap) {
-//            if (bitmap != null && view != null) {
-//
-//                ImageView img = (ImageView) view.getTag(R.id.iv_gv_photo);
-//                img.setImageBitmap(bitmap);
-//            }
-//        }
-//    }
-
 }

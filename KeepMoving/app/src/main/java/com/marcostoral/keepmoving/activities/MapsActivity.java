@@ -777,7 +777,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
             mCurrentVideoFile = getPictureName()+".mp4";
-            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES); //+"/"+R.string.app_name
+            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
             if (!videoDirectory.exists()) {
                 videoDirectory.mkdirs();
             }
@@ -800,7 +800,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
             mCurrentVideoFile = getPictureName()+".mp4";
-            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES); //+"/"+R.string.app_name
+            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
             if (!videoDirectory.exists()) {
                 videoDirectory.mkdirs();
             }
@@ -829,7 +829,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
             mCurrentPhotoFile = getPictureName()+".jpg";
-            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); //+"/"+R.string.app_name
+            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             if (!pictureDirectory.exists()) {
                 pictureDirectory.mkdirs();
             }
@@ -852,7 +852,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             mCurrentPhotoFile = getPictureName()+".jpg";
 
-            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES); //+"/"+R.string.app_name
+            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             if (!pictureDirectory.exists()) {
                 pictureDirectory.mkdirs();
             }
