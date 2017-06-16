@@ -1,4 +1,4 @@
-package com.marcostoral.keepmoving;
+package com.marcostoral.keepmoving.app;
 
 import android.support.multidex.MultiDexApplication;
 

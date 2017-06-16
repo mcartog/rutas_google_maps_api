@@ -1,9 +1,6 @@
 package com.marcostoral.keepmoving.models;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.marcostoral.keepmoving.KeepMovinApp;
+import com.marcostoral.keepmoving.app.KeepMovinApp;
 
 import java.util.Date;
 
@@ -15,7 +12,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by marcostoral on 3/04/17.
  */
 
-public class Route extends RealmObject {
+public class Route extends RealmObject{
 
     @PrimaryKey
     private long id;
@@ -30,20 +27,6 @@ public class Route extends RealmObject {
         this.date = new Date();
         this.waypointList = new RealmList<Waypoint>();
     }
-
-//    public Route(Parcel p){
-//        readFromParcel(p);
-//    }
-//
-//    public static final Parcelable.Creator<Waypoint> CREATOR = new Parcelable.Creator<Waypoint>() {
-//        public Waypoint createFromParcel(Parcel in) {
-//            return new Waypoint();
-//        }
-//
-//        public Waypoint[] newArray(int size) {
-//            return new Waypoint[size];
-//        }
-//    };
 
     public long getId() {
         return id;
@@ -93,14 +76,28 @@ public class Route extends RealmObject {
         this.waypointList = waypointList;
     }
 
-//    public static Creator<Waypoint> getCREATOR() {
-//        return CREATOR;
-//    }
-
     public void addWaypoint (Waypoint waypoint){
         waypointList.add(waypoint);
     }
 
+//    public Route(Parcel p){
+//        readFromParcel(p);
+//    }
+//
+//    public static final Parcelable.Creator<Waypoint> CREATOR = new Parcelable.Creator<Waypoint>() {
+//        public Waypoint createFromParcel(Parcel in) {
+//            return new Waypoint();
+//        }
+//
+//        public Waypoint[] newArray(int size) {
+//            return new Waypoint[size];
+//        }
+//    };
+//
+//    public static Creator<Waypoint> getCREATOR() {
+//        return CREATOR;
+//    }
+//
 //    @Override
 //    public int describeContents() {
 //        return 0;

@@ -127,7 +127,6 @@ public class GalleryActivity extends AppCompatActivity {
     private void showImage(int position) {
 
         String path = waypointArrayList.get(position).getPath();
-
         showPhoto.setImageURI(Uri.parse(path));
         showPhoto.setVisibility(View.VISIBLE);
 
@@ -137,7 +136,6 @@ public class GalleryActivity extends AppCompatActivity {
 
         String path = waypointArrayList.get(position).getPath();
         Intent intentVideo = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
-        intentVideo.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intentVideo.setDataAndType(Uri.parse(path), "video/mp4");
         startActivity(intentVideo);
 

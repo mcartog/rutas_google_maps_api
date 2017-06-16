@@ -55,9 +55,10 @@ public class PhotoAdapter extends BaseAdapter {
 
             waypointPhotoHolder = new WaypointPhotoHolder();
 
+            waypointPhotoHolder.photo = (ImageView) convertView.findViewById(R.id.iv_gv_photo);
             waypointPhotoHolder.latitude = (TextView) convertView.findViewById(R.id.tv_gv_ltd);
             waypointPhotoHolder.longitude = (TextView) convertView.findViewById(R.id.tv_gv_lng);
-            waypointPhotoHolder.photo = (ImageView) convertView.findViewById(R.id.iv_gv_photo);
+            waypointPhotoHolder.altitude = (TextView) convertView.findViewById(R.id.tv_gv_alt);
 
             convertView.setTag(waypointPhotoHolder);
 
@@ -65,17 +66,20 @@ public class PhotoAdapter extends BaseAdapter {
             waypointPhotoHolder = (WaypointPhotoHolder) convertView.getTag();
         }
 
-        waypointPhotoHolder.latitude.setText("Ltd: " + String.valueOf(waypointList.get(position).getLtd()));
-        waypointPhotoHolder.longitude.setText("Lng: " + String.valueOf(waypointList.get(position).getLng()));
+        waypointPhotoHolder.latitude.setText("X: " + String.valueOf(waypointList.get(position).getLtd()));
+        waypointPhotoHolder.longitude.setText("Y: " + String.valueOf(waypointList.get(position).getLng()));
+        waypointPhotoHolder.altitude.setText("Z: " + String.valueOf(waypointList.get(position).getAlt()));
 
 //        Bitmap myPhoto = BitmapFactory.decodeFile(waypointList.get(position).getPath());
 //        waypointPhotoHolder.photo.setImageBitmap(myPhoto);
 
-          String path = waypointList.get(position).getPath();
-          Uri uri = Uri.parse("file://"+path);
-          Picasso.with(context).load(uri).into(waypointPhotoHolder.photo);
-
-
+        String path = waypointList.get(position).getPath();
+        Uri uri = Uri.parse("file://"+path);
+        Picasso.with(context)
+                .load(uri)
+                .resize(60, 60)
+                .centerCrop()
+                .into(waypointPhotoHolder.photo);
 
         return convertView;
     }
@@ -85,5 +89,6 @@ public class PhotoAdapter extends BaseAdapter {
         public ImageView photo;
         public TextView latitude;
         public TextView longitude;
+        public TextView altitude;
     }
 }
