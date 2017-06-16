@@ -1,6 +1,6 @@
 package com.marcostoral.keepmoving.models;
 
-import com.marcostoral.keepmoving.app.KeepMovinApp;
+import com.marcostoral.keepmoving.KeepMovinApp;
 
 import java.util.Date;
 
