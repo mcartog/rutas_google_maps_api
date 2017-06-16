@@ -873,7 +873,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             //Añade un marcador en el mapa, añadiendo un LatLng
                             LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                             mMap.addMarker(new MarkerOptions().position(point));
-                            myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
+                            myRoute.getWaypointList().last().setPath("file://"+mCurrentPhotoPath);
 
                         }else{
 
@@ -904,7 +904,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Añade un marcador en el mapa, añadiendo un LatLng
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                     mMap.addMarker(new MarkerOptions().position(point));
-                    myRoute.getWaypointList().last().setPath(mCurrentVideoPath);
+                    myRoute.getWaypointList().last().setPath("file://"+mCurrentVideoPath);
                     myRoute.getWaypointList().last().setVideo(true);
 
                 } else {

@@ -99,11 +99,9 @@ public class RouteGalleryActivity extends AppCompatActivity {
 
     }
 
-
-
     private void showImage(int position) {
 
-        String path =   waypointArrayList.get(position).getPath();
+        String path =  waypointArrayList.get(position).getPath();
         showPhoto.setImageURI(Uri.parse(path));
         showPhoto.setVisibility(View.VISIBLE);
 

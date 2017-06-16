@@ -74,7 +74,7 @@ public class PhotoAdapter extends BaseAdapter {
 //        waypointPhotoHolder.photo.setImageBitmap(myPhoto);
 
         String path = waypointList.get(position).getPath();
-        Uri uri = Uri.parse("file://"+path);
+        Uri uri = Uri.parse(path);
         Picasso.with(context)
                 .load(uri)
                 .resize(60, 60)
