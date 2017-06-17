@@ -3,8 +3,9 @@ package com.marcostoral.keepmoving.activities;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,6 +40,12 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
     //Model id
     private long id;
 
+    //Chart
+    private LineChart lineChart;
+    private ArrayList<Entry> entries;
+    private float t;
+    private float z;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +60,9 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
             detailsFragment.renderRoute(route);
 
         }
+
+        entries = new ArrayList<Entry>();
+
 
         //Map fragment
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapRouteDetails);

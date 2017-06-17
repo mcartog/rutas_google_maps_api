@@ -61,7 +61,7 @@
                 android:value="@integer/google_play_services_version" />
         </activity>
         <activity android:name=".activities.RouteDetailsActivity" />
-        <activity android:name=".activities.RouteGalleryActivity"></activity>
+        <activity android:name=".activities.RouteGalleryActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -70,7 +70,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
 
     </application>

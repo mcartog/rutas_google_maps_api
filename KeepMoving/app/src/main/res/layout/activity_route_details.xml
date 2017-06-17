@@ -23,5 +23,4 @@
         android:layout_marginTop="90dp"
         tools:context="com.marcostoral.keepmoving.activities.RouteDetailsActivity" />
 
-
 </RelativeLayout>

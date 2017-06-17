@@ -40,7 +40,6 @@ public class GalleryActivity extends AppCompatActivity {
     private ArrayList<Waypoint> waypointArrayList;
     private PhotoAdapter adapter;
 
-    private ImageView showPhoto;
 
 //    private final int PERMISSION_READ_EXTERNAL_MEMORY = 1;
 
@@ -54,7 +53,6 @@ public class GalleryActivity extends AppCompatActivity {
 
         gvPhotosFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gvPicturesFragment);
         gvPhotos = gvPhotosFragment.getView();
-        showPhoto = (ImageView) findViewById(R.id.iv_show_photo);
 
 //        checkForPermission();
 
@@ -77,14 +75,6 @@ public class GalleryActivity extends AppCompatActivity {
                     showImage(position);
 
                 }
-            }
-        });
-
-        showPhoto.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                showPhoto.setVisibility(View.INVISIBLE);
-                return false;
             }
         });
 
@@ -126,9 +116,15 @@ public class GalleryActivity extends AppCompatActivity {
 
     private void showImage(int position) {
 
+
         String path = waypointArrayList.get(position).getPath();
-        showPhoto.setImageURI(Uri.parse(path));
-        showPhoto.setVisibility(View.VISIBLE);
+        Intent intentPhoto = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
+        intentPhoto.setDataAndType(Uri.parse(path), "image/*");
+        startActivity(intentPhoto);
+
+//        String path = waypointArrayList.get(position).getPath();
+//        showPhoto.setImageURI(Uri.parse(path));
+//        showPhoto.setVisibility(View.VISIBLE);
 
     }
 

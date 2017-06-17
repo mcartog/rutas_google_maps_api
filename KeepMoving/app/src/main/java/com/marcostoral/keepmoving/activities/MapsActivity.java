@@ -760,7 +760,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
             mCurrentVideoFile = getPictureName()+".mp4";
-            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES+"/KeepMovin");
             if (!videoDirectory.exists()) {
                 videoDirectory.mkdirs();
             }
@@ -783,7 +783,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
             mCurrentVideoFile = getPictureName()+".mp4";
-            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES+"/KeepMovin");
             if (!videoDirectory.exists()) {
                 videoDirectory.mkdirs();
             }
@@ -812,7 +812,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
             mCurrentPhotoFile = getPictureName()+".jpg";
-            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/KeepMovin");
             if (!pictureDirectory.exists()) {
                 pictureDirectory.mkdirs();
             }
@@ -835,7 +835,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             mCurrentPhotoFile = getPictureName()+".jpg";
 
-            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/KeepMovin");
             if (!pictureDirectory.exists()) {
                 pictureDirectory.mkdirs();
             }
@@ -875,21 +875,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             mMap.addMarker(new MarkerOptions().position(point));
                             myRoute.getWaypointList().last().setPath("file://"+mCurrentPhotoPath);
 
-                        }else{
+                            //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
+                            galleryAddMedia(new File("file://"+mCurrentPhotoPath));
 
-//                            //Guarda el thumbnail pero no la foto.
-//                            Bitmap photo = (Bitmap) data.getExtras().get("data");
-//                            // Obtiene Uri de Bitmap
-//                            Uri tempUri = getImageUri(getApplicationContext(), photo);
-//                            // Obtiene el path del fichero
-//                            File finalFile = new File(getRealPathFromURI(tempUri));
-//
-//                            mCurrentPhotoPath = finalFile.getPath();
-//
-//                            //Añade un marcador en el mapa, añadiendo un LatLng
-//                            LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
-//                            mMap.addMarker(new MarkerOptions().position(point));
-//                            myRoute.getWaypointList().last().setPath(mCurrentPhotoPath);
                         }
                 }
 
@@ -904,8 +892,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Añade un marcador en el mapa, añadiendo un LatLng
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                     mMap.addMarker(new MarkerOptions().position(point));
-                    myRoute.getWaypointList().last().setPath("file://"+mCurrentVideoPath);
+                    myRoute.getWaypointList().last().setPath(mCurrentVideoPath); //"file://"+
                     myRoute.getWaypointList().last().setVideo(true);
+
+                    //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
+                    galleryAddMedia(new File("file://"+mCurrentVideoPath));
 
                 } else {
                     Toast.makeText(this, R.string.no_video, Toast.LENGTH_LONG).show();
@@ -916,6 +907,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
+    private void galleryAddMedia(File file) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        file = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
+    }
+
 
 
     ///////////////////////////////////////////////////////

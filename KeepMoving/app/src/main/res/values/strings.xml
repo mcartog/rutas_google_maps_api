@@ -31,6 +31,8 @@
     <string name="no_video">No se ha realizado ningún vídeo</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_line_chart">LineChartActivity</string>
+    <string name="title_activity_chart">ChartActivity</string>
 
 
 </resources>

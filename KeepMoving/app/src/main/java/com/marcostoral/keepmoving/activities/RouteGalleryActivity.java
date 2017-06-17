@@ -43,8 +43,6 @@ public class RouteGalleryActivity extends AppCompatActivity {
     private ArrayList<Waypoint> waypointArrayList;
     private PhotoAdapter adapter;
 
-    private ImageView showPhoto;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +50,6 @@ public class RouteGalleryActivity extends AppCompatActivity {
 
         gvPhotosFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gvPicturesFragment);
         gvPhotos = gvPhotosFragment.getView();
-
-        showPhoto = (ImageView) findViewById(R.id.iv_show_photo_det);
 
         id = getIntent().getExtras().getLong("id");
 
@@ -89,21 +85,20 @@ public class RouteGalleryActivity extends AppCompatActivity {
             }
         });
 
-        showPhoto.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                showPhoto.setVisibility(View.INVISIBLE);
-                return false;
-            }
-        });
+
 
     }
 
     private void showImage(int position) {
 
-        String path =  waypointArrayList.get(position).getPath();
-        showPhoto.setImageURI(Uri.parse(path));
-        showPhoto.setVisibility(View.VISIBLE);
+        String path = waypointArrayList.get(position).getPath();
+        Intent intentPhoto = new Intent(Intent.ACTION_VIEW, Uri.parse(path));
+        intentPhoto.setDataAndType(Uri.parse(path), "image/*");
+        startActivity(intentPhoto);
+
+//        String path =  waypointArrayList.get(position).getPath();
+//        showPhoto.setImageURI(Uri.parse(path));
+//        showPhoto.setVisibility(View.VISIBLE);
 
     }
 
