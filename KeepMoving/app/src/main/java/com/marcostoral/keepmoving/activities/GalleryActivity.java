@@ -1,19 +1,12 @@
 package com.marcostoral.keepmoving.activities;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.PhotoAdapter;
@@ -41,9 +34,6 @@ public class GalleryActivity extends AppCompatActivity {
     private PhotoAdapter adapter;
 
 
-//    private final int PERMISSION_READ_EXTERNAL_MEMORY = 1;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +43,6 @@ public class GalleryActivity extends AppCompatActivity {
 
         gvPhotosFragment = (GridPhotoViewFragment) getSupportFragmentManager().findFragmentById(R.id.gvPicturesFragment);
         gvPhotos = gvPhotosFragment.getView();
-
-//        checkForPermission();
 
         waypointArrayList = getWaypoint();
 
@@ -114,6 +102,10 @@ public class GalleryActivity extends AppCompatActivity {
 //        return (permissionCheck == PackageManager.PERMISSION_GRANTED);
 //    }
 
+    /**
+     * Recupera el path de una imagen y lanza una actividad parar reproducirla.
+     * @param position
+     */
     private void showImage(int position) {
 
 
@@ -128,6 +120,10 @@ public class GalleryActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Recupera el path de un video y lanza una actividad para reproducirlo.
+     * @param position posición de la lista de Wayppoint
+     */
     private void showVideo(int position) {
 
         String path = waypointArrayList.get(position).getPath();
@@ -137,6 +133,10 @@ public class GalleryActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Genera una lista de Waypoints con imágenes o videos asociados.
+     * @return
+     */
     private ArrayList<Waypoint> getWaypoint() {
         //Consulta todas las rutas almacenadas en la db.
         final RealmResults<Route> routes = realm.where(Route.class).findAll();
@@ -144,7 +144,6 @@ public class GalleryActivity extends AppCompatActivity {
         //Crea una lista de waypoint con los que tienen info en el atributo path
         ArrayList<Waypoint> waypointList = new ArrayList<Waypoint>();
 
-//        if (hasPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
             for (int i = 0; i < routes.size(); i++) {
                 for (int j = 0; j < routes.get(i).getWaypointList().size(); j++) {
                     if (routes.get(i).getWaypointList().get(j).getPath() != null) {
@@ -152,7 +151,6 @@ public class GalleryActivity extends AppCompatActivity {
                     }
                 }
             }
-//        }
         return waypointList;
     }
 }

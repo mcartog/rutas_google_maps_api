@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -75,6 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private SupportMapFragment mapFragment;
 
     //Location
+
+    private LocationCallback mLocationCallback;
     public Location currentLocation;
     public Location lastLocation;
     private LocationRequest mLocationRequest;
@@ -117,80 +121,72 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
         init();
 
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//
-//    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        long milliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
-//        int startState = btnStart.getVisibility();
-//        int stopState = btnStop.getVisibility();
-//        boolean stopEnabled = btnStop.isEnabled();
-//
-//        outState.putParcelable("myRoute", myRoute);
-//        outState.putLong("milliseconds", milliseconds);
-//        outState.putLong("distance",(long) this.totalDistance);
-//        outState.putInt("start", startState);
-//        outState.putInt("stop", stopState);
-//        outState.putBoolean("stopEnable", stopEnabled);
-//
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        if (savedInstanceState != null) {
-//
-//            if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == true) {
-//
-//                //Caso: actividad en curso. Start == Invisible  &&  Stop == Enable(true)
-//
-//                myRoute = savedInstanceState.getParcelable("myRoute");
-//                milliseconds = savedInstanceState.getLong("milliseconds");
-//                startChronometer();
-//                totalDistance = (float) savedInstanceState.getLong("distance");
-//                setKm(totalDistance);
-//                btnStart.setVisibility(View.INVISIBLE);
-//                btnStop.setVisibility(View.VISIBLE);
-//                btnStop.setEnabled(true);
-//                btnWaypoint.setEnabled(true);
-//                isTracking = true;
-//
-//            } else if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == false) {
-//
-//                //Caso: actividad en finalizada. Start == Invisible  &&  Stop == Enable(false)
-//
-//                btnStart.setVisibility(View.INVISIBLE);
-//                btnStop.setVisibility(View.VISIBLE);
-//                milliseconds = savedInstanceState.getLong("milliseconds");
-//                startChronometer();
-//                totalDistance = (float) savedInstanceState.getLong("distance");
-//                setKm(totalDistance);
-//                btnStop.setEnabled(false);
-//                btnWaypoint.setEnabled(false);
-//                isTracking = false;
-//
-//            } else {
-//
-//                //Caso: actividad en pendiente de empezar Start == Visible
-//
-//                btnWaypoint.setEnabled(false);
-//
-//            }
-//        }
-//    }
+        long milliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
+        int startState = btnStart.getVisibility();
+        int stopState = btnStop.getVisibility();
+        boolean stopEnabled = btnStop.isEnabled();
+
+        outState.putParcelable("myRoute", myRoute);
+        outState.putLong("milliseconds", milliseconds);
+        outState.putLong("distance",(long) this.totalDistance);
+        outState.putInt("start", startState);
+        outState.putInt("stop", stopState);
+        outState.putBoolean("stopEnable", stopEnabled);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState != null) {
+
+            if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == true) {
+
+                //Caso: actividad en curso. Start == Invisible  &&  Stop == Enable(true)
+
+                myRoute = savedInstanceState.getParcelable("myRoute");
+                milliseconds = savedInstanceState.getLong("milliseconds");
+                startChronometer();
+                totalDistance = (float) savedInstanceState.getLong("distance");
+                setKm(totalDistance);
+                btnStart.setVisibility(View.INVISIBLE);
+                btnStop.setVisibility(View.VISIBLE);
+                btnStop.setEnabled(true);
+                btnWaypoint.setEnabled(true);
+                isTracking = true;
+
+            } else if (savedInstanceState.getInt("start") == View.INVISIBLE && savedInstanceState.getBoolean("stopEnable") == false) {
+
+                //Caso: actividad en finalizada. Start == Invisible  &&  Stop == Enable(false)
+
+                btnStart.setVisibility(View.INVISIBLE);
+                btnStop.setVisibility(View.VISIBLE);
+                milliseconds = savedInstanceState.getLong("milliseconds");
+                startChronometer();
+                totalDistance = (float) savedInstanceState.getLong("distance");
+                setKm(totalDistance);
+                btnStop.setEnabled(false);
+                btnWaypoint.setEnabled(false);
+                isTracking = false;
+
+            } else {
+
+                //Caso: actividad en pendiente de empezar Start == Visible
+
+                btnWaypoint.setEnabled(false);
+
+            }
+        }
+    }
 
     @Override
     public void onDestroy() {
@@ -215,7 +211,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-//454+6
+
     ///////////////////////////////////////////////////////
     /////////////////////  UI   ///////////////////////////
     ///////////////////////////////////////////////////////
@@ -239,6 +235,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Captura los fragments de entorno y mapa
         mapsEnvironmentFragment = (MapsEnvironmentFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_maps_environment);
         mapsEnvironment = mapsEnvironmentFragment.getView();
+        mapsEnvironment.invalidate();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -327,7 +324,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 isTracking = false;
 
                 //Desconecta ApiGoogleClient
-                stopLocation();
+//                stopLocation();
 
                 //Anula botones
                 btnWaypoint.setEnabled(false);
@@ -416,6 +413,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myRoute.setDistance(totalDistance/1000);
         myRoute.setTime(chronometer.getText().toString());
 
+        double maxLtd = myRoute.getWaypointList().get(0).getLtd();
+        double minLtd = myRoute.getWaypointList().get(0).getLtd();
+        double maxLng = myRoute.getWaypointList().get(0).getLng();
+        double minLng = myRoute.getWaypointList().get(0).getLng();
+        double maxAlt = myRoute.getWaypointList().get(0).getAlt();
+        double minAlt = myRoute.getWaypointList().get(0).getAlt();
+
+        for(int i=0; i < myRoute.getWaypointList().size(); i++){
+
+            if(myRoute.getWaypointList().get(i).getLtd() > maxLtd){
+                maxLtd = myRoute.getWaypointList().get(i).getLtd();
+            }
+
+            if(myRoute.getWaypointList().get(i).getLng() > maxLng){
+                maxLng = myRoute.getWaypointList().get(i).getLng();
+            }
+            if(myRoute.getWaypointList().get(i).getAlt() > maxAlt){
+                maxAlt = myRoute.getWaypointList().get(i).getAlt();
+            }
+
+            if(myRoute.getWaypointList().get(i).getLtd() < minLtd){
+                minLtd = myRoute.getWaypointList().get(i).getLtd();
+            }
+
+            if(myRoute.getWaypointList().get(i).getLng() < minLng){
+                minLng = myRoute.getWaypointList().get(i).getLng();
+            }
+            if(myRoute.getWaypointList().get(i).getAlt() < minAlt){
+                minAlt = myRoute.getWaypointList().get(i).getAlt();
+            }
+
+        }
+
+        myRoute.setMaxLtd(maxLtd);
+        myRoute.setMaxLng(maxLng);
+        myRoute.setMaxAlt(maxAlt);
+        myRoute.setMinLtd(minLtd);
+        myRoute.setMinLng(minLng);
+        myRoute.setMinAlt(minAlt);
+
     }
 
     ///////////////////////////////////////////////////////
@@ -496,27 +533,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onConnectionSuspended(int i) {}
+    public void onConnectionSuspended(int i) {
+
+
+    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {}
-
-
-     /**
-     * Pasada una localización devuelve su posición en latitud y longitud.
-     * @param currentLocation
-     * @return LatLng Valores latitud y longitud de un punto.
-     */
-    public LatLng getWaypointCoords(Location currentLocation) {
-
-        if (currentLocation != null) {
-            LatLng singlePoint = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-            return singlePoint;
-        } else {
-            return null;
-        }
-    }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -574,6 +597,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    /**
+     * Pasada una localización devuelve su posición en latitud y longitud.
+     * @param currentLocation
+     * @return LatLng Valores latitud y longitud de un punto.
+     */
+    public LatLng getWaypointCoords(Location currentLocation) {
+
+        if (currentLocation != null) {
+            LatLng singlePoint = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            return singlePoint;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Crea un punto a partir de Lcoation, asigna tiempo y altura.
+     * @param currentLocation
+     * @param newPoint
+     * @return
+     */
     public Waypoint createAndAddPoint(Location currentLocation, LatLng newPoint){
         //Crea point (pasando Lat y Lng de parámetros).
         currentWaypoint = new Waypoint(newPoint.latitude, newPoint.longitude);
@@ -598,11 +642,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try {
             int gpsSignal = Settings.Secure.getInt(this.getContentResolver(), Settings.Secure.LOCATION_MODE);
 
-            if (gpsSignal == 0) {
-                return false;
-            } else {
-                return true;
-            }
+            return gpsSignal != 0;
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
             return false;
@@ -769,10 +809,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Uri videoUri = FileProvider.getUriForFile(MapsActivity.this, "com.marcostoral.keepmoving.fileProvider", videoFile);
 
-            mCurrentPhotoPath = videoFile.getPath();
+            mCurrentVideoPath = videoFile.getPath();
 
             takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
-            takeVideoIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//            takeVideoIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
             if (takeVideoIntent.resolveActivity(this.getPackageManager())!= null) {
                 startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
@@ -791,14 +831,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Uri videoUri = Uri.fromFile(videoFile);
 
-            mCurrentPhotoPath = videoFile.getPath();
+            mCurrentVideoPath = videoFile.getPath();
 
             takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
 
             if (takeVideoIntent.resolveActivity(this.getPackageManager())!= null) {
                 startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
             }
-
         }
     }
 
@@ -854,6 +893,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Generación de nombre único.
+     * @return
+     */
     private String getPictureName(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String timestamp = sdf.format(new Date());
@@ -876,8 +919,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             myRoute.getWaypointList().last().setPath("file://"+mCurrentPhotoPath);
 
                             //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
-                            galleryAddMedia(new File("file://"+mCurrentPhotoPath));
+//                            galleryAddMedia(new File("file://"+mCurrentPhotoPath));
 
+                            galleryAddMedia("file://"+mCurrentPhotoPath);
                         }
                 }
 
@@ -885,9 +929,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             case REQUEST_VIDEO_CAPTURE:
 
-                if (resultCode == this.RESULT_OK && data != null) {
+                if (resultCode == RESULT_OK && data != null) {
 
-                    mCurrentVideoPath = data.getData().getPath();
+//                    mCurrentVideoPath = data.getData().getPath();
 
                     //Añade un marcador en el mapa, añadiendo un LatLng
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
@@ -896,7 +940,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     myRoute.getWaypointList().last().setVideo(true);
 
                     //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
-                    galleryAddMedia(new File("file://"+mCurrentVideoPath));
+//                    galleryAddMedia(new File("file://"+mCurrentVideoPath));
+                    galleryAddMedia("file://"+mCurrentVideoPath);
 
                 } else {
                     Toast.makeText(this, R.string.no_video, Toast.LENGTH_LONG).show();
@@ -908,9 +953,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void galleryAddMedia(File file) {
+    /**
+     * Notifica a la galería de la aplicación la existencia del fichero introducido como parámetro
+     * @param mediaPath
+     */
+    private void galleryAddMedia(String mediaPath) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        file = new File(mCurrentPhotoPath);
+        File file = new File(mediaPath);
         Uri contentUri = Uri.fromFile(file);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);

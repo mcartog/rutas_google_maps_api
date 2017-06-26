@@ -1,13 +1,12 @@
 package com.marcostoral.keepmoving.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.models.Route;
 import com.marcostoral.keepmoving.fragments.ListViewFragment;
-import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
+import com.marcostoral.keepmoving.models.Route;
 
 public class HistoryActivity extends AppCompatActivity implements ListViewFragment.OnFragmentInteractionListener{
 

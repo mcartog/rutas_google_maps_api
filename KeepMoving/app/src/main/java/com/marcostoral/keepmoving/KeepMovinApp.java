@@ -51,6 +51,4 @@ public class KeepMovinApp extends MultiDexApplication {
         return (results.size() > 0) ? new AtomicInteger(results.max("id").intValue()) : new AtomicInteger();
     }
 
-
-
 }

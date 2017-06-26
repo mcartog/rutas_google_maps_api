@@ -1,8 +1,8 @@
 package com.marcostoral.keepmoving.activities;
 
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -11,11 +11,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.models.Route;
 import com.marcostoral.keepmoving.fragments.RouteDetailsFragment;
+import com.marcostoral.keepmoving.models.Route;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +40,14 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
 
     //Model id
     private long id;
+    private LatLng cornerMax;
+    private LatLng cornerMin;
 
-    //Chart
-    private LineChart lineChart;
-    private ArrayList<Entry> entries;
-    private float t;
-    private float z;
+//    //Chart
+//    private LineChart lineChart;
+//    private ArrayList<Entry> entries;
+//    private float t;
+//    private float z;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +62,11 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
             detailsFragment = (RouteDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentDetailsRoute);
             detailsFragment.renderRoute(route);
 
+            cornerMax = new LatLng(route.getMaxLtd(), route.getMaxLng());
+            cornerMin = new LatLng(route.getMinLtd(), route.getMinLng());
+
+
         }
-
-        entries = new ArrayList<Entry>();
-
 
         //Map fragment
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapRouteDetails);
@@ -83,11 +87,22 @@ public class RouteDetailsActivity extends AppCompatActivity implements OnMapRead
         mMap = googleMap;
 
         //Obtiene el primer punto de la ruta, lo convierte a LatLng.
-        LatLng initialPoint = new LatLng(route.getWaypointList().get(0).getLtd(), route.getWaypointList().get(0).getLng());
+//        LatLng initialPoint = new LatLng(route.getWaypointList().get(0).getLtd(), route.getWaypointList().get(0).getLng());
+
 
         //Establece el zoom mínimo y centra la cámara en el primer punto de la ruta.
         mMap.setMinZoomPreference(10);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialPoint, 15));
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        builder.include(cornerMax);
+        builder.include(cornerMin);
+        LatLngBounds bounds = builder.build();
+
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+        int padding = (int) (width * 0.20);
+//        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds,15));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds,width,height,padding));
 
         drawWaypoint(route);
         drawRoute(route);

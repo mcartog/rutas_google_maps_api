@@ -79,6 +79,7 @@ public class PhotoAdapter extends BaseAdapter {
                 .load(uri)
                 .resize(60, 60)
                 .centerCrop()
+                .error(R.drawable.ic_media_play)
                 .into(waypointPhotoHolder.photo);
 
         return convertView;

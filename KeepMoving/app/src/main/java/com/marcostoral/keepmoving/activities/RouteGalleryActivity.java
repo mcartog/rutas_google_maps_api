@@ -3,15 +3,10 @@ package com.marcostoral.keepmoving.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.PhotoAdapter;
@@ -85,10 +80,12 @@ public class RouteGalleryActivity extends AppCompatActivity {
             }
         });
 
-
-
     }
 
+    /**
+     * Recupera el path de una imagen y lanza una actividad parar reproducirla.
+     * @param position en el GridView
+     */
     private void showImage(int position) {
 
         String path = waypointArrayList.get(position).getPath();
@@ -96,12 +93,12 @@ public class RouteGalleryActivity extends AppCompatActivity {
         intentPhoto.setDataAndType(Uri.parse(path), "image/*");
         startActivity(intentPhoto);
 
-//        String path =  waypointArrayList.get(position).getPath();
-//        showPhoto.setImageURI(Uri.parse(path));
-//        showPhoto.setVisibility(View.VISIBLE);
-
     }
 
+    /**
+     * Recupera el path de un video y lanza una actividad para reproducirlo.
+     * @param position en el GridView
+     */
     private void showVideo(int position) {
 
         String path =   waypointArrayList.get(position).getPath();
