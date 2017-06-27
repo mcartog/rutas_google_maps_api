@@ -53,12 +53,22 @@
 
         </LinearLayout>
 
+        <ImageButton
+            android:id="@+id/ib_chart"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="20"
+            android:layout_gravity="center"
+            android:background="@color/colorAccent"
+            android:src="@android:drawable/ic_dialog_map"
+
+            />
 
         <ImageButton
             android:id="@+id/ib_gallery"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="25"
+            android:layout_weight="20"
             android:layout_gravity="center"
             android:background="@color/colorAccent"
             android:src="@android:drawable/ic_menu_gallery"

@@ -15,6 +15,7 @@
     <string name="distance">Distancia: </string>
     <string name="time">Tiempo: </string>
     <string name="delete">Eliminar</string>
+    <string name="save">Guardar</string>
     <string name="share">Compartir</string>
     <string name="title_dialog_route_type">Selecciona el tipo de ruta: </string>
     <string name="biking">En bicicleta</string>
@@ -23,6 +24,7 @@
     <string name="title_dialog_media_type">¿Qué quieres hacer? </string>
     <string name="photo">Fotografía</string>
     <string name="movie">Vídeo</string>
+    <string name="altitude">Altura</string>
     <string name="title_dialog_persist_route">Ruta generada</string>
     <string name="msn_dialog_persist_route">¿Quieres guardar la ruta?</string>
     <string name="routeTypeTitleDialog">Selecciona el tipo de ruta.</string>

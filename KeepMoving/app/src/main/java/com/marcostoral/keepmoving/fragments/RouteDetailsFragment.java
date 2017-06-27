@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.activities.ChartActivity;
 import com.marcostoral.keepmoving.activities.RouteGalleryActivity;
 import com.marcostoral.keepmoving.models.Route;
 
@@ -30,6 +31,7 @@ public class RouteDetailsFragment extends Fragment {
     private TextView tvTime;
     private ImageView ivType;
     private ImageButton ibGallery;
+    private ImageButton ibChart;
 
     private LinearLayout wrapper;
 
@@ -57,6 +59,7 @@ public class RouteDetailsFragment extends Fragment {
         tvTime = (TextView) view.findViewById(R.id.tvDetailsTime);
         ivType = (ImageView) view.findViewById(R.id.ivDetailsType);
         ibGallery = (ImageButton) view.findViewById(R.id.ib_gallery);
+        ibChart = (ImageButton) view.findViewById(R.id.ib_chart);
 
     }
 
@@ -91,6 +94,17 @@ public class RouteDetailsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), RouteGalleryActivity.class);
+
+                intent.putExtra("id",ref);
+                startActivity(intent);
+
+            }
+        });
+
+        ibChart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ChartActivity.class);
 
                 intent.putExtra("id",ref);
                 startActivity(intent);
