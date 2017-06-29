@@ -15,6 +15,9 @@
     <string name="distance">Distancia: </string>
     <string name="time">Tiempo: </string>
     <string name="delete">Eliminar</string>
+    <string name="modify_title">Editar nombre</string>
+    <string name="export_gpx">Exportar fichero GPX</string>
+    <string name="export_kml">Exportar fichero KML</string>
     <string name="save">Guardar</string>
     <string name="share">Compartir</string>
     <string name="title_dialog_route_type">Selecciona el tipo de ruta: </string>

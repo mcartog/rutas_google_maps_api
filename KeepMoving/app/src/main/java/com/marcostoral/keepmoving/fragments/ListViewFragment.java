@@ -2,8 +2,12 @@ package com.marcostoral.keepmoving.fragments;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -11,12 +15,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
 import com.marcostoral.keepmoving.adapters.RouteAdapter;
 import com.marcostoral.keepmoving.models.Route;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
@@ -33,6 +43,10 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
     private RouteAdapter adapter;
 
     private OnFragmentInteractionListener mListener;
+
+    private FileOutputStream outputStream;
+
+    private String mTitle;
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -135,10 +149,24 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         //Funcionamiento del switch, en función del id del elemento menú clicado podremos hacer direferentes cosas
         switch (item.getItemId()) {
 
-            // COMPARTIR: esta opción NO está disponible. Consultar:   https://developers.facebook.com/docs/sharing/android
-            case R.id.action_share:
+            //Exportar kml
+            case R.id.export_kml:
 
-                Toast.makeText(getContext(), "Compartir en red social",Toast.LENGTH_SHORT).show();
+                exportKML(inf.position);
+                return true;
+
+            //Exportar gpx
+            case R.id.export_gpx:
+
+                exportGPX(inf.position);
+                return true;
+
+            //Exportar gpx
+            case R.id.modify_title:
+
+                showSetTitleAlert(inf.position);
+
+                this.adapter.notifyDataSetChanged();
                 return true;
 
             // ELIMINAR: elimina ruta seleccionada.
@@ -152,6 +180,125 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
                 return super.onContextItemSelected(item);
         }
     }
+
+    public void setTitle(int position){
+
+        realm.beginTransaction();
+        routes.get(position).setTitle(mTitle);
+        realm.commitTransaction();
+
+    }
+
+    public void exportKML(int position){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String routeDate = sdf.format(routes.get(position).getDate());
+        String filename = "KM_"+ routeDate +".kml";
+
+        //Crear fichero
+        File file = new File( Environment.getExternalStorageDirectory(), filename);
+
+
+        //Abrir fichero y escribir en él
+        try {
+            outputStream = getContext().openFileOutput(filename, Context.MODE_PRIVATE);
+            String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+            String l2 = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"> <Document>";
+            String l3 = "<name>"+routes.get(position).getTitle()+"</name>";
+
+            String l5 = "<LineStyle> \n <color>7f00ffff</color> \n <width>5</width> \n  </LineStyle> \n";
+
+            outputStream.write(l1.getBytes());
+            outputStream.write(l2.getBytes());
+            outputStream.write(l3.getBytes());
+            outputStream.write(l5.getBytes());
+
+            String l6 = " <Placemark> \n <LineString> \n  <extrude>1</extrude> \n <tessellate>1</tessellate> \n <altitudeMode>absoluto</altitudeMode>";
+            outputStream.write(l6.getBytes());
+
+            String lc = "<coordinates>";
+            outputStream.write(lc.getBytes());
+            for(int i = 0; i < routes.get(position).getWaypointList().size(); i++){
+
+                String s1 =  routes.get(position).getWaypointList().get(i).getLng()+","+ routes.get(position).getWaypointList().get(i).getLtd()+","+ routes.get(position).getWaypointList().get(i).getAlt();
+                outputStream.write(s1.getBytes());
+
+            }
+            String lc2 = "</coordinates> \n </LineString> \n </Placemark>\n </Document> \n </kml>";
+            outputStream.write(lc2.getBytes());
+
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void exportGPX(int position){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+        String routeDate = sdf.format(routes.get(position).getDate());
+        String filename = "KM_"+ routeDate +".gpx";
+
+        //Crear fichero
+//        File file = new File( getContext().getFilesDir(), filename);
+        File file = new File( Environment.getExternalStorageDirectory(), filename);
+
+        //Abrir fichero y escribir en él
+        try {
+            outputStream = getContext().openFileOutput(filename, Context.MODE_PRIVATE);
+            String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+            String l2 = "<gpx version=\"1.1\" creator=\"GPSBabel - http://www.gpsbabel.org\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
+            String l3 = "<metadata>\n";
+            String l4 = "<time>"+sdf2.format(routes.get(position).getDate()) +"Z</time>\n"; //2017-05-23T19:14:56.069Z
+            String l5 = "<bounds minlat=\""+routes.get(position).getMinLtd()+"\" minlon=\""+routes.get(position).getMinLng()+"\" maxlat=\""+routes.get(position).getMaxLtd()+"\" maxlon=\""+routes.get(position).getMinLng()+"\"/>\n";
+            String l6 = "</metadata>\n";
+            String l7 = "<trk>\n";
+            String l8 = "<name>"+routes.get(position).getTitle()+"</name>\n";
+            String l9 = "<cmt/>\n";
+            String l10 = "<trkseg>\n";
+            String l11 = "</trkseg>\n";
+            String l12 = "</trk>\n";
+            String l13 = "</gpx>\n";
+
+            outputStream.write(l1.getBytes());
+            outputStream.write(l2.getBytes());
+            outputStream.write(l3.getBytes());
+            outputStream.write(l4.getBytes());
+            outputStream.write(l5.getBytes());
+            outputStream.write(l6.getBytes());
+            outputStream.write(l7.getBytes());
+            outputStream.write(l8.getBytes());
+            outputStream.write(l9.getBytes());
+            outputStream.write(l10.getBytes());
+            for(int i = 0; i < routes.get(position).getWaypointList().size(); i++){
+
+                String s1 = "<trkpt lat=\""+routes.get(position).getWaypointList().get(i).getLtd()+"\" lon=\""+routes.get(position).getWaypointList().get(i).getLng()+"\">\n";
+                String s2 =  "<ele>"+routes.get(position).getWaypointList().get(i).getAlt()+"</ele>\n";
+                String s3 =  "<time>"+sdf2.format(routes.get(position).getWaypointList().get(i).getDate())+"Z</time>\n";
+                String s4 =  "</trkpt>\n";
+                outputStream.write(s1.getBytes());
+                outputStream.write(s2.getBytes());
+                outputStream.write(s3.getBytes());
+                outputStream.write(s4.getBytes());
+
+            }
+
+            outputStream.write(l11.getBytes());
+            outputStream.write(l12.getBytes());
+            outputStream.write(l13.getBytes());
+
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 
     ///////////////////////////////////////////////////////
     ////////////////////   REALM    ///////////////////////
@@ -178,5 +325,42 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         routes.get(position).deleteFromRealm();
         realm.commitTransaction();
     }
+
+    ///////////////////////////////////////////////////////
+    ////////////////////   DIALOG    ///////////////////////
+    ///////////////////////////////////////////////////////
+
+    private void showSetTitleAlert(final int pos){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Introduzca nuevo nombre");
+
+        // Set up the input
+        final EditText input = new EditText(getContext());
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+// Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mTitle = input.getText().toString();
+                setTitle(pos);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+
+    }
+
+
+
 
 }

@@ -1,9 +1,11 @@
 package com.marcostoral.keepmoving.activities;
 
+import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -21,14 +23,18 @@ public class ChartActivity extends AppCompatActivity {
     private LineDataSet lineDataSet;
     private LineData data;
     private ArrayList<Entry> entries;
-    private float t;
+//    private float t;
     private float z;
+    private float d;
 
     private Realm realm;
 
     private Route route;
     private RealmResults<Route> routeById;
     private long id;
+
+    static String parameterName = "Altitud";
+    static String subtitleText = "Perfil longitudinal";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +48,17 @@ public class ChartActivity extends AppCompatActivity {
         route = getRoute(id);
 
         entries = getData(route);
-        lineDataSet = new LineDataSet(entries, "Altitud");
+
+        lineDataSet = new LineDataSet(entries, parameterName);
         lineDataSet.setDrawFilled(true);
         lineDataSet.setCubicIntensity(1);
 
         data = new LineData(lineDataSet);
         lineChart.setData(data);
-
-
-
+        Description d = new Description();
+        d.setText(subtitleText);
+        d.setTextSize(12);
+        lineChart.setDescription(d);
     }
 
     @Override
@@ -80,9 +88,11 @@ public class ChartActivity extends AppCompatActivity {
         Entry entry;
 
         for (int j = 0; j < route.getWaypointList().size(); j++) {
+
             z = (float) route.getWaypointList().get(j).getAlt();
-            t = (float) route.getWaypointList().get(j).getTime();
-            entry = new Entry(t,z);
+            d = (float) route.getWaypointList().get(j).getDistance();
+
+            entry = new Entry(d,z);
             entries.add(entry);
 
         }

@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import com.marcostoral.keepmoving.KeepMovinApp;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -20,6 +22,8 @@ public class Waypoint extends RealmObject implements Parcelable{
     private double lng;
     private double alt;
     private double time;
+    private Date date;
+    private double distance;
     private String path;
     private String filePath;
     private boolean isVideo;
@@ -27,6 +31,7 @@ public class Waypoint extends RealmObject implements Parcelable{
 
     public Waypoint() {
         this.id = KeepMovinApp.WaypointID.incrementAndGet();
+        this.date = new Date();
         this.isVideo = false;
     }
 
@@ -34,6 +39,7 @@ public class Waypoint extends RealmObject implements Parcelable{
         this.id = KeepMovinApp.WaypointID.incrementAndGet();
         this.ltd = ltd;
         this.lng = lng;
+        this.date = new Date();
         this.isVideo = false;
     }
 
@@ -75,6 +81,22 @@ public class Waypoint extends RealmObject implements Parcelable{
 
     public void setTime(double time) {
         this.time = time;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
     public String getPath() {

@@ -75,27 +75,27 @@ public class MainActivity extends AppCompatActivity {
     ////////////////////   MENUS   ////////////////////////
     ///////////////////////////////////////////////////////
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.opt_menu,menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_prefs:
-                Toast.makeText(this, "Preferencias", Toast.LENGTH_SHORT).show();
-
-                return true;
-            case R.id.action_about:
-
-                Toast.makeText(this, "Info api agoogle", Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        MenuInflater inflater = getMenuInflater();
+//        inflater.inflate(R.menu.opt_menu,menu);
+//        return true;
+//    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.action_prefs:
+//                Toast.makeText(this, "Preferencias", Toast.LENGTH_SHORT).show();
+//
+//                return true;
+//            case R.id.action_about:
+//
+//                Toast.makeText(this, "Info api agoogle", Toast.LENGTH_SHORT).show();
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
 
     ///////////////////////////////////////////////////////

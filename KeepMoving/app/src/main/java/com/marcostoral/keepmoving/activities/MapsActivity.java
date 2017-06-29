@@ -523,8 +523,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void stopLocation(){
 
-        mGoogleApiClient.disconnect();
         mGoogleApiClient.unregisterConnectionCallbacks(this);
+        mGoogleApiClient.disconnect();
 
     }
 
@@ -565,7 +565,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
 
-        float distanciaListener = this.totalDistance;
+//        float distanciaListener = this.totalDistance;
 
                currentLocation = location;
                if (currentLocation != null) {
@@ -587,7 +587,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                        myRoute.addWaypoint(currentWaypoint);
 
                        //...y si hay más de un punto...
-                       if(myRoute.getWaypointList().size() > 0) {
+                       if(myRoute.getWaypointList().size() >= 0) {
 
                            LatLng pointLatLng = new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng());
                            latLngs.add(pointLatLng);
@@ -605,13 +605,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                        }
                    }
 
-                   if(lastLocation != null){
-
-                       distance = (long) calculateDistance(lastLocation, currentLocation);
-                       this.totalDistance = distanciaListener + distance;
-                       setKm(this.totalDistance);
-
-                   }
+//                   if(lastLocation != null){
+//
+//                       distance = (long) calculateDistance(lastLocation, currentLocation);
+//                       this.totalDistance = distanciaListener + distance;
+//                       setKm(this.totalDistance);
+//
+//                   }
 
                    lastLocation = currentLocation;
                }
@@ -640,10 +640,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * @return
      */
     public Waypoint createAndAddPoint(Location currentLocation, LatLng newPoint){
+        float distanciaListener = this.totalDistance;
         //Crea point (pasando Lat y Lng de parámetros).
         currentWaypoint = new Waypoint(newPoint.latitude, newPoint.longitude);
         currentWaypoint.setAlt(currentLocation.getAltitude());
         currentWaypoint.setTime((SystemClock.elapsedRealtime()-chronometer.getBase()-milliseconds)/1000);
+        if(lastLocation != null){
+
+            distance = (long) calculateDistance(lastLocation, currentLocation);
+            this.totalDistance = distanciaListener + distance;
+            setKm(this.totalDistance);
+            currentWaypoint.setDistance(totalDistance);
+
+        } else {
+            currentWaypoint.setDistance(0);
+        }
 
         return currentWaypoint;
 

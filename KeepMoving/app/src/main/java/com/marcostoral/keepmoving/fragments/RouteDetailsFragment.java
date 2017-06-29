@@ -29,6 +29,7 @@ public class RouteDetailsFragment extends Fragment {
     private TextView tvDate;
     private TextView tvDistance;
     private TextView tvTime;
+    private TextView tvTitle;
     private ImageView ivType;
     private ImageButton ibGallery;
     private ImageButton ibChart;
@@ -57,6 +58,7 @@ public class RouteDetailsFragment extends Fragment {
         tvDate = (TextView) view.findViewById(R.id.tvDetailsDate);
         tvDistance = (TextView) view.findViewById(R.id.tvDetailsDistance);
         tvTime = (TextView) view.findViewById(R.id.tvDetailsTime);
+        tvTitle = (TextView) view.findViewById(R.id.tvDetailsTitle);
         ivType = (ImageView) view.findViewById(R.id.ivDetailsType);
         ibGallery = (ImageButton) view.findViewById(R.id.ib_gallery);
         ibChart = (ImageButton) view.findViewById(R.id.ib_chart);
@@ -70,10 +72,11 @@ public class RouteDetailsFragment extends Fragment {
     public void renderRoute(Route route) {
         wrapper.setVisibility(View.VISIBLE);
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy'\n'HH:mm");
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy'\nHora inicio: 'HH:mm");
         tvDate.setText(df.format(route.getDate()));
         tvDistance.setText("Distancia: "+String.format("%.3f", route.getDistance())+ " Km");
         tvTime.setText("Duración: "+route.getTime());
+        tvTitle.setText(route.getTitle());
         switch (route.getType()){
             case 0:
                 ivType.setImageResource(R.drawable.cycling);

@@ -60,6 +60,7 @@ public class RouteAdapter extends BaseAdapter {
             routeHolder.distance = (TextView) convertView.findViewById(R.id.tvDistance);
             routeHolder.time = (TextView) convertView.findViewById(R.id.tvTime);
             routeHolder.date = (TextView) convertView.findViewById(R.id.tvDate);
+            routeHolder.title = (TextView) convertView.findViewById(R.id.tvTitle);
 
             convertView.setTag(routeHolder);
 
@@ -74,6 +75,7 @@ public class RouteAdapter extends BaseAdapter {
         routeHolder.distance.setText(String.format("%.3f", routeList.get(position).getDistance())+ " Km");
         routeHolder.time.setText(routeList.get(position).getTime().toString());
         routeHolder.date.setText(df.format(routeList.get(position).getDate()));
+        routeHolder.title.setText(routeList.get(position).getTitle());
 
         return convertView;
     }
@@ -99,6 +101,7 @@ public class RouteAdapter extends BaseAdapter {
         public TextView distance;
         public TextView time;
         public TextView date;
+        public TextView title;
     }
 
 
