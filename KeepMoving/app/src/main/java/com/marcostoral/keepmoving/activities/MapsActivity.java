@@ -542,9 +542,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnected(Bundle bundle) {
         //Configuración de peticion de actualización.
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);     //1seg
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        //Refresco en virtud del tiempo
+        switch (type){
+            case 0:
+                mLocationRequest.setInterval(1000);     //1seg
+                mLocationRequest.setFastestInterval(1000);
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                break;
+            case 1:
+                mLocationRequest.setInterval(2500);     //2seg
+                mLocationRequest.setFastestInterval(1000);
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                break;
+
+            case 2:
+                mLocationRequest.setInterval(5000);     //5seg
+                mLocationRequest.setFastestInterval(1000);
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                break;
+        }
+
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -604,14 +621,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                        }
                    }
-
-//                   if(lastLocation != null){
-//
-//                       distance = (long) calculateDistance(lastLocation, currentLocation);
-//                       this.totalDistance = distanciaListener + distance;
-//                       setKm(this.totalDistance);
-//
-//                   }
 
                    lastLocation = currentLocation;
                }
@@ -991,8 +1000,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void galleryAddMedia(String mediaPath) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File file = new File(mediaPath);
-        Uri contentUri = Uri.fromFile(file);
+//        File file = new File(mediaPath);
+//        Uri contentUri = Uri.fromFile(file);
+        Uri contentUri = Uri.parse(mediaPath);
+
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }

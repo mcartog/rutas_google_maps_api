@@ -3,6 +3,7 @@ package com.marcostoral.keepmoving.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -24,7 +25,9 @@ import com.marcostoral.keepmoving.adapters.RouteAdapter;
 import com.marcostoral.keepmoving.models.Route;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -44,7 +47,7 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
     private OnFragmentInteractionListener mListener;
 
-    private FileOutputStream outputStream;
+//    private FileOutputStream outputStream;
 
     private String mTitle;
 
@@ -195,108 +198,132 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         String routeDate = sdf.format(routes.get(position).getDate());
         String filename = "KM_"+ routeDate +".kml";
 
-        //Crear fichero
-        File file = new File( Environment.getExternalStorageDirectory(), filename);
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
+            try {
 
-        //Abrir fichero y escribir en él
-        try {
-            outputStream = getContext().openFileOutput(filename, Context.MODE_PRIVATE);
-            String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-            String l2 = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"> <Document>";
-            String l3 = "<name>"+routes.get(position).getTitle()+"</name>";
-
-            String l5 = "<LineStyle> \n <color>7f00ffff</color> \n <width>5</width> \n  </LineStyle> \n";
-
-            outputStream.write(l1.getBytes());
-            outputStream.write(l2.getBytes());
-            outputStream.write(l3.getBytes());
-            outputStream.write(l5.getBytes());
-
-            String l6 = " <Placemark> \n <LineString> \n  <extrude>1</extrude> \n <tessellate>1</tessellate> \n <altitudeMode>absoluto</altitudeMode>";
-            outputStream.write(l6.getBytes());
-
-            String lc = "<coordinates>";
-            outputStream.write(lc.getBytes());
-            for(int i = 0; i < routes.get(position).getWaypointList().size(); i++){
-
-                String s1 =  routes.get(position).getWaypointList().get(i).getLng()+","+ routes.get(position).getWaypointList().get(i).getLtd()+","+ routes.get(position).getWaypointList().get(i).getAlt();
-                outputStream.write(s1.getBytes());
-
+            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + "/KeepMovin");
+            if (!directory.exists()) {
+                directory.mkdirs();
             }
-            String lc2 = "</coordinates> \n </LineString> \n </Placemark>\n </Document> \n </kml>";
-            outputStream.write(lc2.getBytes());
 
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            File file = new File(directory, filename);
+
+                OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(file));
+
+
+            //Abrir fichero y escribir en él
+
+//                outputStream = getContext().getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
+                String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+                String l2 = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"> <Document>";
+                String l3 = "<name>" + routes.get(position).getTitle() + "</name>";
+
+                String l5 = "<LineStyle> \n <color>7f00ffff</color> \n <width>5</width> \n  </LineStyle> \n";
+
+                outputStream.write(l1);//.getBytes());
+                outputStream.write(l2);//.getBytes());
+                outputStream.write(l3);//.getBytes());
+                outputStream.write(l5);//.getBytes());
+
+                String l6 = " <Placemark> \n <LineString> \n  <extrude>1</extrude> \n <tessellate>1</tessellate> \n <altitudeMode>absoluto</altitudeMode>";
+                outputStream.write(l6);//.getBytes());
+
+                String lc = "<coordinates>";
+                outputStream.write(lc);//.getBytes());
+                for (int i = 0; i < routes.get(position).getWaypointList().size(); i++) {
+
+                    String s1 = routes.get(position).getWaypointList().get(i).getLng() + "," + routes.get(position).getWaypointList().get(i).getLtd() + "," + routes.get(position).getWaypointList().get(i).getAlt();
+                    outputStream.write(s1);//.getBytes());
+
+                }
+                String lc2 = "</coordinates> \n </LineString> \n </Placemark>\n </Document> \n </kml>";
+                outputStream.write(lc2);//.getBytes());
+
+                outputStream.close();
+
+                Toast.makeText(getContext(), R.string.succesful_export, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), R.string.error_export, Toast.LENGTH_SHORT).show();
+            }
         }
-
-
     }
 
-    public void exportGPX(int position){
+    public void exportGPX(int position) {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
         String routeDate = sdf.format(routes.get(position).getDate());
-        String filename = "KM_"+ routeDate +".gpx";
+        String filename = "KM_" + routeDate + ".gpx";
 
-        //Crear fichero
-//        File file = new File( getContext().getFilesDir(), filename);
-        File file = new File( Environment.getExternalStorageDirectory(), filename);
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 
-        //Abrir fichero y escribir en él
-        try {
-            outputStream = getContext().openFileOutput(filename, Context.MODE_PRIVATE);
-            String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-            String l2 = "<gpx version=\"1.1\" creator=\"GPSBabel - http://www.gpsbabel.org\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
-            String l3 = "<metadata>\n";
-            String l4 = "<time>"+sdf2.format(routes.get(position).getDate()) +"Z</time>\n"; //2017-05-23T19:14:56.069Z
-            String l5 = "<bounds minlat=\""+routes.get(position).getMinLtd()+"\" minlon=\""+routes.get(position).getMinLng()+"\" maxlat=\""+routes.get(position).getMaxLtd()+"\" maxlon=\""+routes.get(position).getMinLng()+"\"/>\n";
-            String l6 = "</metadata>\n";
-            String l7 = "<trk>\n";
-            String l8 = "<name>"+routes.get(position).getTitle()+"</name>\n";
-            String l9 = "<cmt/>\n";
-            String l10 = "<trkseg>\n";
-            String l11 = "</trkseg>\n";
-            String l12 = "</trk>\n";
-            String l13 = "</gpx>\n";
+            try {
 
-            outputStream.write(l1.getBytes());
-            outputStream.write(l2.getBytes());
-            outputStream.write(l3.getBytes());
-            outputStream.write(l4.getBytes());
-            outputStream.write(l5.getBytes());
-            outputStream.write(l6.getBytes());
-            outputStream.write(l7.getBytes());
-            outputStream.write(l8.getBytes());
-            outputStream.write(l9.getBytes());
-            outputStream.write(l10.getBytes());
-            for(int i = 0; i < routes.get(position).getWaypointList().size(); i++){
+                File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + "/KeepMovin");
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
 
-                String s1 = "<trkpt lat=\""+routes.get(position).getWaypointList().get(i).getLtd()+"\" lon=\""+routes.get(position).getWaypointList().get(i).getLng()+"\">\n";
-                String s2 =  "<ele>"+routes.get(position).getWaypointList().get(i).getAlt()+"</ele>\n";
-                String s3 =  "<time>"+sdf2.format(routes.get(position).getWaypointList().get(i).getDate())+"Z</time>\n";
-                String s4 =  "</trkpt>\n";
-                outputStream.write(s1.getBytes());
-                outputStream.write(s2.getBytes());
-                outputStream.write(s3.getBytes());
-                outputStream.write(s4.getBytes());
+                File file = new File(directory, filename);
 
+                //Abrir fichero y escribir en él
+
+//                outputStream = getContext().getApplicationContext().openFileOutput(filename, getContext().MODE_APPEND);
+                OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(file));
+                String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+                String l2 = "<gpx version=\"1.1\" creator=\"GPSBabel - http://www.gpsbabel.org\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
+                String l3 = "<metadata>\n";
+                String l4 = "<time>" + sdf2.format(routes.get(position).getDate()) + "Z</time>\n"; //2017-05-23T19:14:56.069Z
+                String l5 = "<bounds minlat=\"" + routes.get(position).getMinLtd() + "\" minlon=\"" + routes.get(position).getMinLng() + "\" maxlat=\"" + routes.get(position).getMaxLtd() + "\" maxlon=\"" + routes.get(position).getMinLng() + "\"/>\n";
+                String l6 = "</metadata>\n";
+                String l7 = "<trk>\n";
+                String l8 = "<name>" + routes.get(position).getTitle() + "</name>\n";
+                String l9 = "<cmt/>\n";
+                String l10 = "<trkseg>\n";
+                String l11 = "</trkseg>\n";
+                String l12 = "</trk>\n";
+                String l13 = "</gpx>\n";
+
+                outputStream.write(l1);// (l1.getBytes());
+                outputStream.write  (l2);    //(l2.getBytes());
+                outputStream.write  (l3);        //(l3.getBytes());
+                outputStream.write   (l4);   //(l4.getBytes());
+                outputStream.write  (l5);    //(l5.getBytes());
+                outputStream.write  (l6);    //(l6.getBytes());
+                outputStream.write  (l7);    //(l7.getBytes());
+                outputStream.write   (l8);   //(l8.getBytes());
+                outputStream.write (l9);     //(l9.getBytes());
+                outputStream.write (l10);     //(l10.getBytes());
+                for (int i = 0; i < routes.get(position).getWaypointList().size(); i++) {
+
+                    String s1 = "<trkpt lat=\"" + routes.get(position).getWaypointList().get(i).getLtd() + "\" lon=\"" + routes.get(position).getWaypointList().get(i).getLng() + "\">\n";
+                    String s2 = "<ele>" + routes.get(position).getWaypointList().get(i).getAlt() + "</ele>\n";
+                    String s3 = "<time>" + sdf2.format(routes.get(position).getWaypointList().get(i).getDate()) + "Z</time>\n";
+                    String s4 = "</trkpt>\n";
+                    outputStream.write(s1);//.getBytes());
+                    outputStream.write(s2);//.getBytes());
+                    outputStream.write(s3);//.getBytes());
+                    outputStream.write(s4);//.getBytes());
+
+                }
+
+                outputStream.write(l11);//.getBytes());
+                outputStream.write(l12);//.getBytes());
+                outputStream.write(l13);//.getBytes());
+
+                outputStream.close();
+
+                Toast.makeText(getContext(), R.string.succesful_export, Toast.LENGTH_SHORT).show();
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), R.string.error_export, Toast.LENGTH_SHORT).show();
             }
-
-            outputStream.write(l11.getBytes());
-            outputStream.write(l12.getBytes());
-            outputStream.write(l13.getBytes());
-
-            outputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-
-
     }
 
 

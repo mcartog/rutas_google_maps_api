@@ -33,7 +33,7 @@ public class ChartActivity extends AppCompatActivity {
     private RealmResults<Route> routeById;
     private long id;
 
-    static String parameterName = "Altitud";
+    static String parameterName = "Altura";
     static String subtitleText = "Perfil longitudinal";
 
     @Override
@@ -86,14 +86,29 @@ public class ChartActivity extends AppCompatActivity {
 
         entries = new ArrayList<Entry>();
         Entry entry;
+        z = 0;
 
         for (int j = 0; j < route.getWaypointList().size(); j++) {
 
-            z = (float) route.getWaypointList().get(j).getAlt();
-            d = (float) route.getWaypointList().get(j).getDistance();
+            if( (z - route.getWaypointList().get(j).getAlt()) >= 2.5 || (z - route.getWaypointList().get(j).getAlt()) < -2.5){  //0.5
 
-            entry = new Entry(d,z);
-            entries.add(entry);
+                if(route.getWaypointList().get(j).getAlt() == 0 ){
+
+                    //El primer posicionamiento puede no coger bien la altura
+                    z = (float) route.getWaypointList().get(j+1).getAlt();
+                    d = (float) route.getWaypointList().get(j+1).getDistance();
+
+                } else {
+
+                    z = (float) route.getWaypointList().get(j).getAlt();
+                    d = (float) route.getWaypointList().get(j).getDistance();
+
+                }
+
+                entry = new Entry(d,z);
+                entries.add(entry);
+            }
+
 
         }
 
