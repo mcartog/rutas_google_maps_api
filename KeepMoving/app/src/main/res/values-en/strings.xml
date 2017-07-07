@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Keep Movin\'</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="to_map">Go!</string>
+    <string name="to_history">History</string>
+    <string name="to_stadistics">Estadísticas</string>
+    <string name="to_gallery">Gallery</string>
+    <string name="prefs">Preferences</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="acept">Accept</string>
+    <string name="cancel">Cancel</string>
+    <string name="about">About...</string>
+    <string name="caputure_waypoint">Create waypoint</string>
+    <string name="distance">Distance: </string>
+    <string name="time">Time: </string>
+    <string name="date">Date: </string>
+    <string name="start_at">Start at: </string>
+    <string name="delete">Delete</string>
+    <string name="modify_title">Modify title</string>
+    <string name="export_gpx">Export GPX</string>
+    <string name="export_kml">Export KML</string>
+    <string name="save">Save</string>
+    <string name="share">Share</string>
+    <string name="title_dialog_route_type">Select activity: </string>
+    <string name="biking">Biking</string>
+    <string name="running">Running</string>
+    <string name="hiking">Hiking</string>
+    <string name="title_dialog_media_type">Do you wanna take... ? </string>
+    <string name="photo">A photo</string>
+    <string name="movie">A video</string>
+    <string name="altitude">High</string>
+    <string name="succesful_export">File successfully exported</string>
+    <string name="error_export">There was an error during file export</string>
+    <string name="title_dialog_persist_route">Saving route</string>
+    <string name="msn_dialog_persist_route">Would you wanna save this route?</string>
+    <string name="routeTypeTitleDialog">Select activity.</string>
+    <string name="pleaseStopTrackng">Please, stop recording route.</string>
+    <string name="no_photo">No photo was taken</string>
+    <string name="no_video">No video was taken</string>
+    <string name="waiting_position">Waiting for location</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_line_chart">LineChartActivity</string>
+    <string name="title_activity_chart">ChartActivity</string>
+
+
+</resources>

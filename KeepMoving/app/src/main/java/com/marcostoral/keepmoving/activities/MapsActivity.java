@@ -363,7 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     waypointDialog.show();
 
                 } else {
-                    Toast.makeText(MapsActivity.this, "Esperando posicionamiento", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MapsActivity.this, R.string.waiting_position, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -744,8 +744,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(this)
-                        .setTitle("Location Permission Needed")
-                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setTitle("Write External Storage Permission Needed")
+                        .setMessage("This app needs the Write External Storage permission, please accept to use this functionality")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

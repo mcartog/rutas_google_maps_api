@@ -27,6 +27,7 @@ public class RouteDetailsFragment extends Fragment {
 
     //UI
     private TextView tvDate;
+    private TextView tvHour;
     private TextView tvDistance;
     private TextView tvTime;
     private TextView tvTitle;
@@ -56,6 +57,7 @@ public class RouteDetailsFragment extends Fragment {
 
         wrapper = (LinearLayout) view.findViewById(R.id.wrapper_fragment_details);
         tvDate = (TextView) view.findViewById(R.id.tvDetailsDate);
+        tvHour = (TextView) view.findViewById(R.id.tvDetailsHour);
         tvDistance = (TextView) view.findViewById(R.id.tvDetailsDistance);
         tvTime = (TextView) view.findViewById(R.id.tvDetailsTime);
         tvTitle = (TextView) view.findViewById(R.id.tvDetailsTitle);
@@ -72,10 +74,13 @@ public class RouteDetailsFragment extends Fragment {
     public void renderRoute(Route route) {
         wrapper.setVisibility(View.VISIBLE);
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yyyy'\nHora inicio: 'HH:mm");
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        DateFormat dfh = new SimpleDateFormat("HH:mm");
+
         tvDate.setText(df.format(route.getDate()));
-        tvDistance.setText("Distancia: "+String.format("%.3f", route.getDistance())+ " Km");
-        tvTime.setText("Duración: "+route.getTime());
+        tvHour.setText(dfh.format(route.getDate()));
+        tvDistance.setText(String.format("%.3f", route.getDistance())+ " Km");
+        tvTime.setText(route.getTime());
         tvTitle.setText(route.getTitle());
         switch (route.getType()){
             case 0:

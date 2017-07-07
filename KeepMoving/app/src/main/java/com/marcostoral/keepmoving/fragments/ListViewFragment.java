@@ -1,12 +1,17 @@
 package com.marcostoral.keepmoving.fragments;
 
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.view.ContextMenu;
@@ -21,6 +26,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
+import com.marcostoral.keepmoving.activities.MapsActivity;
 import com.marcostoral.keepmoving.adapters.RouteAdapter;
 import com.marcostoral.keepmoving.models.Route;
 
@@ -47,9 +53,10 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
     private OnFragmentInteractionListener mListener;
 
-//    private FileOutputStream outputStream;
-
     private String mTitle;
+
+    //Permissions
+    public static final int PERMISSIONS_REQUEST_WRITE_DATA = 98;
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -194,6 +201,8 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
     public void exportKML(int position){
 
+        checkWritePermission();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String routeDate = sdf.format(routes.get(position).getDate());
         String filename = "KM_"+ routeDate +".kml";
@@ -211,36 +220,37 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
                 OutputStreamWriter outputStream = new OutputStreamWriter(new FileOutputStream(file));
 
-
             //Abrir fichero y escribir en él
 
 //                outputStream = getContext().getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
                 String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-                String l2 = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"> <Document>";
-                String l3 = "<name>" + routes.get(position).getTitle() + "</name>";
+                String l2 = "\n <kml xmlns=\"http://www.opengis.net/kml/2.2\"> <Document>";
+                String l3 = "\n <name>" + routes.get(position).getTitle() + "</name>";
+                String l5 = "\n <LineStyle> \n <color>7f00ffff</color> \n <width>5</width> \n  </LineStyle>";
 
-                String l5 = "<LineStyle> \n <color>7f00ffff</color> \n <width>5</width> \n  </LineStyle> \n";
+                outputStream.write(l1);
+                outputStream.write(l2);
+                outputStream.write(l3);
+                outputStream.write(l5);
 
-                outputStream.write(l1);//.getBytes());
-                outputStream.write(l2);//.getBytes());
-                outputStream.write(l3);//.getBytes());
-                outputStream.write(l5);//.getBytes());
+                String l6 = "\n <Placemark> \n <LineString> \n  <extrude>1</extrude> \n <tessellate>1</tessellate> \n <altitudeMode>absoluto</altitudeMode>";
+                outputStream.write(l6);
 
-                String l6 = " <Placemark> \n <LineString> \n  <extrude>1</extrude> \n <tessellate>1</tessellate> \n <altitudeMode>absoluto</altitudeMode>";
-                outputStream.write(l6);//.getBytes());
-
-                String lc = "<coordinates>";
-                outputStream.write(lc);//.getBytes());
+                String lc = "\n" +
+                        " <coordinates>";
+                outputStream.write(lc);
                 for (int i = 0; i < routes.get(position).getWaypointList().size(); i++) {
 
-                    String s1 = routes.get(position).getWaypointList().get(i).getLng() + "," + routes.get(position).getWaypointList().get(i).getLtd() + "," + routes.get(position).getWaypointList().get(i).getAlt();
-                    outputStream.write(s1);//.getBytes());
+                    String s1 = "\n"+routes.get(position).getWaypointList().get(i).getLng() + "," + routes.get(position).getWaypointList().get(i).getLtd() + "," + routes.get(position).getWaypointList().get(i).getAlt();
+                    outputStream.write(s1);
 
                 }
-                String lc2 = "</coordinates> \n </LineString> \n </Placemark>\n </Document> \n </kml>";
-                outputStream.write(lc2);//.getBytes());
-
+                String lc2 = "\n" +
+                        " </coordinates> \n </LineString> \n </Placemark>\n </Document> \n </kml>";
+                outputStream.write(lc2);
                 outputStream.close();
+
+                MediaScannerConnection.scanFile(getContext(),new String[] { file.toString() },null,null);
 
                 Toast.makeText(getContext(), R.string.succesful_export, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
@@ -252,6 +262,9 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
     public void exportGPX(int position) {
 
+
+        checkWritePermission();
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
@@ -259,6 +272,7 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         String filename = "KM_" + routeDate + ".gpx";
 
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+
 
             try {
 
@@ -277,7 +291,7 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
                 String l2 = "<gpx version=\"1.1\" creator=\"GPSBabel - http://www.gpsbabel.org\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
                 String l3 = "<metadata>\n";
                 String l4 = "<time>" + sdf2.format(routes.get(position).getDate()) + "Z</time>\n"; //2017-05-23T19:14:56.069Z
-                String l5 = "<bounds minlat=\"" + routes.get(position).getMinLtd() + "\" minlon=\"" + routes.get(position).getMinLng() + "\" maxlat=\"" + routes.get(position).getMaxLtd() + "\" maxlon=\"" + routes.get(position).getMinLng() + "\"/>\n";
+                String l5 = "<bounds minlat=\"" + routes.get(position).getMinLtd() + "\" minlon=\"" + routes.get(position).getMinLng() + "\" maxlat=\"" + routes.get(position).getMaxLtd() + "\" maxlon=\"" + routes.get(position).getMaxLng() + "\"/>\n";
                 String l6 = "</metadata>\n";
                 String l7 = "<trk>\n";
                 String l8 = "<name>" + routes.get(position).getTitle() + "</name>\n";
@@ -287,34 +301,36 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
                 String l12 = "</trk>\n";
                 String l13 = "</gpx>\n";
 
-                outputStream.write(l1);// (l1.getBytes());
-                outputStream.write  (l2);    //(l2.getBytes());
-                outputStream.write  (l3);        //(l3.getBytes());
-                outputStream.write   (l4);   //(l4.getBytes());
-                outputStream.write  (l5);    //(l5.getBytes());
-                outputStream.write  (l6);    //(l6.getBytes());
-                outputStream.write  (l7);    //(l7.getBytes());
-                outputStream.write   (l8);   //(l8.getBytes());
-                outputStream.write (l9);     //(l9.getBytes());
-                outputStream.write (l10);     //(l10.getBytes());
+                outputStream.write(l1);
+                outputStream.write  (l2);
+                outputStream.write  (l3);
+                outputStream.write   (l4);
+                outputStream.write  (l5);
+                outputStream.write  (l6);
+                outputStream.write  (l7);
+                outputStream.write   (l8);
+                outputStream.write (l9);
+                outputStream.write (l10);
                 for (int i = 0; i < routes.get(position).getWaypointList().size(); i++) {
 
                     String s1 = "<trkpt lat=\"" + routes.get(position).getWaypointList().get(i).getLtd() + "\" lon=\"" + routes.get(position).getWaypointList().get(i).getLng() + "\">\n";
                     String s2 = "<ele>" + routes.get(position).getWaypointList().get(i).getAlt() + "</ele>\n";
                     String s3 = "<time>" + sdf2.format(routes.get(position).getWaypointList().get(i).getDate()) + "Z</time>\n";
                     String s4 = "</trkpt>\n";
-                    outputStream.write(s1);//.getBytes());
-                    outputStream.write(s2);//.getBytes());
-                    outputStream.write(s3);//.getBytes());
-                    outputStream.write(s4);//.getBytes());
+                    outputStream.write(s1);
+                    outputStream.write(s2);
+                    outputStream.write(s3);
+                    outputStream.write(s4);
 
                 }
 
-                outputStream.write(l11);//.getBytes());
-                outputStream.write(l12);//.getBytes());
-                outputStream.write(l13);//.getBytes());
+                outputStream.write(l11);
+                outputStream.write(l12);
+                outputStream.write(l13);
 
                 outputStream.close();
+
+                MediaScannerConnection.scanFile(getContext(),new String[] { file.toString() },null,null);
 
                 Toast.makeText(getContext(), R.string.succesful_export, Toast.LENGTH_SHORT).show();
 
@@ -387,7 +403,75 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
     }
 
+    /**
+     * Comprueba los permisos de escritura. En caso de no disponer de ellos permite activación en AlertDialog.
+     */
+    public void checkWritePermission(){
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Write External Storage Permission Needed")
+                        .setMessage("This app needs the Write External Storage permission, please accept to use this functionality")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        PERMISSIONS_REQUEST_WRITE_DATA);
+                            }
+                        })
+                        .create()
+                        .show();
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSIONS_REQUEST_WRITE_DATA);
+            }
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+
+            //Permiso de escritura
+            case PERMISSIONS_REQUEST_WRITE_DATA: {
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+//                        dispatchTakePictureIntent();
+
+                    }
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getContext(), "permission denied", Toast.LENGTH_LONG).show();
+
+                }
+                return;
+
+                // other 'case' lines to check for other
+                // permissions this app might request
+            }
+        }
+    }
 
 
 }
