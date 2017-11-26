@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -26,16 +25,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.marcostoral.keepmoving.R;
-import com.marcostoral.keepmoving.activities.MapsActivity;
 import com.marcostoral.keepmoving.adapters.RouteAdapter;
 import com.marcostoral.keepmoving.models.Route;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;

@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -276,6 +275,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Establece el cuentakilómetros
         setKm(0);
 
+        checkLocationPermission();
+
         setStartButton();
         setStopButton();
         setWaypointButton();
@@ -334,7 +335,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 //Anula botones
                 btnWaypoint.setEnabled(false);
-//                btnStop.setEnabled(false);
                 btnStop.setVisibility(View.INVISIBLE);
                 btnSave.setVisibility(View.VISIBLE);
 
@@ -426,52 +426,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void setRouteParameters(){
 
-        myRoute.setType(type);
-        myRoute.setDistance(totalDistance/1000);
-        myRoute.setTime(chronometer.getText().toString());
+        if(myRoute.getWaypointList().size()>1){
+            myRoute.setType(type);
+            myRoute.setDistance(totalDistance/1000);
+            myRoute.setTime(chronometer.getText().toString());
 
-        //Inicio los valores extremos con el valor del primer punto de la ruta.
-        double maxLtd = myRoute.getWaypointList().get(0).getLtd();
-        double minLtd = myRoute.getWaypointList().get(0).getLtd();
-        double maxLng = myRoute.getWaypointList().get(0).getLng();
-        double minLng = myRoute.getWaypointList().get(0).getLng();
-        double maxAlt = myRoute.getWaypointList().get(0).getAlt();
-        double minAlt = myRoute.getWaypointList().get(0).getAlt();
+            //Inicio los valores extremos con el valor del primer punto de la ruta.
+            double maxLtd = myRoute.getWaypointList().get(0).getLtd();
+            double minLtd = myRoute.getWaypointList().get(0).getLtd();
+            double maxLng = myRoute.getWaypointList().get(0).getLng();
+            double minLng = myRoute.getWaypointList().get(0).getLng();
+            double maxAlt = myRoute.getWaypointList().get(0).getAlt();
+            double minAlt = myRoute.getWaypointList().get(0).getAlt();
 
-        //Recorro la lista en busca de valores extremos
-        for(int i=0; i < myRoute.getWaypointList().size(); i++){
+            //Recorro la lista en busca de valores extremos
+            for(int i=0; i < myRoute.getWaypointList().size(); i++){
 
-            if(myRoute.getWaypointList().get(i).getLtd() > maxLtd){
-                maxLtd = myRoute.getWaypointList().get(i).getLtd();
+                if(myRoute.getWaypointList().get(i).getLtd() > maxLtd){
+                    maxLtd = myRoute.getWaypointList().get(i).getLtd();
+                }
+
+                if(myRoute.getWaypointList().get(i).getLng() > maxLng){
+                    maxLng = myRoute.getWaypointList().get(i).getLng();
+                }
+                if(myRoute.getWaypointList().get(i).getAlt() > maxAlt){
+                    maxAlt = myRoute.getWaypointList().get(i).getAlt();
+                }
+
+                if(myRoute.getWaypointList().get(i).getLtd() < minLtd){
+                    minLtd = myRoute.getWaypointList().get(i).getLtd();
+                }
+
+                if(myRoute.getWaypointList().get(i).getLng() < minLng){
+                    minLng = myRoute.getWaypointList().get(i).getLng();
+                }
+                if(myRoute.getWaypointList().get(i).getAlt() < minAlt){
+                    minAlt = myRoute.getWaypointList().get(i).getAlt();
+                }
+
             }
 
-            if(myRoute.getWaypointList().get(i).getLng() > maxLng){
-                maxLng = myRoute.getWaypointList().get(i).getLng();
-            }
-            if(myRoute.getWaypointList().get(i).getAlt() > maxAlt){
-                maxAlt = myRoute.getWaypointList().get(i).getAlt();
-            }
-
-            if(myRoute.getWaypointList().get(i).getLtd() < minLtd){
-                minLtd = myRoute.getWaypointList().get(i).getLtd();
-            }
-
-            if(myRoute.getWaypointList().get(i).getLng() < minLng){
-                minLng = myRoute.getWaypointList().get(i).getLng();
-            }
-            if(myRoute.getWaypointList().get(i).getAlt() < minAlt){
-                minAlt = myRoute.getWaypointList().get(i).getAlt();
-            }
-
+            //Asigno valores extremos
+            myRoute.setMaxLtd(maxLtd);
+            myRoute.setMaxLng(maxLng);
+            myRoute.setMaxAlt(maxAlt);
+            myRoute.setMinLtd(minLtd);
+            myRoute.setMinLng(minLng);
+            myRoute.setMinAlt(minAlt);
+        } else {
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
         }
 
-        //Asigno valores extremos
-        myRoute.setMaxLtd(maxLtd);
-        myRoute.setMaxLng(maxLng);
-        myRoute.setMaxAlt(maxAlt);
-        myRoute.setMinLtd(minLtd);
-        myRoute.setMinLng(minLng);
-        myRoute.setMinAlt(minAlt);
+
 
     }
 
@@ -848,7 +854,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             File videoFile = new File(videoDirectory,mCurrentVideoFile);
 
-            Uri videoUri = FileProvider.getUriForFile(MapsActivity.this, "com.marcostoral.keepmoving.fileProvider", videoFile);
+            Uri videoUri = FileProvider.getUriForFile(MapsActivity.this, "com.appsturdev.keepmoving.fileProvider", videoFile);
 
             mCurrentVideoPath = videoFile.getPath();
 
@@ -898,7 +904,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             File imageFile = new File(pictureDirectory,mCurrentPhotoFile);
 
-            Uri pictureUri = FileProvider.getUriForFile(MapsActivity.this, "com.marcostoral.keepmoving.fileProvider", imageFile);
+            Uri pictureUri = FileProvider.getUriForFile(MapsActivity.this, "com.appsturdev.keepmoving.fileProvider", imageFile);
 
             mCurrentPhotoPath = imageFile.getPath();
 
