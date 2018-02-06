@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KEEP MOVIN\'</string>
+    <string name="app_development_studio">appsturdev</string>
+    <string name="title_activity_maps">Seekarte</string>
+    <string name="to_map">Startstrecke</string>
+    <string name="to_history">Vorgeschichte</string>
+    <string name="to_stadistics">Statistik</string>
+    <string name="to_gallery">Galerie</string>
+    <string name="prefs">Präferenzen</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="acept">Akzeptieren</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="about">Über...</string>
+    <string name="caputure_waypoint">Generierung von Points of Interest</string>
+    <string name="distance">Distanz: </string>
+    <string name="time">Dauer: </string>
+    <string name="date">Datum: </string>
+    <string name="start_at">Startzeit: </string>
+    <string name="delete">Löschen</string>
+    <string name="modify_title">Name bearbeiten</string>
+    <string name="export_gpx">GPX-Datei exportieren</string>
+    <string name="export_kml">KML-Datei exportieren</string>
+    <string name="save">Altmaterial</string>
+    <string name="share">Sich teilen</string>
+    <string name="title_dialog_route_type">Wählen Sie den Routentyp aus: </string>
+    <string name="biking">Velo</string>
+    <string name="running">Running</string>
+    <string name="hiking">Hinking</string>
+    <string name="title_dialog_media_type">Was wollen Sie tun?</string>
+    <string name="photo">Foto</string>
+    <string name="movie">Video</string>
+    <string name="altitude">Aufriss</string>
+    <string name="succesful_export">Exportdatei erfolgreich exportiert</string>
+    <string name="error_export">Beim Exportieren der Datei ist ein Fehler aufgetreten</string>
+    <string name="title_dialog_persist_route">Generierte Route</string>
+    <string name="msn_dialog_persist_route">Sie möchten die Route speichern?</string>
+    <string name="routeTypeTitleDialog">Wählen Sie den Routentyp aus.</string>
+    <string name="pleaseStopTrackng">Beenden Sie die Aufnahme.</string>
+    <string name="no_photo">Keine Fotos gemacht</string>
+    <string name="no_video">Kein Video aufgezeichnet</string>
+    <string name="waiting_position">Warten auf Positionierung</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_line_chart">LineChartActivity</string>
+    <string name="title_activity_chart">ChartActivity</string>
+
+    <string name="new_name">Neuen Namen eingeben</string>
+    <string name="perfil">Längsprofil</string>
+    <string name="error_record">Es wurde keine Positionierung erreicht</string>
+</resources>

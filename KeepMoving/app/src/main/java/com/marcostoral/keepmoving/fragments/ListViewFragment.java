@@ -116,21 +116,25 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
         cargaRutas();
 
-        lvHistory = (ListView) view.findViewById(R.id.lvRoutes);
+        if (routes != null) {
+            lvHistory = (ListView) view.findViewById(R.id.lvRoutes);
 
-        adapter = new RouteAdapter(getContext(),routes,R.layout.lv_item);
-        lvHistory.setAdapter(adapter);
+            adapter = new RouteAdapter(getContext(),routes,R.layout.lv_item);
+            lvHistory.setAdapter(adapter);
 
-        lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            lvHistory.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                mListener.onListClick(routes.get(position));   //cambio el arrayRoutes por routes
+                    mListener.onListClick(routes.get(position));   //cambio el arrayRoutes por routes
 
-            }
-        });
+                }
+            });
 
-        registerForContextMenu(lvHistory);
+            registerForContextMenu(lvHistory);
+        }
+
+
     }
 
 
@@ -192,6 +196,7 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         realm.beginTransaction();
         routes.get(position).setTitle(mTitle);
         realm.commitTransaction();
+        realm.close();
 
     }
 
@@ -218,7 +223,6 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
             //Abrir fichero y escribir en él
 
-//                outputStream = getContext().getApplicationContext().openFileOutput(filename, Context.MODE_PRIVATE);
                 String l1 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
                 String l2 = "\n <kml xmlns=\"http://www.opengis.net/kml/2.2\"> <Document>";
                 String l3 = "\n <name>" + routes.get(position).getTitle() + "</name>";
@@ -242,15 +246,32 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
 
                 }
                 String lc2 = "\n" +
-                        " </coordinates> \n </LineString> \n </Placemark>\n </Document> \n </kml>";
+                        " </coordinates> \n </LineString> \n </Placemark> "; // \n </Document> \n </kml>";
                 outputStream.write(lc2);
+
+                for (int i = 0; i < routes.get(position).getWaypointList().size(); i++) {
+
+                    if(routes.get(position).getWaypointList().get(i).getPath() != null){
+
+                        String s0 = "\n <Placemark> \n <name>"+routes.get(position).getWaypointList().get(i).getFilePath()+"</name>";
+                        outputStream.write(s0);
+                        String s2 = "\n"+"<Point>"+"\n"+"<coordinates>" + routes.get(position).getWaypointList().get(i).getLng() + "," + routes.get(position).getWaypointList().get(i).getLtd() + "," + routes.get(position).getWaypointList().get(i).getAlt() +"\n </coordinates> \n </Point>\n" +
+                                " </Placemark> ";
+                        outputStream.write(s2);
+
+                    }
+                }
+
+                String lc3 = "\n" +
+                        "</Document> \n </kml>";
+
+                outputStream.write(lc3);
                 outputStream.close();
 
                 MediaScannerConnection.scanFile(getContext(),new String[] { file.toString() },null,null);
 
                 Toast.makeText(getContext(), R.string.succesful_export, Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
-                e.printStackTrace();
                 Toast.makeText(getContext(), R.string.error_export, Toast.LENGTH_SHORT).show();
             }
         }
@@ -363,6 +384,7 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
         realm.beginTransaction();
         routes.get(position).deleteFromRealm();
         realm.commitTransaction();
+        realm.close();
     }
 
     ///////////////////////////////////////////////////////
@@ -372,7 +394,7 @@ public class ListViewFragment extends Fragment implements RealmChangeListener<Re
     private void showSetTitleAlert(final int pos){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Introduzca nuevo nombre");
+        builder.setTitle(R.string.new_name);
 
         // Set up the input
         final EditText input = new EditText(getContext());

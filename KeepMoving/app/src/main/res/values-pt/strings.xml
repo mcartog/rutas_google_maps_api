@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KEEP MOVIN\'</string>
+    <string name="app_development_studio">appsturdev</string>
+    <string name="title_activity_maps">Mapa</string>
+    <string name="to_map">Iniciar rota</string>
+    <string name="to_history">História</string>
+    <string name="to_stadistics">Estatísticas</string>
+    <string name="to_gallery">Galeria</string>
+    <string name="prefs">Preferências</string>
+    <string name="start">Comece</string>
+    <string name="stop">Pare</string>
+    <string name="acept">Aceitar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="about">Sobre...</string>
+    <string name="caputure_waypoint">Gerar ponto de interesse</string>
+    <string name="distance">Distância: </string>
+    <string name="time">Duração: </string>
+    <string name="date">Data: </string>
+    <string name="start_at">Hora de início: </string>
+    <string name="delete">Eliminar</string>
+    <string name="modify_title">Editar nome</string>
+    <string name="export_gpx">Exportar arquivo GPX</string>
+    <string name="export_kml">Exportar arquivo KML</string>
+    <string name="save">Salvar</string>
+    <string name="share">Compartilhe</string>
+    <string name="title_dialog_route_type">Selecione o tipo de rota: </string>
+    <string name="biking">De bicicleta</string>
+    <string name="running">Correndo</string>
+    <string name="hiking">Caminhando</string>
+    <string name="title_dialog_media_type">O que você quer fazer?</string>
+    <string name="photo">Fotografia</string>
+    <string name="movie">Vídeo</string>
+    <string name="altitude">Altura</string>
+    <string name="succesful_export">Arquivo exportado corretamente</string>
+    <string name="error_export">Ocorreu um erro ao exportar o arquivo</string>
+    <string name="title_dialog_persist_route">Rota gerada</string>
+    <string name="msn_dialog_persist_route">Deseja salvar a rota?</string>
+    <string name="routeTypeTitleDialog">Selecione o tipo de rota.</string>
+    <string name="pleaseStopTrackng">Termine a gravação.</string>
+    <string name="no_photo">Nenhuma fotografia foi tirada</string>
+    <string name="no_video">Nenhum vídeo foi feito</string>
+    <string name="waiting_position">Esperando posicionamento</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_line_chart">LineChartActivity</string>
+    <string name="title_activity_chart">ChartActivity</string>
+
+    <string name="new_name">Insira novo nome</string>
+    <string name="perfil">Perfil longitudinal</string>
+    <string name="error_record">Nenhum posicionamento foi obtido</string>
+</resources>

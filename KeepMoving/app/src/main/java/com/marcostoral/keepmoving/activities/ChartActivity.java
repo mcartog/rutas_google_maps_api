@@ -32,8 +32,6 @@ public class ChartActivity extends AppCompatActivity {
     private RealmResults<Route> routeById;
     private long id;
 
-    static String parameterName = "Altura";
-    static String subtitleText = "Perfil longitudinal";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +46,14 @@ public class ChartActivity extends AppCompatActivity {
 
         entries = getData(route);
 
-        lineDataSet = new LineDataSet(entries, parameterName);
+        lineDataSet = new LineDataSet(entries, getString(R.string.altitude));//parameterName);
         lineDataSet.setDrawFilled(true);
         lineDataSet.setCubicIntensity(1);
 
         data = new LineData(lineDataSet);
         lineChart.setData(data);
         Description d = new Description();
-        d.setText(subtitleText);
+        d.setText(getString(R.string.perfil));
         d.setTextSize(12);
         lineChart.setDescription(d);
     }
@@ -89,13 +87,15 @@ public class ChartActivity extends AppCompatActivity {
 
         for (int j = 0; j < route.getWaypointList().size(); j++) {
 
-            if( (z - route.getWaypointList().get(j).getAlt()) >= 1.5 || (z - route.getWaypointList().get(j).getAlt()) < -1.5){  //0.5
+            if( (z - route.getWaypointList().get(j).getAlt()) >= 2.5 || (z - route.getWaypointList().get(j).getAlt()) < -2.5){  //+-5
 
                 if(route.getWaypointList().get(j).getAlt() == 0 ){
 
                     //El primer posicionamiento puede no coger bien la altura
-                    z = (float) route.getWaypointList().get(j+1).getAlt();
-                    d = (float) route.getWaypointList().get(j+1).getDistance();
+                    if (route.getWaypointList().get(j+1) != null){
+                        z = (float) route.getWaypointList().get(j+1).getAlt();
+                        d = (float) route.getWaypointList().get(j+1).getDistance();
+                    }
 
                 } else {
 

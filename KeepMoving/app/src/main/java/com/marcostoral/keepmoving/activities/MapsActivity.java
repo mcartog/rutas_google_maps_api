@@ -190,6 +190,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        }
 //    }
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -344,9 +345,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //Asigna datos a objeto Route
                 setRouteParameters();
 
-                //Inicia dialogo de persistencia.
-                saveConfirmationDialog.show();
+                if (isSaved == false) {
 
+                    //Inicia dialogo de persistencia.
+                    saveConfirmationDialog.show();
+                }
             }
         });
     }
@@ -474,7 +477,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             myRoute.setMinLng(minLng);
             myRoute.setMinAlt(minAlt);
         } else {
-            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.error_record, Toast.LENGTH_LONG).show();
+            isSaved = true;
+            btnSave.setEnabled(false);
         }
 
 
@@ -551,19 +556,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Refresco en virtud del tiempo
         switch (type){
             case 0:
-                mLocationRequest.setInterval(1000);     //1seg
-                mLocationRequest.setFastestInterval(1000);
+                mLocationRequest.setInterval(15000);     //15seg
+                mLocationRequest.setFastestInterval(5000);
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 break;
             case 1:
-                mLocationRequest.setInterval(2500);     //2seg
-                mLocationRequest.setFastestInterval(1000);
+                mLocationRequest.setInterval(9000);     //9seg
+                mLocationRequest.setFastestInterval(5000);
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 break;
 
             case 2:
-                mLocationRequest.setInterval(5000);     //5seg
-                mLocationRequest.setFastestInterval(1000);
+                mLocationRequest.setInterval(5000);     //6seg
+                mLocationRequest.setFastestInterval(2500);
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 break;
         }
@@ -672,6 +677,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         return currentWaypoint;
+
+    }
+
+    public Waypoint copyLastPoint(Route myRoute){
+
+        //Copia último waypoint.
+
+        Waypoint lastWaypoint = new Waypoint(myRoute.getWaypointList().last().getLtd(), myRoute.getWaypointList().last().getLng());
+        lastWaypoint.setAlt(myRoute.getWaypointList().last().getAlt());
+        lastWaypoint.setTime((SystemClock.elapsedRealtime()-chronometer.getBase()-milliseconds)/1000);
+        lastWaypoint.setDistance(myRoute.getWaypointList().last().getDistance());
+
+        return lastWaypoint;
 
     }
 
@@ -854,7 +872,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             File videoFile = new File(videoDirectory,mCurrentVideoFile);
 
-            Uri videoUri = FileProvider.getUriForFile(MapsActivity.this, "com.appsturdev.keepmoving.fileProvider", videoFile);
+            Uri videoUri = FileProvider.getUriForFile(MapsActivity.this, "com.marcostoral.keepmoving.fileProvider", videoFile);
 
             mCurrentVideoPath = videoFile.getPath();
 
@@ -904,7 +922,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             File imageFile = new File(pictureDirectory,mCurrentPhotoFile);
 
-            Uri pictureUri = FileProvider.getUriForFile(MapsActivity.this, "com.appsturdev.keepmoving.fileProvider", imageFile);
+            Uri pictureUri = FileProvider.getUriForFile(MapsActivity.this, "com.marcostoral.keepmoving.fileProvider", imageFile);
 
             mCurrentPhotoPath = imageFile.getPath();
 
@@ -960,10 +978,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         if(data == null){
                             //Al usar EXTRA_OUTPUT la imagen se guarda en el path que yo le haya pasado, el data vendrá vacío.
 
+                            /////////LANZA GET POSITION
+                            Waypoint lastWaypoint = copyLastPoint(myRoute);
+                            myRoute.addWaypoint(lastWaypoint);
+                            /////////
                             //Añade un marcador en el mapa, añadiendo un LatLng
                             LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                             mMap.addMarker(new MarkerOptions().position(point));
                             myRoute.getWaypointList().last().setPath("file://"+mCurrentPhotoPath);
+                            myRoute.getWaypointList().last().setFilePath(mCurrentPhotoFile);
 
                             //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
 //                            galleryAddMedia(new File("file://"+mCurrentPhotoPath));
@@ -979,11 +1002,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if (resultCode == RESULT_OK && data != null) {
 
 //                    mCurrentVideoPath = data.getData().getPath();
-
+                    Waypoint lastWaypoint = copyLastPoint(myRoute);
+                    myRoute.addWaypoint(lastWaypoint);
                     //Añade un marcador en el mapa, añadiendo un LatLng
                     LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
                     mMap.addMarker(new MarkerOptions().position(point));
                     myRoute.getWaypointList().last().setPath(mCurrentVideoPath); //"file://"+
+                    myRoute.getWaypointList().last().setFilePath(mCurrentVideoFile);
                     myRoute.getWaypointList().last().setVideo(true);
 
                     //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
@@ -1030,6 +1055,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         realm.beginTransaction();
         realm.copyToRealm(r);
         realm.commitTransaction();
+        realm.close();
+
     }
 
 

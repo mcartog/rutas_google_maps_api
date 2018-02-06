@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Keep Movin\'</string>
+    <string name="app_name">KEEP MOVIN\'</string>
+    <string name="app_development_studio">appsturdev</string>
     <string name="title_activity_maps">Mapa</string>
     <string name="to_map">Empezar ruta</string>
     <string name="to_history">Historial</string>
@@ -43,6 +44,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_line_chart">LineChartActivity</string>
     <string name="title_activity_chart">ChartActivity</string>
+
+    <string name="new_name">Introduzca nuevo nombre</string>
+    <string name="perfil">Perfil longitudinal</string>
+
+    <string name="error_record">No se ha obtenido ningún posicionamiento</string>
+
 
 
 </resources>

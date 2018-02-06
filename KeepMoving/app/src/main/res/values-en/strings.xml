@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">Keep Movin\'</string>
+    <string name="app_name">KEEP MOVIN\'</string>
+    <string name="app_development_studio">appsturdev</string>
     <string name="title_activity_maps">Map</string>
     <string name="to_map">Go!</string>
     <string name="to_history">History</string>
-    <string name="to_stadistics">Estadísticas</string>
+    <string name="to_stadistics">Stadistics</string>
     <string name="to_gallery">Gallery</string>
     <string name="prefs">Preferences</string>
     <string name="start">Start</string>
@@ -45,4 +46,7 @@
     <string name="title_activity_chart">ChartActivity</string>
 
 
+    <string name="new_name">Introduce new name</string>
+    <string name="perfil">Longitudinal profile</string>
+    <string name="error_record">No positioning has been obtained</string>
 </resources>
