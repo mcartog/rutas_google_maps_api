@@ -27,9 +27,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,7 +57,7 @@ import java.util.List;
 import io.realm.Realm;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     //Realm
     private Realm realm;
@@ -114,6 +118,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //Permissions
     public static final int PERMISSIONS_REQUEST_LOCATION = 99;
     public static final int PERMISSIONS_REQUEST_WRITE_DATA = 98;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     ///////////////////////////////////////////////////////
     /////////////////   CALLBACKS   ///////////////////////
@@ -125,6 +134,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         init();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 //    @Override
@@ -285,7 +297,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void setStartButton(){
+    private void setStartButton() {
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,7 +334,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void setStopButton(){
+    private void setStopButton() {
 
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -354,13 +366,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void setWaypointButton(){
+    private void setWaypointButton() {
 
         btnWaypoint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(myRoute.getWaypointList().size()>0){
+                if (myRoute.getWaypointList().size() > 0) {
 
                     //Lanza dialog foto vs video.
                     waypointDialog.show();
@@ -373,7 +385,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    private void setSaveButton(){
+    private void setSaveButton() {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -384,6 +396,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Recibe el tipo de ruta y le asigna una imagen en función de la elección.
+     *
      * @param type
      */
     public void routeTypeIconReceptor(int type) {
@@ -410,14 +423,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         chronometer.start();
     }
 
-    public void setKm (float totalDistance){
+    public void setKm(float totalDistance) {
 
         float km = totalDistance / 1000;
-        tvCurrentDistance.setText( km + " Km");
+        tvCurrentDistance.setText(km + " Km");
 
     }
 
-    public float calculateDistance (Location lastLocation, Location currentLocation){
+    public float calculateDistance(Location lastLocation, Location currentLocation) {
 
         return currentLocation.distanceTo(lastLocation);
 
@@ -427,11 +440,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Al dar a Stop asignamos los valores a ROute.
      */
-    public void setRouteParameters(){
+    public void setRouteParameters() {
 
-        if(myRoute.getWaypointList().size()>1){
+        if (myRoute.getWaypointList().size() > 1) {
             myRoute.setType(type);
-            myRoute.setDistance(totalDistance/1000);
+            myRoute.setDistance(totalDistance / 1000);
             myRoute.setTime(chronometer.getText().toString());
 
             //Inicio los valores extremos con el valor del primer punto de la ruta.
@@ -443,27 +456,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             double minAlt = myRoute.getWaypointList().get(0).getAlt();
 
             //Recorro la lista en busca de valores extremos
-            for(int i=0; i < myRoute.getWaypointList().size(); i++){
+            for (int i = 0; i < myRoute.getWaypointList().size(); i++) {
 
-                if(myRoute.getWaypointList().get(i).getLtd() > maxLtd){
+                if (myRoute.getWaypointList().get(i).getLtd() > maxLtd) {
                     maxLtd = myRoute.getWaypointList().get(i).getLtd();
                 }
 
-                if(myRoute.getWaypointList().get(i).getLng() > maxLng){
+                if (myRoute.getWaypointList().get(i).getLng() > maxLng) {
                     maxLng = myRoute.getWaypointList().get(i).getLng();
                 }
-                if(myRoute.getWaypointList().get(i).getAlt() > maxAlt){
+                if (myRoute.getWaypointList().get(i).getAlt() > maxAlt) {
                     maxAlt = myRoute.getWaypointList().get(i).getAlt();
                 }
 
-                if(myRoute.getWaypointList().get(i).getLtd() < minLtd){
+                if (myRoute.getWaypointList().get(i).getLtd() < minLtd) {
                     minLtd = myRoute.getWaypointList().get(i).getLtd();
                 }
 
-                if(myRoute.getWaypointList().get(i).getLng() < minLng){
+                if (myRoute.getWaypointList().get(i).getLng() < minLng) {
                     minLng = myRoute.getWaypointList().get(i).getLng();
                 }
-                if(myRoute.getWaypointList().get(i).getAlt() < minAlt){
+                if (myRoute.getWaypointList().get(i).getAlt() < minAlt) {
                     minAlt = myRoute.getWaypointList().get(i).getAlt();
                 }
 
@@ -481,7 +494,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             isSaved = true;
             btnSave.setEnabled(false);
         }
-
 
 
     }
@@ -510,9 +522,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void initLocation(){
+    public void initLocation() {
         //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
@@ -524,15 +536,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 //Request Location Permission
                 checkLocationPermission();
             }
-        }
-        else {
+        } else {
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
     }
 
-    public void stopLocation(){
+    public void stopLocation() {
 
         mGoogleApiClient.unregisterConnectionCallbacks(this);
         mGoogleApiClient.disconnect();
@@ -554,22 +565,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //Configuración de peticion de actualización.
         mLocationRequest = new LocationRequest();
         //Refresco en virtud del tiempo
-        switch (type){
-            case 0:
-                mLocationRequest.setInterval(15000);     //15seg
-                mLocationRequest.setFastestInterval(5000);
+        switch (type) {
+            case 0: //Bike
+                mLocationRequest.setInterval(5000);     //5seg
+                mLocationRequest.setFastestInterval(1000);
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 break;
-            case 1:
-                mLocationRequest.setInterval(9000);     //9seg
+            case 1: //Running
+                mLocationRequest.setInterval(10000);     //10seg
                 mLocationRequest.setFastestInterval(5000);
                 mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 break;
 
-            case 2:
-                mLocationRequest.setInterval(5000);     //6seg
-                mLocationRequest.setFastestInterval(2500);
-                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            case 2: //Hiking
+                mLocationRequest.setInterval(30000);     //30seg
+                mLocationRequest.setFastestInterval(5000);
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
                 break;
         }
 
@@ -588,58 +599,60 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {}
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+    }
 
     @Override
     public void onLocationChanged(Location location) {
 
 //        float distanciaListener = this.totalDistance;
 
-               currentLocation = location;
-               if (currentLocation != null) {
-                   mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),17));
-               }
+        currentLocation = location;
+        if (currentLocation != null) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()), 17));
+        }
 
-               //Obtiene las coordenadas de un punto a partir de una localización.
-               newPoint = getWaypointCoords(currentLocation);
+        //Obtiene las coordenadas de un punto a partir de una localización.
+        newPoint = getWaypointCoords(currentLocation);
 
-               //Si la recuperación de coordenadas es exitosa..
-               if(newPoint != null){
+        //Si la recuperación de coordenadas es exitosa..
+        if (newPoint != null) {
 
-                   createAndAddPoint(currentLocation, newPoint);
+            createAndAddPoint(currentLocation, newPoint);
 
-                   //...y la ruta se ha iniciado...
-                   if(myRoute != null){
+            //...y la ruta se ha iniciado...
+            if (myRoute != null) {
 
-                       //Añadir punto a ruta.
-                       myRoute.addWaypoint(currentWaypoint);
+                //Añadir punto a ruta.
+                myRoute.addWaypoint(currentWaypoint);
 
-                       //...y si hay más de un punto...
-                       if(myRoute.getWaypointList().size() >= 0) {
+                //...y si hay más de un punto...
+                if (myRoute.getWaypointList().size() >= 0) {
 
-                           LatLng pointLatLng = new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng());
-                           latLngs.add(pointLatLng);
+                    LatLng pointLatLng = new LatLng(currentWaypoint.getLtd(), currentWaypoint.getLng());
+                    latLngs.add(pointLatLng);
 
-                           routeTrack = new PolylineOptions()
-                                   .width(5)
-                                   .color(Color.RED)
-                                   .geodesic(true);
+                    routeTrack = new PolylineOptions()
+                            .width(5)
+                            .color(Color.RED)
+                            .geodesic(true);
 
-                           routeTrack.addAll(latLngs);
+                    routeTrack.addAll(latLngs);
 
-                           //Dibuja polilinea
-                           mMap.addPolyline(routeTrack);
+                    //Dibuja polilinea
+                    mMap.addPolyline(routeTrack);
 
-                       }
-                   }
+                }
+            }
 
-                   lastLocation = currentLocation;
-               }
+            lastLocation = currentLocation;
+        }
 
     }
 
     /**
      * Pasada una localización devuelve su posición en latitud y longitud.
+     *
      * @param currentLocation
      * @return LatLng Valores latitud y longitud de un punto.
      */
@@ -655,17 +668,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Crea un punto a partir de Lcoation, asigna tiempo y altura.
+     *
      * @param currentLocation
      * @param newPoint
      * @return
      */
-    public Waypoint createAndAddPoint(Location currentLocation, LatLng newPoint){
+    public Waypoint createAndAddPoint(Location currentLocation, LatLng newPoint) {
         float distanciaListener = this.totalDistance;
         //Crea point (pasando Lat y Lng de parámetros).
         currentWaypoint = new Waypoint(newPoint.latitude, newPoint.longitude);
         currentWaypoint.setAlt(currentLocation.getAltitude());
-        currentWaypoint.setTime((SystemClock.elapsedRealtime()-chronometer.getBase()-milliseconds)/1000);
-        if(lastLocation != null){
+        currentWaypoint.setTime((SystemClock.elapsedRealtime() - chronometer.getBase() - milliseconds) / 1000);
+        if (lastLocation != null) {
 
             distance = (long) calculateDistance(lastLocation, currentLocation);
             this.totalDistance = distanciaListener + distance;
@@ -680,13 +694,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public Waypoint copyLastPoint(Route myRoute){
+    public Waypoint copyLastPoint(Route myRoute) {
 
         //Copia último waypoint.
 
         Waypoint lastWaypoint = new Waypoint(myRoute.getWaypointList().last().getLtd(), myRoute.getWaypointList().last().getLng());
         lastWaypoint.setAlt(myRoute.getWaypointList().last().getAlt());
-        lastWaypoint.setTime((SystemClock.elapsedRealtime()-chronometer.getBase()-milliseconds)/1000);
+        lastWaypoint.setTime((SystemClock.elapsedRealtime() - chronometer.getBase() - milliseconds) / 1000);
         lastWaypoint.setDistance(myRoute.getWaypointList().last().getDistance());
 
         return lastWaypoint;
@@ -710,6 +724,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return gpsSignal != 0;
         } catch (Settings.SettingNotFoundException e) {
             e.printStackTrace();
+            showInfoAlert();
             return false;
         }
 
@@ -756,7 +771,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     /**
      * Comprueba los permisos de escritura. En caso de no disponer de ellos permite activación en AlertDialog.
      */
-    public void checkWritePermission(){
+    public void checkWritePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
@@ -860,17 +875,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     public void dispatchTakeVideoIntent() {
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
-            mCurrentVideoFile = getPictureName()+".mp4";
-            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES+"/KeepMovin");
+            mCurrentVideoFile = getPictureName() + ".mp4";
+            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES + "/KeepMovin");
             if (!videoDirectory.exists()) {
                 videoDirectory.mkdirs();
             }
 
-            File videoFile = new File(videoDirectory,mCurrentVideoFile);
+            File videoFile = new File(videoDirectory, mCurrentVideoFile);
 
             Uri videoUri = FileProvider.getUriForFile(MapsActivity.this, "com.marcostoral.keepmoving.fileProvider", videoFile);
 
@@ -879,7 +894,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
 //            takeVideoIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-            if (takeVideoIntent.resolveActivity(this.getPackageManager())!= null) {
+            if (takeVideoIntent.resolveActivity(this.getPackageManager()) != null) {
                 startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
             }
 
@@ -887,12 +902,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
-            mCurrentVideoFile = getPictureName()+".mp4";
-            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES+"/KeepMovin");
+            mCurrentVideoFile = getPictureName() + ".mp4";
+            File videoDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES + "/KeepMovin");
             if (!videoDirectory.exists()) {
                 videoDirectory.mkdirs();
             }
-            File videoFile = new File(videoDirectory,mCurrentVideoFile);
+            File videoFile = new File(videoDirectory, mCurrentVideoFile);
 
             Uri videoUri = Uri.fromFile(videoFile);
 
@@ -900,7 +915,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
 
-            if (takeVideoIntent.resolveActivity(this.getPackageManager())!= null) {
+            if (takeVideoIntent.resolveActivity(this.getPackageManager()) != null) {
                 startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
             }
         }
@@ -912,15 +927,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void dispatchTakePictureIntent() {
 
         //Si es mayor que Marshallow
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-            mCurrentPhotoFile = getPictureName()+".jpg";
-            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/KeepMovin");
+            mCurrentPhotoFile = getPictureName() + ".jpg";
+            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/KeepMovin");
             if (!pictureDirectory.exists()) {
                 pictureDirectory.mkdirs();
             }
-            File imageFile = new File(pictureDirectory,mCurrentPhotoFile);
+            File imageFile = new File(pictureDirectory, mCurrentPhotoFile);
 
             Uri pictureUri = FileProvider.getUriForFile(MapsActivity.this, "com.marcostoral.keepmoving.fileProvider", imageFile);
 
@@ -932,18 +947,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
 
-        }else{
+        } else {
             //Si es una versión inferior...
 
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-            mCurrentPhotoFile = getPictureName()+".jpg";
+            mCurrentPhotoFile = getPictureName() + ".jpg";
 
-            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+"/KeepMovin");
+            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES + "/KeepMovin");
             if (!pictureDirectory.exists()) {
                 pictureDirectory.mkdirs();
             }
-            File imageFile = new File(pictureDirectory,mCurrentPhotoFile);
+            File imageFile = new File(pictureDirectory, mCurrentPhotoFile);
 
             Uri pictureUri = Uri.fromFile(imageFile);
 
@@ -960,12 +975,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Generación de nombre único.
+     *
      * @return
      */
-    private String getPictureName(){
+    private String getPictureName() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
         String timestamp = sdf.format(new Date());
-        return "KM"+timestamp;
+        return "KM" + timestamp;
     }
 
     @Override
@@ -973,9 +989,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         switch (requestCode) {
             case REQUEST_IMAGE_CAPTURE:
-                switch (resultCode){
+                switch (resultCode) {
                     case RESULT_OK:
-                        if(data == null){
+                        if (data == null) {
                             //Al usar EXTRA_OUTPUT la imagen se guarda en el path que yo le haya pasado, el data vendrá vacío.
 
                             /////////LANZA GET POSITION
@@ -983,15 +999,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             myRoute.addWaypoint(lastWaypoint);
                             /////////
                             //Añade un marcador en el mapa, añadiendo un LatLng
-                            LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+//                            LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(), myRoute.getWaypointList().last().getLng());
+                            LatLng point = new LatLng(lastWaypoint.getLtd(), lastWaypoint.getLng());
                             mMap.addMarker(new MarkerOptions().position(point));
-                            myRoute.getWaypointList().last().setPath("file://"+mCurrentPhotoPath);
+                            myRoute.getWaypointList().last().setPath("file://" + mCurrentPhotoPath);
                             myRoute.getWaypointList().last().setFilePath(mCurrentPhotoFile);
 
                             //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
 //                            galleryAddMedia(new File("file://"+mCurrentPhotoPath));
 
-                            galleryAddMedia("file://"+mCurrentPhotoPath);
+                            galleryAddMedia("file://" + mCurrentPhotoPath);
                         }
                 }
 
@@ -1005,7 +1022,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Waypoint lastWaypoint = copyLastPoint(myRoute);
                     myRoute.addWaypoint(lastWaypoint);
                     //Añade un marcador en el mapa, añadiendo un LatLng
-                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(),myRoute.getWaypointList().last().getLng());
+//                    LatLng point = new LatLng(myRoute.getWaypointList().last().getLtd(), myRoute.getWaypointList().last().getLng());
+                    LatLng point = new LatLng(lastWaypoint.getLtd(), lastWaypoint.getLng());
                     mMap.addMarker(new MarkerOptions().position(point));
                     myRoute.getWaypointList().last().setPath(mCurrentVideoPath); //"file://"+
                     myRoute.getWaypointList().last().setFilePath(mCurrentVideoFile);
@@ -1013,7 +1031,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     //Añade la imagen a la galería del sistema para que sea accesible por el resto de apps.
 //                    galleryAddMedia(new File("file://"+mCurrentVideoPath));
-                    galleryAddMedia("file://"+mCurrentVideoPath);
+                    galleryAddMedia("file://" + mCurrentVideoPath);
 
                 } else {
                     Toast.makeText(this, R.string.no_video, Toast.LENGTH_LONG).show();
@@ -1027,6 +1045,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Notifica a la galería de la aplicación la existencia del fichero introducido como parámetro
+     *
      * @param mediaPath
      */
     private void galleryAddMedia(String mediaPath) {
@@ -1040,7 +1059,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
     ///////////////////////////////////////////////////////
     ////////////////////  REALM   /////////////////////////
     ///////////////////////////////////////////////////////
@@ -1048,9 +1066,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Persiste objeto Route.
+     *
      * @param r
      */
-    public void saveRoute(Route r){
+    public void saveRoute(Route r) {
 
         realm.beginTransaction();
         realm.copyToRealm(r);
@@ -1063,11 +1082,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ///////////////////////////////////////////////////////
     //////////////////  DIALOGS   /////////////////////////
     ///////////////////////////////////////////////////////
+
     /**
      * Crea el diálogo de selección de tipo de media caputrado.
+     *
      * @return
      */
-    private Dialog generateDialogCaptureWaypoint(){
+    private Dialog generateDialogCaptureWaypoint() {
 
         final String[] items = getResources().getStringArray(R.array.route_media_values);
 
@@ -1077,13 +1098,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         builder.setItems(R.array.media_type, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
 
-                switch (Integer.parseInt(items[item])){
+                switch (Integer.parseInt(items[item])) {
 
                     //FOTOGRAFÍA
                     case 0:
 
                         //Comprueba la versión de Android para la gestión de permisos
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (ContextCompat.checkSelfPermission(MapsActivity.this,
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                     == PackageManager.PERMISSION_GRANTED) {
@@ -1095,8 +1116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 //Comprueba permiso de escritura
                                 checkWritePermission();
                             }
-                        }
-                        else {
+                        } else {
 
                             //Lanza cámara para capturar imagen
                             dispatchTakePictureIntent();
@@ -1107,7 +1127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //VÍDEO
                     case 1:
                         //Comprueba la versión de Android para la gestión de permisos
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (ContextCompat.checkSelfPermission(MapsActivity.this,
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                     == PackageManager.PERMISSION_GRANTED) {
@@ -1119,14 +1139,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 //Comprueba permiso de escritura
                                 checkWritePermission();
                             }
-                        }
-                        else {
+                        } else {
 
                             //Lanza cámara para capturar video
                             dispatchTakeVideoIntent();
                         }
 
-                    break;
+                        break;
                 }
 
             }
@@ -1137,9 +1156,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Crea el diálogo de selección de tipo de media caputrado.
+     *
      * @return
      */
-    private Dialog saveRouteConfirmation(){
+    private Dialog saveRouteConfirmation() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.title_dialog_persist_route);
@@ -1185,5 +1205,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Maps Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
+    }
 }

@@ -87,7 +87,7 @@ public class ChartActivity extends AppCompatActivity {
 
         for (int j = 0; j < route.getWaypointList().size(); j++) {
 
-            if( (z - route.getWaypointList().get(j).getAlt()) >= 2.5 || (z - route.getWaypointList().get(j).getAlt()) < -2.5){  //+-5
+            if( (z - route.getWaypointList().get(j).getAlt()) >= 1.5 || (z - route.getWaypointList().get(j).getAlt()) < -1.5){  //+-3
 
                 if(route.getWaypointList().get(j).getAlt() == 0 ){
 
