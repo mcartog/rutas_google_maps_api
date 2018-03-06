@@ -580,7 +580,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             case 2: //Hiking
                 mLocationRequest.setInterval(30000);     //30seg
                 mLocationRequest.setFastestInterval(5000);
-                mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 break;
         }
 

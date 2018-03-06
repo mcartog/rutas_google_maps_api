@@ -2,6 +2,7 @@ package com.marcostoral.keepmoving.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -44,18 +45,23 @@ public class ChartActivity extends AppCompatActivity {
         id = getIntent().getExtras().getLong("id");
         route = getRoute(id);
 
-        entries = getData(route);
+        if (route != null) {
 
-        lineDataSet = new LineDataSet(entries, getString(R.string.altitude));//parameterName);
-        lineDataSet.setDrawFilled(true);
-        lineDataSet.setCubicIntensity(1);
+            entries = getData(route);
 
-        data = new LineData(lineDataSet);
-        lineChart.setData(data);
-        Description d = new Description();
-        d.setText(getString(R.string.perfil));
-        d.setTextSize(12);
-        lineChart.setDescription(d);
+            lineDataSet = new LineDataSet(entries, getString(R.string.altitude));//parameterName);
+            lineDataSet.setDrawFilled(true);
+            lineDataSet.setCubicIntensity(1);
+
+            data = new LineData(lineDataSet);
+            lineChart.setData(data);
+            Description d = new Description();
+            d.setText(getString(R.string.perfil));
+            d.setTextSize(12);
+            lineChart.setDescription(d);
+        }else{
+            Toast.makeText(this,"Error",Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -76,6 +82,7 @@ public class ChartActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
         routeById = realm.where(Route.class).equalTo("id", id).findAll();
         return routeById.get(0);
+
 
     }
 
